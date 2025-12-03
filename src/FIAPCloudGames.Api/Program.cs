@@ -1,4 +1,9 @@
+using FIAPCloudGames.Api;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSwaggerDocumentation();
+
 
 // Add services to the container.
 
@@ -12,6 +17,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwaggerDocumentation();
 }
 
 app.UseAuthorization();
