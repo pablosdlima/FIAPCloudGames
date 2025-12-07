@@ -1,4 +1,4 @@
-﻿namespace FIAPCloudGames.Api
+﻿namespace FIAPCloudGames.Api.Extensions
 {
     public static class SwaggerExtensions
     {

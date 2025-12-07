@@ -1,25 +1,21 @@
-using FIAPCloudGames.Api;
+using FIAPCloudGames.Api.Extensions;
+using FIAPCloudGames.IoC;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddJwtAuthenticationConfig(builder.Configuration);
 builder.Services.AddSwaggerDocumentation();
-
-
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.ConfigureAppDependencies(builder.Configuration);
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.UseSwaggerDocumentation();
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
