@@ -1,6 +1,6 @@
 ﻿namespace FIAPCloudGames.Domain.Models;
 //=============================================================
-internal class Endereco
+public class Endereco
 {
     #region Propriedades
     //--------------------------------------------------------

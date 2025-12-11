@@ -1,4 +1,6 @@
-﻿namespace FIAPCloudGames.Domain.Interfaces;
+﻿using System.Linq.Expressions;
+
+namespace FIAPCloudGames.Domain.Interfaces.Generic;
 //===============================================================
 public interface IGenericEntity<T>
 {
@@ -8,11 +10,11 @@ public interface IGenericEntity<T>
     //-----------------------------------------------------------
     void Delete(T entity);
     //-----------------------------------------------------------
-    int Insert(T entity);
+    T Insert(T entity);
     //-----------------------------------------------------------
-    int InsertReturnId(T entity);
+    //Guid InsertReturnId(T entity);
     //-----------------------------------------------------------
-    bool Update(T entity);
+    T Update(T entity);
     //-----------------------------------------------------------
     IQueryable<T> Get();
     //-----------------------------------------------------------

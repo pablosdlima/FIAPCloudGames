@@ -1,7 +1,127 @@
-﻿namespace FIAPCloudGames.Data.Repositories.Generic;
+﻿using FIAPCloudGames.Data.Data;
+using FIAPCloudGames.Domain.Interfaces.Generic;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
+
+namespace FIAPCloudGames.Data.Repositories.Generic;
 //===============================================================
 public class GenericEntityRepository<T> : IGenericEntity<T> where T : class
 {
+    #region Propriedades
+    //------------------------------------------------------------
+    private readonly Contexto _context;
+    //------------------------------------------------------------
+    #endregion
+
+    #region Constructor
+    //------------------------------------------------------------
+    public GenericEntityRepository(Contexto context) => _context = context;
+    //------------------------------------------------------------
+    #endregion
+
+    #region Auxiliares
+    //------------------------------------------------------------
+    private int ReturnPrimaryKey(T entity)
+    {
+        return (int)entity.GetType().GetProperties()
+                       .FirstOrDefault(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).GetValue(entity);
+    }
+    //------------------------------------------------------------
+    #endregion
+
+    #region Methods
+    //------------------------------------------------------------
+    public void Delete(T entity)
+    {
+        try
+        {
+            _context.Set<T>().Remove(entity);
+            _context.SaveChanges();
+        }
+        catch (Exception err)
+        {
+            Console.WriteLine(err);
+        }
+    }
+    //------------------------------------------------------------
+    public bool Exists(Expression<Func<T, bool>> predicate)
+    {
+        throw new NotImplementedException();
+    }
+    //------------------------------------------------------------
+    public IQueryable<T> Get()
+    {
+        return _context.Set<T>().AsNoTracking();
+    }
+    //------------------------------------------------------------
+    public T GetById(int id)
+    {
+        try
+        {
+            return _context.Set<T>().Find(id)!;
+        }
+        catch (Exception err)
+        {
+            throw err;
+        }
+    }
+    //------------------------------------------------------------
+    public List<T> GetContainsId(Expression<Func<T, bool>> predicate)
+    {
+        return _context.Set<T>().Where(predicate).ToList();
+    }
+    //------------------------------------------------------------
+    public T Insert(T entity)
+    {
+        try
+        {
+            _context.Set<T>().Add(entity);
+            int result = _context.SaveChanges();
+            return entity;
+        }
+        catch (Exception err)
+        {
+            throw new Exception(message: err.Message);
+        }
+    }
+    //------------------------------------------------------------
+    //public int InsertReturnId(T entity)
+    //{
+    //    try
+    //    {
+    //        _context.Set<T>().Add(entity);
+    //        int result = _context.SaveChanges();
+    //        return result >= 1 ? ReturnPrimaryKey(entity) : 0;
+    //    }
+    //    catch (Exception err)
+    //    {
+    //        Console.WriteLine(err);
+    //        return 0;
+    //    }
+    //}
+    //------------------------------------------------------------
+
+    public int LastId(Expression<Func<T, int>> predicate)
+    {
+        return _context.Set<T>().Max(predicate);
+    }
+    //------------------------------------------------------------
+    public T Update(T entity)
+    {
+        try
+        {
+            _context.Update(entity);
+            int result = _context.SaveChanges();
+            return entity;
+        }
+        catch (Exception err)
+        {
+            throw new Exception(message: err.Message);
+        }
+    }
+    //------------------------------------------------------------
+    #endregion
 
 }
 //===============================================================

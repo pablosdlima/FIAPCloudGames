@@ -1,4 +1,6 @@
-﻿namespace FIAPCloudGames.Data.Data;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace FIAPCloudGames.Data.Data;
 //=================================================================
 public class Contexto : DbContext
 {
