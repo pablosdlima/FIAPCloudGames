@@ -1,4 +1,5 @@
 using FIAPCloudGames.Api.Extensions;
+using FIAPCloudGames.Api.Middleware;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Services;
 using FIAPCloudGames.IoC;
@@ -45,6 +46,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseSerilogRequestLoggingConfiguration();
+
+// Add middleware de tratamento de erros
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
