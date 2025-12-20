@@ -9,7 +9,7 @@ public interface IGenericService<T>
     T Insert(T entity);
     T Update(T entity);
     IQueryable<T> Get();
-    T GetById(int id);
+    T GetById(Guid id);
     List<T> GetContainsId(Expression<Func<T, bool>> predicate);
     int LastId(Expression<Func<T, int>> predicate);
 }

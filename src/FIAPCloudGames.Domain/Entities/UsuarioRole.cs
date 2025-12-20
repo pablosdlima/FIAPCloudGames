@@ -4,6 +4,8 @@ public class UsuarioRole
 {
     #region Propriedades
     //--------------------------------------------------------
+    public Guid IdUsuarioRole { get; set; }
+    //--------------------------------------------------------
     public Guid UsuarioId { get; set; }
     //--------------------------------------------------------
     public Guid RoleId { get; set; }

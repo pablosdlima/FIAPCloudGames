@@ -4,7 +4,7 @@ public class Endereco
 {
     #region Propriedades
     //--------------------------------------------------------
-    public int Id { get; set; }
+    public int IdEndereco { get; set; }
     //--------------------------------------------------------
     public Guid UsuarioId { get; set; }
     //--------------------------------------------------------
@@ -12,7 +12,7 @@ public class Endereco
     //--------------------------------------------------------
     public string Numero { get; set; }
     //--------------------------------------------------------
-    public string Complemento { get; set; }
+    public string? Complemento { get; set; }
     //--------------------------------------------------------
     public string Bairro { get; set; }
     //--------------------------------------------------------

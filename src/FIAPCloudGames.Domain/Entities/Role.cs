@@ -4,11 +4,11 @@ public class Role
 {
     #region Propriedades
     //------------------------------------------------
-    public Guid Id { get; set; }
+    public Guid IdRole { get; set; }
     //------------------------------------------------
     public string RoleName { get; set; }
     //------------------------------------------------
-    public string Description { get; set; }
+    public string? Description { get; set; }
     //------------------------------------------------
     #endregion
 

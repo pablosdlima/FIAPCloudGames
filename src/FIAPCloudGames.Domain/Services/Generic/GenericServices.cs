@@ -22,38 +22,38 @@ public abstract class GenericServices<T> : IGenericService<T>
     {
         _repository.Delete(entity);
     }
-
+    //-----------------------------------------------------
     public bool Exists(Expression<Func<T, bool>> predicate)
     {
         return _repository.Exists(predicate);
     }
-
+    //-----------------------------------------------------
     public IQueryable<T> Get()
     {
         return _repository.Get();
     }
-
-    public T GetById(int id)
+    //-----------------------------------------------------
+    public T GetById(Guid id)
     {
         return _repository.GetById(id);
     }
-
+    //-----------------------------------------------------
     public List<T> GetContainsId(Expression<Func<T, bool>> predicate)
     {
         return _repository.GetContainsId(predicate);
     }
-
+    //-----------------------------------------------------
     public T Insert(T entity)
     {
         _repository.Insert(entity);
         return entity;
     }
-
+    //-----------------------------------------------------
     public int LastId(Expression<Func<T, int>> predicate)
     {
         return _repository.LastId(predicate);
     }
-
+    //-----------------------------------------------------
     public T Update(T entity)
     {
         _repository.Update(entity);

@@ -55,7 +55,7 @@ public class GenericEntityRepository<T> : IGenericEntity<T> where T : class
         return _context.Set<T>().AsNoTracking();
     }
     //------------------------------------------------------------
-    public T GetById(int id)
+    public T GetById(Guid id)
     {
         try
         {

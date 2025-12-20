@@ -4,7 +4,7 @@ public class UsuarioGameBiblioteca
 {
     #region Propriedades
     //--------------------------------------------------------
-    public Guid Id { get; set; }
+    public Guid IdUsuarioGame { get; set; }
     //--------------------------------------------------------
     public Guid UsuarioId { get; set; }
     //--------------------------------------------------------
