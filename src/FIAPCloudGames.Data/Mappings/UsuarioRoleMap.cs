@@ -10,7 +10,7 @@ public class UsuarioRoleMap : IEntityTypeConfiguration<UsuarioRole>
     //-----------------------------------------------------------
     public void Configure(EntityTypeBuilder<UsuarioRole> builder)
     {
-        builder.ToTable("UsuarioRoleTb");
+        builder.ToTable("UsuarioRole");
         builder.HasKey(primaryKey => primaryKey.IdUsuarioRole);
 
         builder.Property(ur => ur.IdUsuarioRole)

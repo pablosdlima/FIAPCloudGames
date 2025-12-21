@@ -10,7 +10,7 @@ public class ContatoMap : IEntityTypeConfiguration<Contato>
     //------------------------------------------------------------------
     public void Configure(EntityTypeBuilder<Contato> builder)
     {
-        builder.ToTable("ContatoTb");
+        builder.ToTable("Contato");
         builder.HasKey(primaryKey => primaryKey.IdContato);
 
         builder.Property(e => e.IdContato)

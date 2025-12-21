@@ -10,7 +10,7 @@ public class UsuarioGameBibliotecaMap : IEntityTypeConfiguration<UsuarioGameBibl
     //----------------------------------------------------------------------------------
     public void Configure(EntityTypeBuilder<UsuarioGameBiblioteca> builder)
     {
-        builder.ToTable("UsuarioGameBibliotecaTb");
+        builder.ToTable("UsuarioGameBiblioteca");
         builder.HasKey(primaryKey => primaryKey.IdUsuarioGame);
 
         builder.Property(ugb => ugb.IdUsuarioGame)

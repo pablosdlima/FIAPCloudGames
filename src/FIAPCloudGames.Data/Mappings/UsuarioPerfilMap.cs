@@ -10,7 +10,7 @@ public class UsuarioPerfilMap : IEntityTypeConfiguration<UsuarioPerfil>
     //-------------------------------------------------------------------------
     public void Configure(EntityTypeBuilder<UsuarioPerfil> builder)
     {
-        builder.ToTable("UsuarioPerfilTb");
+        builder.ToTable("UsuarioPerfil");
         builder.HasKey(primaryKey => primaryKey.IdUsuarioPerfil);
 
         builder.Property(up => up.IdUsuarioPerfil)

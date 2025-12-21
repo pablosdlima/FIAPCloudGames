@@ -10,7 +10,7 @@ public class GameMap : IEntityTypeConfiguration<Game>
     //-------------------------------------------------------
     public void Configure(EntityTypeBuilder<Game> builder)
     {
-        builder.ToTable("GameTb");
+        builder.ToTable("Game");
         builder.HasKey(primaryKey => primaryKey.IdGame);
 
         builder.Property(g => g.IdGame)

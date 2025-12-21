@@ -10,7 +10,7 @@ public class RoleMap : IEntityTypeConfiguration<Role>
     //--------------------------------------------------------------------
     public void Configure(EntityTypeBuilder<Role> builder)
     {
-        builder.ToTable("RoleTb");
+        builder.ToTable("Role");
         builder.HasKey(primary => primary.IdRole);
 
         builder.Property(r => r.IdRole)

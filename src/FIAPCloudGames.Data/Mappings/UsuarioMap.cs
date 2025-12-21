@@ -11,7 +11,7 @@ public class UsuarioMap : IEntityTypeConfiguration<Usuario>
     #endregion
     public void Configure(EntityTypeBuilder<Usuario> builder)
     {
-        builder.ToTable("UsuarioTb");
+        builder.ToTable("Usuario");
         builder.HasKey(primaryKey => primaryKey.IdUsuario);
 
         builder.Property(u => u.IdUsuario)

@@ -44,7 +44,7 @@ builder.AddSerilogConfiguration();
 builder.Services.AddDbContext<Contexto>(options =>
     options
         .UseLazyLoadingProxies()
-        .UseSqlServer(builder.Configuration.GetConnectionString("Contexto")));
+        .UseSqlServer(builder.Configuration.GetConnectionString("MS_FiapCloudGames")));
 //------------------------------------------------------------------------------------------------------------
 #endregion
 
