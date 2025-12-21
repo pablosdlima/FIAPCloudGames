@@ -3,17 +3,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FIAPCloudGames.Data.Mappings;
-//====================================================
+
 public class UsuarioGameBibliotecaMap : IEntityTypeConfiguration<UsuarioGameBiblioteca>
 {
     #region Interfaces
-    //----------------------------------------------------------------------------------
+
     public void Configure(EntityTypeBuilder<UsuarioGameBiblioteca> builder)
     {
         builder.ToTable("UsuarioGameBiblioteca");
-        builder.HasKey(primaryKey => primaryKey.IdUsuarioGame);
+        builder.HasKey(primaryKey => primaryKey.Id);
 
-        builder.Property(ugb => ugb.IdUsuarioGame)
+        builder.Property(ugb => ugb.Id)
               .ValueGeneratedNever();
 
         builder.Property(ugb => ugb.TipoAquisicao)
@@ -47,7 +47,7 @@ public class UsuarioGameBibliotecaMap : IEntityTypeConfiguration<UsuarioGameBibl
         //-----------------------------------------------------------------------------
         #endregion
     }
-    //----------------------------------------------------------------------------------
+
     #endregion
 }
-//====================================================
+

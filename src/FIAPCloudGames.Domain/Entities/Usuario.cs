@@ -4,7 +4,7 @@ public class Usuario
 {
     #region Propriedades
     //--------------------------------------------------------
-    public Guid IdUsuario { get; set; }
+    public Guid Id { get; set; }
     //--------------------------------------------------------
     public string Nome { get; set; }
     //--------------------------------------------------------
@@ -20,15 +20,15 @@ public class Usuario
 
     #region Listas e Objetos (Relacionamentos)
     //--------------------------------------------------------
-    public UsuarioPerfil Perfil { get;  set; }
+    public UsuarioPerfil Perfil { get; set; }
     //--------------------------------------------------------
-    public ICollection<UsuarioRole> UsuarioRoles { get;  set; }
+    public ICollection<UsuarioRole> UsuarioRoles { get; set; }
     //--------------------------------------------------------
-    public ICollection<UsuarioGameBiblioteca> Biblioteca { get;  set; }
+    public ICollection<UsuarioGameBiblioteca> Biblioteca { get; set; }
     //--------------------------------------------------------
-    public ICollection<Endereco> Enderecos { get;  set; }
+    public ICollection<Endereco> Enderecos { get; set; }
     //--------------------------------------------------------
-    public ICollection<Contato> Contatos { get;  set; }
+    public ICollection<Contato> Contatos { get; set; }
     //--------------------------------------------------------
     #endregion
 }

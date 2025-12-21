@@ -3,18 +3,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FIAPCloudGames.Data.Mappings;
-//===================================================
+
 public class UsuarioMap : IEntityTypeConfiguration<Usuario>
 {
     #region Interfaces
-    //-----------------------------------------------------------------
+
     #endregion
     public void Configure(EntityTypeBuilder<Usuario> builder)
     {
         builder.ToTable("Usuario");
-        builder.HasKey(primaryKey => primaryKey.IdUsuario);
+        builder.HasKey(primaryKey => primaryKey.Id);
 
-        builder.Property(u => u.IdUsuario)
+        builder.Property(u => u.Id)
               .ValueGeneratedNever();
 
         builder.Property(u => u.Nome)
@@ -70,6 +70,5 @@ public class UsuarioMap : IEntityTypeConfiguration<Usuario>
         //-----------------------------------------------------------
         #endregion
     }
-    //-----------------------------------------------------------------
+
 }
-//===================================================

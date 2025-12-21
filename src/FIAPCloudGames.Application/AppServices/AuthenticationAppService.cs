@@ -1,12 +1,12 @@
 ﻿using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Exceptions;
 
-namespace FIAPCloudGames.Application
+namespace FIAPCloudGames.Application.AppServices
 {
-    public class AuthenticationService : IAuthenticationService
+    public class AuthenticationAppService : IAuthenticationService
     {
         public readonly IJwtGenerator _jwtGenerator;
-        public AuthenticationService(IJwtGenerator jwtGenerator)
+        public AuthenticationAppService(IJwtGenerator jwtGenerator)
         {
             _jwtGenerator = jwtGenerator;
         }

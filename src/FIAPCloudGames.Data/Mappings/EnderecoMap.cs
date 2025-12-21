@@ -3,17 +3,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FIAPCloudGames.Data.Mappings;
-//===================================================
+
 public class EnderecoMap : IEntityTypeConfiguration<Endereco>
 {
     #region Interfaces
-    //-----------------------------------------------------------
+
     public void Configure(EntityTypeBuilder<Endereco> builder)
     {
         builder.ToTable("Endereco");
-        builder.HasKey(primaryKey => primaryKey.IdEndereco);
+        builder.HasKey(primaryKey => primaryKey.Id);
 
-        builder.Property(e => e.IdEndereco)
+        builder.Property(e => e.Id)
             .ValueGeneratedOnAdd();
 
         builder.Property(e => e.Rua)
@@ -45,17 +45,16 @@ public class EnderecoMap : IEntityTypeConfiguration<Endereco>
                .HasColumnType("nvarchar(max)");
 
         #region Foreign Key
-        //------------------------------------------------------
+
         builder.HasOne(e => e.Usuario)
               .WithMany(u => u.Enderecos)
               .HasForeignKey(e => e.UsuarioId)
               .OnDelete(DeleteBehavior.Restrict);
-        //------------------------------------------------------
+
         #endregion
     }
-    //-----------------------------------------------------------
+
     #endregion
 
 
 }
-//===================================================

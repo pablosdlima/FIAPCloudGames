@@ -24,11 +24,11 @@ namespace FIAPCloudGames.Data.Migrations
 
             modelBuilder.Entity("FIAPCloudGames.Domain.Models.Contato", b =>
                 {
-                    b.Property<int>("IdContato")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdContato"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Celular")
                         .IsRequired()
@@ -41,7 +41,7 @@ namespace FIAPCloudGames.Data.Migrations
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("IdContato");
+                    b.HasKey("Id");
 
                     b.HasIndex("UsuarioId");
 
@@ -50,11 +50,11 @@ namespace FIAPCloudGames.Data.Migrations
 
             modelBuilder.Entity("FIAPCloudGames.Domain.Models.Endereco", b =>
                 {
-                    b.Property<int>("IdEndereco")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdEndereco"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Bairro")
                         .IsRequired()
@@ -86,7 +86,7 @@ namespace FIAPCloudGames.Data.Migrations
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("IdEndereco");
+                    b.HasKey("Id");
 
                     b.HasIndex("UsuarioId");
 
@@ -95,7 +95,7 @@ namespace FIAPCloudGames.Data.Migrations
 
             modelBuilder.Entity("FIAPCloudGames.Domain.Models.Game", b =>
                 {
-                    b.Property<Guid>("IdGame")
+                    b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DataCriacao")
@@ -123,15 +123,15 @@ namespace FIAPCloudGames.Data.Migrations
                     b.Property<decimal>("Preco")
                         .HasColumnType("decimal(18,2)");
 
-                    b.HasKey("IdGame");
+                    b.HasKey("Id");
 
                     b.ToTable("Game", (string)null);
                 });
 
             modelBuilder.Entity("FIAPCloudGames.Domain.Models.Role", b =>
                 {
-                    b.Property<Guid>("IdRole")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -140,14 +140,28 @@ namespace FIAPCloudGames.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("IdRole");
+                    b.HasKey("Id");
 
                     b.ToTable("Role", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Usuário padrão do sistema",
+                            RoleName = "usuario"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Administrador com acesso total",
+                            RoleName = "administrador"
+                        });
                 });
 
             modelBuilder.Entity("FIAPCloudGames.Domain.Models.Usuario", b =>
                 {
-                    b.Property<Guid>("IdUsuario")
+                    b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Ativo")
@@ -167,14 +181,14 @@ namespace FIAPCloudGames.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("IdUsuario");
+                    b.HasKey("Id");
 
                     b.ToTable("Usuario", (string)null);
                 });
 
             modelBuilder.Entity("FIAPCloudGames.Domain.Models.UsuarioGameBiblioteca", b =>
                 {
-                    b.Property<Guid>("IdUsuarioGame")
+                    b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DataAquisicao")
@@ -192,7 +206,7 @@ namespace FIAPCloudGames.Data.Migrations
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("IdUsuarioGame");
+                    b.HasKey("Id");
 
                     b.HasIndex("GameId");
 
@@ -204,7 +218,7 @@ namespace FIAPCloudGames.Data.Migrations
 
             modelBuilder.Entity("FIAPCloudGames.Domain.Models.UsuarioPerfil", b =>
                 {
-                    b.Property<Guid>("IdUsuarioPerfil")
+                    b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AvatarUrl")
@@ -222,7 +236,7 @@ namespace FIAPCloudGames.Data.Migrations
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("IdUsuarioPerfil");
+                    b.HasKey("Id");
 
                     b.HasIndex("UsuarioId")
                         .IsUnique();
@@ -232,16 +246,16 @@ namespace FIAPCloudGames.Data.Migrations
 
             modelBuilder.Entity("FIAPCloudGames.Domain.Models.UsuarioRole", b =>
                 {
-                    b.Property<Guid>("IdUsuarioRole")
+                    b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("IdUsuarioRole");
+                    b.HasKey("Id");
 
                     b.HasIndex("RoleId");
 

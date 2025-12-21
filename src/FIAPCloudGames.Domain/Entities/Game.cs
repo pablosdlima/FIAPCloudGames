@@ -4,7 +4,7 @@ public class Game
 {
     #region Propriedades
     //--------------------------------------------------------
-    public Guid IdGame { get; set; }
+    public Guid Id { get; set; }
     //--------------------------------------------------------
     public string Nome { get; set; }
     //--------------------------------------------------------

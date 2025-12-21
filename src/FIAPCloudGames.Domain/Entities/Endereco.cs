@@ -4,7 +4,7 @@ public class Endereco
 {
     #region Propriedades
     //--------------------------------------------------------
-    public int IdEndereco { get; set; }
+    public int Id { get; set; }
     //--------------------------------------------------------
     public Guid UsuarioId { get; set; }
     //--------------------------------------------------------

@@ -11,9 +11,9 @@ public class GameMap : IEntityTypeConfiguration<Game>
     public void Configure(EntityTypeBuilder<Game> builder)
     {
         builder.ToTable("Game");
-        builder.HasKey(primaryKey => primaryKey.IdGame);
+        builder.HasKey(primaryKey => primaryKey.Id);
 
-        builder.Property(g => g.IdGame)
+        builder.Property(g => g.Id)
               .ValueGeneratedNever();
 
         builder.Property(g => g.Nome)

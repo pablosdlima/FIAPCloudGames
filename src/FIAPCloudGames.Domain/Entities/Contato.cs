@@ -4,7 +4,7 @@ public class Contato
 {
     #region Propriedades
     //--------------------------------------------------------
-    public int IdContato { get; set; }
+    public int Id { get; set; }
     //--------------------------------------------------------
     public Guid UsuarioId { get; set; }
     //--------------------------------------------------------

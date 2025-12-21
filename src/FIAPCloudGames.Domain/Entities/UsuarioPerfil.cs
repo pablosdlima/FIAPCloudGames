@@ -4,7 +4,7 @@ public class UsuarioPerfil
 {
     #region Propriedades
     //------------------------------------------------
-    public Guid IdUsuarioPerfil { get; set; }
+    public Guid Id { get; set; }
     //------------------------------------------------
     public Guid UsuarioId { get; set; }
     //------------------------------------------------
