@@ -12,7 +12,7 @@ public class Role
 
     #region Listas e Objetos (Relacionamentos)
 
-    public ICollection<UsuarioRole> Usuarios { get; set; }
+    public virtual ICollection<UsuarioRole> Usuarios { get; set; }
 
     #endregion
 }

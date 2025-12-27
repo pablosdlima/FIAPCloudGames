@@ -17,7 +17,7 @@ public class UsuarioRoleMap : IEntityTypeConfiguration<UsuarioRole>
         builder.Property(ur => ur.Id)
                .ValueGeneratedNever();
 
-        builder.Property(ur => ur.UsuarioId)
+        builder.Property(c => c.UsuarioId)
                .IsRequired();
 
         builder.Property(ur => ur.RoleId)
@@ -28,7 +28,7 @@ public class UsuarioRoleMap : IEntityTypeConfiguration<UsuarioRole>
         // Usuario (1) -> UsuarioRole (N)
         builder.HasOne(ur => ur.Usuario)
                .WithMany(u => u.UsuarioRoles)
-               .HasForeignKey(ur => ur.UsuarioId)
+               .HasForeignKey(c => new { c.UsuarioId })
                .OnDelete(DeleteBehavior.Restrict);
 
         // Role (1) -> UsuarioRole (N)

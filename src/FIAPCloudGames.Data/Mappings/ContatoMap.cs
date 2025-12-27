@@ -22,12 +22,15 @@ public class ContatoMap : IEntityTypeConfiguration<Contato>
         builder.Property(c => c.Email)
             .IsRequired(true);
 
+        builder.Property(c => c.UsuarioId)
+               .IsRequired();
+
         #region Foreign Keys
 
         builder.HasOne(c => c.Usuario)
             .WithMany(u => u.Contatos)
-            .HasForeignKey(c => c.UsuarioId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(c => new { c.UsuarioId })
+            .OnDelete(DeleteBehavior.Cascade);
 
         #endregion
     }

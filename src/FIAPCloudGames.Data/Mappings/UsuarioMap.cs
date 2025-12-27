@@ -12,14 +12,22 @@ public class UsuarioMap : IEntityTypeConfiguration<Usuario>
     public void Configure(EntityTypeBuilder<Usuario> builder)
     {
         builder.ToTable("Usuario");
-        builder.HasKey(primaryKey => primaryKey.Id);
+
+        builder.HasKey(u => u.Id);
 
         builder.Property(u => u.Id)
-              .ValueGeneratedNever();
+               .IsRequired()
+               .ValueGeneratedNever(); // Guid gerado na aplicação
 
+        // Nome único com índice
         builder.Property(u => u.Nome)
                .IsRequired()
-               .HasColumnType("nvarchar(max)");
+               .HasMaxLength(200)
+               .HasColumnType("nvarchar(200)");
+
+        builder.HasIndex(u => u.Nome)
+               .IsUnique()
+               .HasDatabaseName("IX_Usuario_Nome_Unique");
 
         builder.Property(u => u.Senha)
                .IsRequired()
@@ -29,10 +37,10 @@ public class UsuarioMap : IEntityTypeConfiguration<Usuario>
                .IsRequired();
 
         builder.Property(u => u.DataCriacao)
-               .IsRequired();
+               .IsRequired(false);
 
         builder.Property(u => u.DataAtualizacao)
-               .IsRequired();
+               .IsRequired(false);
 
 
         #region Foreign Keys
@@ -66,7 +74,7 @@ public class UsuarioMap : IEntityTypeConfiguration<Usuario>
         builder.HasMany(u => u.Contatos)
                .WithOne(c => c.Usuario)
                .HasForeignKey(c => c.UsuarioId)
-               .OnDelete(DeleteBehavior.Restrict);
+               .OnDelete(DeleteBehavior.Cascade);
         //-----------------------------------------------------------
         #endregion
     }

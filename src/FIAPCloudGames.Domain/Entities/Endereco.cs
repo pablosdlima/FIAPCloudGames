@@ -1,33 +1,24 @@
 ﻿namespace FIAPCloudGames.Domain.Models;
-//=============================================================
+
 public class Endereco
 {
     #region Propriedades
-    //--------------------------------------------------------
-    public int Id { get; set; }
-    //--------------------------------------------------------
+
+    public Guid Id { get; set; }
     public Guid UsuarioId { get; set; }
-    //--------------------------------------------------------
     public string Rua { get; set; }
-    //--------------------------------------------------------
     public string Numero { get; set; }
-    //--------------------------------------------------------
     public string? Complemento { get; set; }
-    //--------------------------------------------------------
     public string Bairro { get; set; }
-    //--------------------------------------------------------
     public string Cidade { get; set; }
-    //--------------------------------------------------------
     public string Estado { get; set; }
-    //--------------------------------------------------------
     public string Cep { get; set; }
-    //--------------------------------------------------------
+
     #endregion
 
     #region Listas e Objetos (Relacionamentos)
-    //--------------------------------------------------------
-    public Usuario Usuario { get; set; }
-    //--------------------------------------------------------
+
+    public virtual Usuario Usuario { get; set; }
+
     #endregion
 }
-//=============================================================

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FIAPCloudGames.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class v0001 : Migration
+    public partial class v_001 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,9 +22,9 @@ namespace FIAPCloudGames.Data.Migrations
                     Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Genero = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Desenvolvedor = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DataRelease = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataRelease = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     Preco = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DataCriacao = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -52,8 +52,8 @@ namespace FIAPCloudGames.Data.Migrations
                     Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Senha = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DataCriacao = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DataAtualizacao = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -64,8 +64,7 @@ namespace FIAPCloudGames.Data.Migrations
                 name: "Contato",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UsuarioId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Celular = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -85,8 +84,7 @@ namespace FIAPCloudGames.Data.Migrations
                 name: "Endereco",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UsuarioId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Rua = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Numero = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -116,7 +114,7 @@ namespace FIAPCloudGames.Data.Migrations
                     GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TipoAquisicao = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PrecoAquisicao = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DataAquisicao = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DataAquisicao = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -142,7 +140,7 @@ namespace FIAPCloudGames.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UsuarioId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     NomeCompleto = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DataNascimento = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataNascimento = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     Pais = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AvatarUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },

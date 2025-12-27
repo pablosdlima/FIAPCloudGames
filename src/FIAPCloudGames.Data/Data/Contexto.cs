@@ -1,4 +1,5 @@
-﻿using FIAPCloudGames.Domain.Models;
+﻿using FIAPCloudGames.Data.Mappings;
+using FIAPCloudGames.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FIAPCloudGames.Data.Data;
@@ -20,20 +21,27 @@ public class Contexto : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(Contexto).Assembly);
 
+
+
         modelBuilder.Entity<Role>().HasData(
-        new Role
-        {
-            Id = 1,
-            RoleName = "usuario",
-            Description = "Usuário padrão do sistema"
-        },
-        new Role
-        {
-            Id = 2,
-            RoleName = "administrador",
-            Description = "Administrador com acesso total"
-        }
-    );
+            new Role
+            {
+                Id = 1,
+                RoleName = "usuario",
+                Description = "Usuário padrão do sistema"
+            },
+            new Role
+            {
+                Id = 2,
+                RoleName = "administrador",
+                Description = "Administrador com acesso total"
+            }
+        );
+
+        modelBuilder.ApplyConfiguration(new UsuarioMap());
+        modelBuilder.ApplyConfiguration(new ContatoMap());
+
+        base.OnModelCreating(modelBuilder);
     }
 
     #endregion

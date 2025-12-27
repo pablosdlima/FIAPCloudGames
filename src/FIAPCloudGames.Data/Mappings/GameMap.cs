@@ -40,7 +40,7 @@ public class GameMap : IEntityTypeConfiguration<Game>
                .IsRequired();
 
         builder.Property(g => g.DataCriacao)
-               .IsRequired();
+               .IsRequired(false);
 
 
         #region Foreign Key

@@ -27,12 +27,14 @@ public class UsuarioGameBibliotecaMap : IEntityTypeConfiguration<UsuarioGameBibl
         builder.Property(ugb => ugb.DataAquisicao)
                .IsRequired();
 
-        #region Foreign Key
-        //-----------------------------------------------------------------------------
+        builder.Property(c => c.UsuarioId)
+               .IsRequired();
+
+        #region Foreign Key        
         // Usuario (1) -> Biblioteca (N)
         builder.HasOne(ugb => ugb.Usuario)
                .WithMany(u => u.Biblioteca)
-               .HasForeignKey(ugb => ugb.UsuarioId)
+               .HasForeignKey(c => new { c.UsuarioId })
                .OnDelete(DeleteBehavior.Restrict);
 
         // Game (1) -> Biblioteca (N)
@@ -44,10 +46,7 @@ public class UsuarioGameBibliotecaMap : IEntityTypeConfiguration<UsuarioGameBibl
         // Índices
         builder.HasIndex(ugb => new { ugb.UsuarioId, ugb.GameId })
                .IsUnique();
-        //-----------------------------------------------------------------------------
         #endregion
     }
-
     #endregion
 }
-

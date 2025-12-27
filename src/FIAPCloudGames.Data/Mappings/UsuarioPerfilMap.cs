@@ -31,16 +31,18 @@ public class UsuarioPerfilMap : IEntityTypeConfiguration<UsuarioPerfil>
                .IsRequired(false)
                .HasColumnType("nvarchar(max)");
 
+        builder.Property(c => c.UsuarioId)
+               .IsRequired();
+
         #region Foreign Keys
-        //---------------------------------------------------------------------
+
         builder.HasOne(up => up.Usuario)
                .WithOne(u => u.Perfil)
-               .HasForeignKey<UsuarioPerfil>(up => up.UsuarioId)
+               .HasForeignKey<UsuarioPerfil>(c => new { c.UsuarioId })
                .OnDelete(DeleteBehavior.Cascade);
-        //---------------------------------------------------------------------
-        builder.HasIndex(up => up.UsuarioId) //1:1
+
+        builder.HasIndex(c => new { c.UsuarioId }) //1:1
               .IsUnique();
-        //---------------------------------------------------------------------
 
         #endregion
     }

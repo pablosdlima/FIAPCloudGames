@@ -44,17 +44,17 @@ public class EnderecoMap : IEntityTypeConfiguration<Endereco>
                .IsRequired(true)
                .HasColumnType("nvarchar(max)");
 
+        builder.Property(c => c.UsuarioId)
+               .IsRequired();
+
         #region Foreign Key
 
         builder.HasOne(e => e.Usuario)
               .WithMany(u => u.Enderecos)
-              .HasForeignKey(e => e.UsuarioId)
-              .OnDelete(DeleteBehavior.Restrict);
+              .HasForeignKey(c => new { c.UsuarioId })
+              .OnDelete(DeleteBehavior.Cascade);
 
         #endregion
     }
-
     #endregion
-
-
 }

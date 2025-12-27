@@ -2,6 +2,13 @@
 
 public class UsuarioRole
 {
+
+    public UsuarioRole(int roleId)
+    {
+        Id = Guid.NewGuid();
+        RoleId = roleId;
+    }
+
     #region Propriedades
 
     public Guid Id { get; set; }
@@ -14,9 +21,9 @@ public class UsuarioRole
 
     #region Listas e Objetos (Relacionamentos)
 
-    public Usuario Usuario { get; set; }
+    public virtual Usuario Usuario { get; set; }
 
-    public Role Role { get; set; }
+    public virtual Role Role { get; set; }
 
     #endregion
 }

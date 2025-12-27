@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FIAPCloudGames.Data.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20251221194310_v0001")]
-    partial class v0001
+    [Migration("20251225142922_v_001")]
+    partial class v_001
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,11 +27,9 @@ namespace FIAPCloudGames.Data.Migrations
 
             modelBuilder.Entity("FIAPCloudGames.Domain.Models.Contato", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Celular")
                         .IsRequired()
@@ -53,11 +51,9 @@ namespace FIAPCloudGames.Data.Migrations
 
             modelBuilder.Entity("FIAPCloudGames.Domain.Models.Endereco", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Bairro")
                         .IsRequired()
@@ -101,11 +97,11 @@ namespace FIAPCloudGames.Data.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DataCriacao")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("DataCriacao")
+                        .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTime>("DataRelease")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("DataRelease")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Descricao")
                         .IsRequired()
@@ -170,11 +166,11 @@ namespace FIAPCloudGames.Data.Migrations
                     b.Property<bool>("Ativo")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("DataAtualizacao")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("DataAtualizacao")
+                        .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTime>("DataCriacao")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("DataCriacao")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -194,8 +190,8 @@ namespace FIAPCloudGames.Data.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DataAquisicao")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("DataAquisicao")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("GameId")
                         .HasColumnType("uniqueidentifier");
@@ -227,8 +223,8 @@ namespace FIAPCloudGames.Data.Migrations
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DataNascimento")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("DataNascimento")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NomeCompleto")
                         .HasColumnType("nvarchar(max)");

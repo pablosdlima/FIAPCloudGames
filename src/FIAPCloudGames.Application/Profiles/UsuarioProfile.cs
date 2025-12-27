@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using FIAPCloudGames.Application.Dtos;
+using FIAPCloudGames.Domain.Dtos;
 using FIAPCloudGames.Domain.Models;
 
 namespace FIAPCloudGames.Application.Profiles;

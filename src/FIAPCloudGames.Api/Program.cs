@@ -5,10 +5,12 @@ using FIAPCloudGames.Application.AppServices;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Data.Data;
 using FIAPCloudGames.Data.Repositories.Generic;
+using FIAPCloudGames.Domain.Dtos.Validators;
 using FIAPCloudGames.Domain.Interfaces.Generic;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Services;
 using FIAPCloudGames.IoC;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -37,6 +39,12 @@ builder.Services.AddControllers();
 //-------------------------------------------------------
 builder.AddSerilogConfiguration();
 //-------------------------------------------------------
+#endregion
+
+#region Validators
+
+builder.Services.AddValidatorsFromAssemblyContaining<CadastrarUsuarioRequestValidator>();
+
 #endregion
 
 #region Contexto Base de dados
