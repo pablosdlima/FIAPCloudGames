@@ -1,4 +1,5 @@
-﻿using FIAPCloudGames.Application.Interfaces;
+﻿using FIAPCloudGames.Api.Filters;
+using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos;
 using FIAPCloudGames.Domain.Dtos.Request;
 using FluentValidation;
@@ -22,7 +23,7 @@ public static class UsuariosEndpoints
             return Results.Ok(result);
         });
 
-        app.MapPost("/", async (CadastrarUsuarioRequest request, IUsuarioAppService Usuarioservice, IValidator<CadastrarUsuarioRequest> validator) =>
+        app.MapPost("cadastrar/", async (CadastrarUsuarioRequest request, IUsuarioAppService Usuarioservice, IValidator<CadastrarUsuarioRequest> validator) =>
         {
             var validationError = await ValidationFilter.ValidateAsync(request, validator);
             if (validationError != null)
@@ -40,36 +41,4 @@ public static class UsuariosEndpoints
             return result != null ? Results.Ok(dto) : Results.NotFound();
         });
     }
-
-    public static class ValidationFilter
-    {
-        public static async Task<IResult?> ValidateAsync<T>(
-            T model,
-            IValidator<T> validator)
-        {
-            var validationResult = await validator.ValidateAsync(model);
-
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors
-                    .GroupBy(e => e.PropertyName)
-                    .ToDictionary(
-                        g => g.Key,
-                        g => g.Select(e => e.ErrorMessage).ToArray()
-                    );
-
-                var response = new
-                {
-                    statusCode = 400, // Use 400 para erros de validação
-                    message = "Erro de validação",
-                    errors = errors
-                };
-
-                return Results.BadRequest(response);
-            }
-
-            return null;
-        }
-    }
-
 }
