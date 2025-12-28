@@ -1,4 +1,5 @@
 ﻿using FIAPCloudGames.Application.Interfaces;
+using FIAPCloudGames.Domain.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,22 +17,40 @@ namespace FIAPCloudGames.Autenticacao
             _config = config;
         }
 
-        public string GenerateToken(string username, string role)
+        public string GenerateToken(Usuario usuario)
         {
-            var claims = new[]
+            var roles = usuario.UsuarioRoles?.Select(ur => ur.Role.RoleName).ToList()
+                        ?? [];
+
+            if (!roles.Any())
             {
-                new Claim(JwtRegisteredClaimNames.Sub, username),
-                new Claim(ClaimTypes.Role, role),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                throw new InvalidOperationException("Usuário não possui roles definidas.");
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()),
+                new Claim(ClaimTypes.Name, usuario.Nome),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()), // Id ao invés do Nome
+                new Claim(ClaimTypes.Name, usuario.Nome),
+                new Claim("user_id", usuario.Id.ToString()),
             };
+
+            // Adicionar todas as roles como claims
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(30),
+                expires: DateTime.UtcNow.AddMinutes(30),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

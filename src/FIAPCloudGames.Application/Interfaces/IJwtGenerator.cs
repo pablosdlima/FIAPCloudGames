@@ -1,7 +1,9 @@
-﻿namespace FIAPCloudGames.Application.Interfaces
+﻿using FIAPCloudGames.Domain.Models;
+
+namespace FIAPCloudGames.Application.Interfaces
 {
     public interface IJwtGenerator
     {
-        string GenerateToken(string usuario, string role);
+        string GenerateToken(Usuario usuario);
     }
 }

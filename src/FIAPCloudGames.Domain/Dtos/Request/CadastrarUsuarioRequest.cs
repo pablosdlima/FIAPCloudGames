@@ -9,5 +9,9 @@ namespace FIAPCloudGames.Domain.Dtos.Request
         public string Celular { get; set; }
         public string Email { get; set; }
         public TipoUsuario TipoUsuario { get; set; }
+        public string NomeCompleto { get; set; }
+        public DateTimeOffset? DataNascimento { get; set; }
+        public string Pais { get; set; }
+        public string AvatarUrl { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace FIAPCloudGames.IoC
     {
         public static void ConfigureAppDependencies(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<IAuthenticationService, AuthenticationAppService>();
+            services.AddScoped<IAuthenticationAppService, AuthenticationAppService>();
             services.AddScoped<IJwtGenerator, JwtGenerator>();
         }
     }

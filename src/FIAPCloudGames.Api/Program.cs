@@ -48,12 +48,12 @@ builder.Services.AddValidatorsFromAssemblyContaining<CadastrarUsuarioRequestVali
 #endregion
 
 #region Contexto Base de dados
-//------------------------------------------------------------------------------------------------------------
+
 builder.Services.AddDbContext<Contexto>(options =>
     options
         .UseLazyLoadingProxies()
         .UseSqlServer(builder.Configuration.GetConnectionString("MS_FiapCloudGames")));
-//------------------------------------------------------------------------------------------------------------
+
 #endregion
 
 #region Mappers
@@ -74,6 +74,7 @@ builder.Services.AddScoped<IUsuarioService, UsuarioServices>();
 builder.Services.AddScoped<IUsuarioGameService, UsuarioGameServices>();
 builder.Services.AddScoped<IUsuarioPerfilService, UsuarioPerfilServices>();
 builder.Services.AddScoped<IUsuarioRoleServices, UsuarioRoleServices>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationServices>();
 
 // Repositório Genérico
 builder.Services.AddScoped(typeof(IGenericEntity<>), typeof(GenericEntityRepository<>));
@@ -127,23 +128,17 @@ app.MapControllers();
 #endregion
 
 #region Endpoints (Minimal APIs)
-//-----------------------------------------
-app.MapContatos();
-//-----------------------------------------
-app.MapEnderecos();
-//-----------------------------------------
-app.MapGames();
-//-----------------------------------------
-app.MapRoles();
-//-----------------------------------------
+
+//app.MapContatos();
+//app.MapEnderecos();
+//app.MapGames();
+//app.MapRoles();
 app.MapUsuarios();
-//-----------------------------------------
-app.MapUsuariosPerfil();
-//-----------------------------------------
-app.MapUsuarioGames();
-//-----------------------------------------
-app.MapUsuarioRole();
-//-----------------------------------------
+//app.MapUsuariosPerfil();
+//app.MapUsuarioGames();
+//app.MapUsuarioRole();
+app.MapAuthentication();
+
 #endregion
 
 app.Run();

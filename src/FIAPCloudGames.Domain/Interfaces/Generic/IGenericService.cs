@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 
 namespace FIAPCloudGames.Domain.Interfaces.Generic;
-//=====================================================
+
 public interface IGenericService<T>
 {
     bool Exists(Expression<Func<T, bool>> predicate);
@@ -13,4 +13,3 @@ public interface IGenericService<T>
     List<T> GetContainsId(Expression<Func<T, bool>> predicate);
     int LastId(Expression<Func<T, int>> predicate);
 }
-//=====================================================

@@ -18,16 +18,13 @@ public class UsuarioAppService : IUsuarioAppService
     #endregion
 
     #region Construtor
-    //
+
     public UsuarioAppService(IUsuarioService usuarioService, IMapper mapper)
     {
-        _usuarioService = usuarioService
-            ?? throw new ArgumentNullException(nameof(usuarioService));
-
-        _mapper = mapper
-            ?? throw new ArgumentNullException(nameof(mapper));
+        _usuarioService = usuarioService ?? throw new ArgumentNullException(nameof(usuarioService));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
-    //
+
     #endregion
 
 
@@ -38,13 +35,9 @@ public class UsuarioAppService : IUsuarioAppService
             throw new ArgumentNullException(nameof(request));
         }
 
-        var usuario = Usuario.Criar(request.Nome, request.Senha);
-        usuario.Contatos = [new Contato(request.Celular, request.Email)];
-        usuario.UsuarioRoles = [new UsuarioRole((int)request.TipoUsuario)];
+        var cadastroUsuarioResult = _usuarioService.CadastrarUsuario(request);
 
-        var criado = _usuarioService.Insert(usuario);
-
-        return new CadastrarUsuarioResponse() { IdUsuario = usuario.Id };
+        return new CadastrarUsuarioResponse() { IdUsuario = cadastroUsuarioResult.Id };
     }
 
     public UsuarioDtos Alterar(UsuarioDtos dto)

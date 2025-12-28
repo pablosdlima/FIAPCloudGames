@@ -17,9 +17,8 @@ public class UsuarioMap : IEntityTypeConfiguration<Usuario>
 
         builder.Property(u => u.Id)
                .IsRequired()
-               .ValueGeneratedNever(); // Guid gerado na aplicação
+               .ValueGeneratedNever();
 
-        // Nome único com índice
         builder.Property(u => u.Nome)
                .IsRequired()
                .HasMaxLength(200)

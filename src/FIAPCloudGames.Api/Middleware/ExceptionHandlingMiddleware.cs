@@ -3,7 +3,6 @@ using FIAPCloudGames.Domain.Exceptions;
 
 namespace FIAPCloudGames.Api.Middleware
 {
-    // Presentation/Middleware/ExceptionHandlingMiddleware.cs
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;

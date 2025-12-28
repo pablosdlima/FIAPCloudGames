@@ -2,6 +2,16 @@
 
 public class UsuarioPerfil
 {
+    public UsuarioPerfil(string nomeCompleto, DateTimeOffset? dataNascimento, string pais, string avatarUrl)
+    {
+        Id = Guid.NewGuid();
+        NomeCompleto = nomeCompleto;
+        DataNascimento = dataNascimento;
+        Pais = pais;
+        AvatarUrl = avatarUrl;
+    }
+
+
     #region Propriedades
 
     public Guid Id { get; set; }

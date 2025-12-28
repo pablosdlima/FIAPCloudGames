@@ -5,33 +5,36 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 
 namespace FIAPCloudGames.Data.Repositories.Generic;
-//===============================================================
+
 public class GenericEntityRepository<T> : IGenericEntity<T> where T : class
 {
     #region Propriedades
-    //------------------------------------------------------------
+
     private readonly Contexto _context;
-    //------------------------------------------------------------
+
     #endregion
 
     #region Constructor
-    //------------------------------------------------------------
-    public GenericEntityRepository(Contexto context) => _context = context;
-    //------------------------------------------------------------
+
+    public GenericEntityRepository(Contexto context)
+    {
+        _context = context;
+    }
+
+
     #endregion
 
     #region Auxiliares
-    //------------------------------------------------------------
+
     private int ReturnPrimaryKey(T entity)
     {
-        return (int)entity.GetType().GetProperties()
-                       .FirstOrDefault(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).GetValue(entity);
+        return (int)entity.GetType().GetProperties().FirstOrDefault(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).GetValue(entity);
     }
-    //------------------------------------------------------------
+
     #endregion
 
     #region Methods
-    //------------------------------------------------------------
+
     public void Delete(T entity)
     {
         try
@@ -44,17 +47,17 @@ public class GenericEntityRepository<T> : IGenericEntity<T> where T : class
             Console.WriteLine(err);
         }
     }
-    //------------------------------------------------------------
+
     public bool Exists(Expression<Func<T, bool>> predicate)
     {
         throw new NotImplementedException();
     }
-    //------------------------------------------------------------
+
     public IQueryable<T> Get()
     {
         return _context.Set<T>().AsNoTracking();
     }
-    //------------------------------------------------------------
+
     public T GetById(Guid id)
     {
         try
@@ -66,18 +69,18 @@ public class GenericEntityRepository<T> : IGenericEntity<T> where T : class
             throw err;
         }
     }
-    //------------------------------------------------------------
+
     public List<T> GetContainsId(Expression<Func<T, bool>> predicate)
     {
         return _context.Set<T>().Where(predicate).ToList();
     }
-    //------------------------------------------------------------
+
     public T Insert(T entity)
     {
         try
         {
             _context.Set<T>().Add(entity);
-            int result = _context.SaveChanges();
+            var result = _context.SaveChanges();
             return entity;
         }
         catch (Exception err)
@@ -106,13 +109,13 @@ public class GenericEntityRepository<T> : IGenericEntity<T> where T : class
     {
         return _context.Set<T>().Max(predicate);
     }
-    //------------------------------------------------------------
+
     public T Update(T entity)
     {
         try
         {
             _context.Update(entity);
-            int result = _context.SaveChanges();
+            var result = _context.SaveChanges();
             return entity;
         }
         catch (Exception err)
@@ -120,8 +123,6 @@ public class GenericEntityRepository<T> : IGenericEntity<T> where T : class
             throw new Exception(message: err.Message);
         }
     }
-    //------------------------------------------------------------
-    #endregion
 
+    #endregion
 }
-//===============================================================
