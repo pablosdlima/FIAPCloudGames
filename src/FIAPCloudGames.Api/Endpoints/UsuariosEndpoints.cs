@@ -21,7 +21,7 @@ public static class UsuariosEndpoints
             }
 
             return Results.Ok(result);
-        });
+        }).RequireAuthorization();
 
         app.MapPost("cadastrar/", async (CadastrarUsuarioRequest request, IUsuarioAppService Usuarioservice, IValidator<CadastrarUsuarioRequest> validator) =>
         {

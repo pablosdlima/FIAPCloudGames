@@ -12,21 +12,23 @@ using FIAPCloudGames.Domain.Services;
 using FIAPCloudGames.IoC;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Logging;
 using Serilog;
+
+IdentityModelEventSource.ShowPII = true;
 
 var builder = WebApplication.CreateBuilder(args);
 
 #region Swagger
-//-------------------------------------------------------
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-//-------------------------------------------------------
+
+builder.Services.AddSwaggerDocumentation();
+
 #endregion
 
 #region Segurança
-//-------------------------------------------------------
+
 builder.Services.AddJwtAuthenticationConfig(builder.Configuration);
-//-------------------------------------------------------
+
 #endregion
 
 #region Controllers
@@ -101,27 +103,22 @@ builder.Host.UseSerilog();
 var app = builder.Build();
 
 #region Swagger
-//-------------------------------------------------------
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerDocumentation(); // Usar sua extension!
 }
-//-------------------------------------------------------
 #endregion
 
 #region Pipeline HTTP
 //-------------------------------------------------------
 app.UseSerilogRequestLoggingConfiguration();
-
 app.UseHttpsRedirection();
-
-
-// Add middleware de tratamento de erros
-app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Add middleware de tratamento de erros
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapControllers();
 //-------------------------------------------------------
