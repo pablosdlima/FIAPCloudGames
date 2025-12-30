@@ -9,7 +9,7 @@ public class UsuarioGameServices : GenericServices<UsuarioGameBiblioteca>, IUsua
 {
     #region Construtor
     //------------------------------------------------------------
-    public UsuarioGameServices(IGenericEntity<UsuarioGameBiblioteca> repository) : base(repository)
+    public UsuarioGameServices(IGenericEntityRepository<UsuarioGameBiblioteca> repository) : base(repository)
     {
     }
     //------------------------------------------------------------

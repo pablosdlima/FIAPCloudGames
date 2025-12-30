@@ -2,14 +2,27 @@
 
 namespace FIAPCloudGames.Domain.Interfaces.Generic;
 
-public interface IGenericService<T>
+public interface IGenericEntityRepository<T>
 {
+    #region Methods
+
     bool Exists(Expression<Func<T, bool>> predicate);
+
     void Delete(T entity);
-    Task<T> Insert(T entity);
+
+    Task<T> Insert(T entity, CancellationToken cancellationToken = default);
+
+    //Guid InsertReturnId(T entity);
+
     T Update(T entity);
+
     IQueryable<T> Get();
+
     T GetById(Guid id);
+
     List<T> GetContainsId(Expression<Func<T, bool>> predicate);
+
     int LastId(Expression<Func<T, int>> predicate);
+
+    #endregion
 }

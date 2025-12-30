@@ -1,6 +1,8 @@
-﻿using FIAPCloudGames.Application.Interfaces;
+﻿using FIAPCloudGames.Api.Filters;
+using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request;
 using FIAPCloudGames.Domain.Exceptions;
+using FluentValidation;
 
 namespace FIAPCloudGames.Api.Endpoints
 {
@@ -10,8 +12,14 @@ namespace FIAPCloudGames.Api.Endpoints
         {
             var app = route.MapGroup("/api/Authentication").WithTags("Authentication");
 
-            app.MapPost("login/", async (LoginRequest request, IAuthenticationAppService authenticationService) =>
+            app.MapPost("login/", async (LoginRequest request, IAuthenticationAppService authenticationService, IValidator<LoginRequest> validator) =>
             {
+                var validationError = await ValidationFilter.ValidateAsync(request, validator);
+                if (validationError != null)
+                {
+                    return validationError;
+                }
+
                 try
                 {
                     var result = await authenticationService.Login(request.Usuario, request.Senha);

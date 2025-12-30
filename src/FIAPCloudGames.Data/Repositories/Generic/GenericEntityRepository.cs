@@ -6,11 +6,12 @@ using System.Linq.Expressions;
 
 namespace FIAPCloudGames.Data.Repositories.Generic;
 
-public class GenericEntityRepository<T> : IGenericEntity<T> where T : class
+public class GenericEntityRepository<T> : IGenericEntityRepository<T> where T : class
 {
     #region Propriedades
 
     private readonly Contexto _context;
+    protected readonly DbSet<T> _dbSet;
 
     #endregion
 
@@ -19,6 +20,7 @@ public class GenericEntityRepository<T> : IGenericEntity<T> where T : class
     public GenericEntityRepository(Contexto context)
     {
         _context = context;
+        _dbSet = _context.Set<T>();
     }
 
 
@@ -75,19 +77,13 @@ public class GenericEntityRepository<T> : IGenericEntity<T> where T : class
         return _context.Set<T>().Where(predicate).ToList();
     }
 
-    public T Insert(T entity)
+    public virtual async Task<T> Insert(T entity, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            _context.Set<T>().Add(entity);
-            var result = _context.SaveChanges();
-            return entity;
-        }
-        catch (Exception err)
-        {
-            throw new Exception(message: err.Message);
-        }
+        await _dbSet.AddAsync(entity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+        return entity;
     }
+
     //------------------------------------------------------------
     //public int InsertReturnId(T entity)
     //{

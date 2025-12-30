@@ -21,9 +21,12 @@ public static class UsuariosEndpoints
             }
 
             return Results.Ok(result);
-        }).RequireAuthorization();
+        });
+        //}).RequireAuthorization(policy => policy.RequireRole("usuario"));
+        //}).RequireAuthorization(policy => policy.RequireRole("administrador"));
+        //}).RequireAuthorization();
 
-        app.MapPost("cadastrar/", async (CadastrarUsuarioRequest request, IUsuarioAppService Usuarioservice, IValidator<CadastrarUsuarioRequest> validator) =>
+        app.MapPost("Cadastrar/", async (CadastrarUsuarioRequest request, IUsuarioAppService Usuarioservice, IValidator<CadastrarUsuarioRequest> validator) =>
         {
             var validationError = await ValidationFilter.ValidateAsync(request, validator);
             if (validationError != null)
@@ -31,7 +34,7 @@ public static class UsuariosEndpoints
                 return validationError;
             }
 
-            var result = Usuarioservice.Cadastrar(request);
+            var result = await Usuarioservice.Cadastrar(request);
             return result != null ? Results.Ok(result) : Results.Problem();
         });
 

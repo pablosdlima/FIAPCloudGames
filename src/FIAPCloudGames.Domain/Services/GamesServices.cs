@@ -9,7 +9,7 @@ public class GamesServices : GenericServices<Game>, IGameService
 {
     #region Construtor
     //------------------------------------------------------------------------------
-    public GamesServices(IGenericEntity<Game> repository) : base(repository)
+    public GamesServices(IGenericEntityRepository<Game> repository) : base(repository)
     {
     }
     //------------------------------------------------------------------------------

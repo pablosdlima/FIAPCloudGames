@@ -28,14 +28,14 @@ public class UsuarioAppService : IUsuarioAppService
     #endregion
 
 
-    public CadastrarUsuarioResponse Cadastrar(CadastrarUsuarioRequest request)
+    public async Task<CadastrarUsuarioResponse> Cadastrar(CadastrarUsuarioRequest request)
     {
         if (request is null)
         {
             throw new ArgumentNullException(nameof(request));
         }
 
-        var cadastroUsuarioResult = _usuarioService.CadastrarUsuario(request);
+        var cadastroUsuarioResult = await _usuarioService.CadastrarUsuario(request);
 
         return new CadastrarUsuarioResponse() { IdUsuario = cadastroUsuarioResult.Id };
     }
@@ -75,11 +75,6 @@ public class UsuarioAppService : IUsuarioAppService
 
     public UsuarioDtos BuscarPorId(Guid id)
     {
-        if (id == Guid.Empty)
-        {
-            throw new ArgumentException("Id inválido.", nameof(id));
-        }
-
         var entity = _usuarioService.GetById(id);
 
         if (entity is null)

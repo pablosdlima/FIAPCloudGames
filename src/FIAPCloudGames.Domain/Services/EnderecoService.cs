@@ -9,7 +9,7 @@ public class EnderecoService : GenericServices<Endereco>, IEnderecoService
 {
     #region Construtor
     //------------------------------------------------------------------------------
-    public EnderecoService(IGenericEntity<Endereco> repository) : base(repository)
+    public EnderecoService(IGenericEntityRepository<Endereco> repository) : base(repository)
     {
     }
     //------------------------------------------------------------------------------

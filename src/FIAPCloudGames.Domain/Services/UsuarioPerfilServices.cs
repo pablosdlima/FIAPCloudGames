@@ -9,7 +9,7 @@ public class UsuarioPerfilServices : GenericServices<UsuarioPerfil>, IUsuarioPer
 {
     #region Construtor
     //------------------------------------------------------------------
-    public UsuarioPerfilServices(IGenericEntity<UsuarioPerfil> repository) : base(repository)
+    public UsuarioPerfilServices(IGenericEntityRepository<UsuarioPerfil> repository) : base(repository)
     {
     }
     //------------------------------------------------------------------

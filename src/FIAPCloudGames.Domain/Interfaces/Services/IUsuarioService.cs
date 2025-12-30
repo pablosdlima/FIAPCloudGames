@@ -6,7 +6,7 @@ namespace FIAPCloudGames.Domain.Interfaces.Services;
 
 public interface IUsuarioService : IGenericService<Usuario>
 {
-    Usuario CadastrarUsuario(CadastrarUsuarioRequest usuario);
+    Task<Usuario> CadastrarUsuario(CadastrarUsuarioRequest request);
 
     Task<Usuario> ValidarLogin(string usuario, string senha);
 }

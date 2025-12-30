@@ -9,7 +9,7 @@ public interface IUsuarioAppService
 
     List<UsuarioDtos> Listar();
     UsuarioDtos BuscarPorId(Guid id);
-    CadastrarUsuarioResponse Cadastrar(CadastrarUsuarioRequest dto);
+    Task<CadastrarUsuarioResponse> Cadastrar(CadastrarUsuarioRequest request);
     UsuarioDtos Alterar(UsuarioDtos dto);
     UsuarioDtos Inativar(Guid id);
 }

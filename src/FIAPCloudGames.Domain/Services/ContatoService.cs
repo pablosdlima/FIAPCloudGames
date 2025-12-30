@@ -9,7 +9,7 @@ public class ContatoService : GenericServices<Contato>, IContatoService
 {
     #region Construtor
     //-------------------------------------------------------------------------
-    public ContatoService(IGenericEntity<Contato> repository) : base(repository)
+    public ContatoService(IGenericEntityRepository<Contato> repository) : base(repository)
     {
     }
     //-------------------------------------------------------------------------

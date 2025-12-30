@@ -9,7 +9,7 @@ public class RoleServices : GenericServices<Role>, IRoleServices
 {
     #region Construtor
     //-------------------------------------------------------------------
-    public RoleServices(IGenericEntity<Role> repository) : base(repository)
+    public RoleServices(IGenericEntityRepository<Role> repository) : base(repository)
     {
     }
     //-------------------------------------------------------------------

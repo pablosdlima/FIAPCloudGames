@@ -9,7 +9,7 @@ public class UsuarioRoleServices : GenericServices<UsuarioRole>, IUsuarioRoleSer
 {
     #region Construtor
     //----------------------------------------------------------------------
-    public UsuarioRoleServices(IGenericEntity<UsuarioRole> repository) : base(repository)
+    public UsuarioRoleServices(IGenericEntityRepository<UsuarioRole> repository) : base(repository)
     {
     }
     //----------------------------------------------------------------------

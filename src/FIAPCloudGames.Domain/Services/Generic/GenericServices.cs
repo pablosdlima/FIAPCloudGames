@@ -6,13 +6,13 @@ public abstract class GenericServices<T> : IGenericService<T>
 {
     #region Propertys
 
-    protected readonly IGenericEntity<T> _repository;
+    protected readonly IGenericEntityRepository<T> _repository;
 
     #endregion
 
     #region Construtor
 
-    protected GenericServices(IGenericEntity<T> repository)
+    protected GenericServices(IGenericEntityRepository<T> repository)
     {
         _repository = repository;
     }
@@ -46,9 +46,9 @@ public abstract class GenericServices<T> : IGenericService<T>
         return _repository.GetContainsId(predicate);
     }
 
-    public T Insert(T entity)
+    public async Task<T> Insert(T entity)
     {
-        _repository.Insert(entity);
+        await _repository.Insert(entity);
         return entity;
     }
 

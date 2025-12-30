@@ -79,7 +79,7 @@ builder.Services.AddScoped<IUsuarioRoleServices, UsuarioRoleServices>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationServices>();
 
 // Repositório Genérico
-builder.Services.AddScoped(typeof(IGenericEntity<>), typeof(GenericEntityRepository<>));
+builder.Services.AddScoped(typeof(IGenericEntityRepository<>), typeof(GenericEntityRepository<>));
 
 // Application Services
 builder.Services.AddScoped<IContatoAppService, ContatoAppService>();

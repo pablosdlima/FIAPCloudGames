@@ -11,13 +11,13 @@ public class UsuarioServices : GenericServices<Usuario>, IUsuarioService
 {
     #region Construtor
 
-    public UsuarioServices(IGenericEntity<Usuario> repository) : base(repository)
+    public UsuarioServices(IGenericEntityRepository<Usuario> repository) : base(repository)
     {
     }
 
     #endregion
 
-    public Usuario CadastrarUsuario(CadastrarUsuarioRequest request)
+    public async Task<Usuario> CadastrarUsuario(CadastrarUsuarioRequest request)
     {
         var senhaCriptografada = BCrypt.Net.BCrypt.HashPassword(request.Senha);
         var usuario = Usuario.Criar(request.Nome, senhaCriptografada);
@@ -25,7 +25,7 @@ public class UsuarioServices : GenericServices<Usuario>, IUsuarioService
         usuario.UsuarioRoles = [new UsuarioRole((int)request.TipoUsuario)];
         usuario.Perfil = new UsuarioPerfil(request.NomeCompleto, request.DataNascimento, request.Pais, request.AvatarUrl);
 
-        return Insert(usuario);
+        return await Insert(usuario);
     }
 
     public async Task<Usuario> ValidarLogin(string usuario, string senha)
