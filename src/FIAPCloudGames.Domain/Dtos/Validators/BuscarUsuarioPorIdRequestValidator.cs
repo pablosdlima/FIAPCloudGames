@@ -1,4 +1,4 @@
-﻿using FIAPCloudGames.Domain.Dtos.Request;
+﻿using FIAPCloudGames.Domain.Dtos.Request.Usuario;
 using FluentValidation;
 
 namespace FIAPCloudGames.Domain.Dtos.Validators

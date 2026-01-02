@@ -1,4 +1,4 @@
-﻿namespace FIAPCloudGames.Domain.Dtos.Responses
+﻿namespace FIAPCloudGames.Domain.Dtos.Responses.Usuarios
 {
     public class CadastrarUsuarioResponse
     {

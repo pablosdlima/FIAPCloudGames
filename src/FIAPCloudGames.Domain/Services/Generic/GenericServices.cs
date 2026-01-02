@@ -26,6 +26,11 @@ public abstract class GenericServices<T> : IGenericService<T>
         _repository.Delete(entity);
     }
 
+    public async Task<bool> DeleteById(Guid id)
+    {
+        return await _repository.DeleteById(id);
+    }
+
     public bool Exists(Expression<Func<T, bool>> predicate)
     {
         return _repository.Exists(predicate);
@@ -57,10 +62,10 @@ public abstract class GenericServices<T> : IGenericService<T>
         return _repository.LastId(predicate);
     }
 
-    public T Update(T entity)
+    public async Task<(T entity, bool success)> Update(T entity)
     {
-        _repository.Update(entity);
-        return entity;
+        var (updatedEntity, success) = _repository.Update(entity);
+        return (updatedEntity, success);
     }
 
     #endregion

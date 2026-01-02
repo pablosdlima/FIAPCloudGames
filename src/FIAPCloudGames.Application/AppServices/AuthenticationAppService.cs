@@ -1,5 +1,5 @@
 ﻿using FIAPCloudGames.Application.Interfaces;
-using FIAPCloudGames.Domain.Dtos.Responses;
+using FIAPCloudGames.Domain.Dtos.Responses.Authentication;
 using FIAPCloudGames.Domain.Interfaces.Services;
 
 namespace FIAPCloudGames.Application.AppServices

@@ -50,6 +50,28 @@ public class GenericEntityRepository<T> : IGenericEntityRepository<T> where T : 
         }
     }
 
+    public async Task<bool> DeleteById(Guid id)
+    {
+        try
+        {
+            var entity = await _context.Set<T>().FindAsync(id);
+
+            if (entity == null)
+            {
+                return false;
+            }
+
+            _context.Set<T>().Remove(entity);
+            var result = await _context.SaveChangesAsync();
+
+            return result > 0;
+        }
+        catch (Exception err)
+        {
+            throw new Exception(message: err.Message, innerException: err);
+        }
+    }
+
     public bool Exists(Expression<Func<T, bool>> predicate)
     {
         throw new NotImplementedException();
@@ -106,13 +128,13 @@ public class GenericEntityRepository<T> : IGenericEntityRepository<T> where T : 
         return _context.Set<T>().Max(predicate);
     }
 
-    public T Update(T entity)
+    public (T entity, bool success) Update(T entity)
     {
         try
         {
             _context.Update(entity);
             var result = _context.SaveChanges();
-            return entity;
+            return (entity, result > 0);
         }
         catch (Exception err)
         {

@@ -10,11 +10,11 @@ public interface IGenericEntityRepository<T>
 
     void Delete(T entity);
 
+    Task<bool> DeleteById(Guid id);
+
     Task<T> Insert(T entity, CancellationToken cancellationToken = default);
 
-    //Guid InsertReturnId(T entity);
-
-    T Update(T entity);
+    (T entity, bool success) Update(T entity);
 
     IQueryable<T> Get();
 

@@ -1,7 +1,6 @@
 ﻿using FIAPCloudGames.Api.Filters;
 using FIAPCloudGames.Application.Interfaces;
-using FIAPCloudGames.Domain.Dtos;
-using FIAPCloudGames.Domain.Dtos.Request;
+using FIAPCloudGames.Domain.Dtos.Request.Usuario;
 using FluentValidation;
 
 namespace FIAPCloudGames.Api.Endpoints;
@@ -12,9 +11,11 @@ public static class UsuariosEndpoints
     {
         var app = route.MapGroup("/api/Usuarios").WithTags("Usuarios");
 
-        app.MapGet("PorId/{id}", (Guid id, IUsuarioAppService Usuarioservice) =>
+        app.MapGet("BuscarPorId/{id}", (Guid id, IUsuarioAppService Usuarioservice, IValidator<BuscarUsuarioPorIdRequest> validator) =>
         {
-            var result = Usuarioservice.BuscarPorId(id);
+            var request = new BuscarUsuarioPorIdRequest(id);
+
+            var result = Usuarioservice.BuscarPorId(request.Id);
             if (result == null)
             {
                 return Results.NotFound();
@@ -38,10 +39,23 @@ public static class UsuariosEndpoints
             return result != null ? Results.Ok(result) : Results.Problem();
         });
 
-        app.MapPut("/", (UsuarioDtos dto, IUsuarioAppService Usuarioservice) =>
+        app.MapPut("AlterarSenha/", async (AlterarSenhaRequest request, IUsuarioAppService Usuarioservice, IValidator<AlterarSenhaRequest> validator) =>
         {
-            var result = Usuarioservice.Alterar(dto);
-            return result != null ? Results.Ok(dto) : Results.NotFound();
+            var validationError = await ValidationFilter.ValidateAsync(request, validator);
+            if (validationError != null)
+            {
+                return validationError;
+            }
+
+            var result = Usuarioservice.AlterarSenha(request);
+            return result != null ? Results.Ok("Senha alterada com sucesso.") : Results.NotFound();
+        });
+
+
+        app.MapPut("AlterarStatus/", async (Guid id, IUsuarioAppService Usuarioservice) =>
+        {
+            var result = await Usuarioservice.AlterarStatus(id);
+            return result != null ? Results.Ok(result) : Results.NotFound();
         });
     }
 }

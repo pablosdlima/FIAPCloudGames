@@ -1,6 +1,6 @@
 ﻿using FIAPCloudGames.Api.Filters;
 using FIAPCloudGames.Application.Interfaces;
-using FIAPCloudGames.Domain.Dtos.Request;
+using FIAPCloudGames.Domain.Dtos.Request.Authentication;
 using FIAPCloudGames.Domain.Exceptions;
 using FluentValidation;
 

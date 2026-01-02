@@ -1,4 +1,4 @@
-﻿using FIAPCloudGames.Domain.Dtos.Responses;
+﻿using FIAPCloudGames.Domain.Dtos.Responses.Authentication;
 
 namespace FIAPCloudGames.Application.Interfaces
 {

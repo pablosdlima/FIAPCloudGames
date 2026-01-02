@@ -1,4 +1,5 @@
-﻿using FIAPCloudGames.Domain.Dtos.Request;
+﻿using FIAPCloudGames.Domain.Dtos.Request.Usuario;
+using FIAPCloudGames.Domain.Dtos.Responses.Usuario;
 using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Generic;
 using FIAPCloudGames.Domain.Interfaces.Services;
@@ -49,4 +50,41 @@ public class UsuarioServices : GenericServices<Usuario>, IUsuarioService
 
         return usuarioResult;
     }
+
+
+    public async Task<bool> AlterarSenha(AlterarSenhaRequest request)
+    {
+        var usuarioResult = Get().Where(u => u.Id == request.Id).FirstOrDefault();
+
+        if (usuarioResult == null)
+        {
+            throw new NotFoundException("Usuário não encontrado.");
+        }
+
+        var senhaCriptografada = BCrypt.Net.BCrypt.HashPassword(request.Senha);
+        usuarioResult.AlterarSenha(senhaCriptografada);
+
+        var (usuario, success) = await Update(usuarioResult);
+
+        return success;
+    }
+
+
+    public async Task<AlterarStatusResponse> AlterarStatus(Guid Id)
+    {
+        var usuarioResult = Get().Where(u => u.Id == Id).FirstOrDefault();
+
+        if (usuarioResult == null)
+        {
+            throw new NotFoundException("Usuário não encontrado.");
+        }
+
+        usuarioResult.AlterarStatus(usuarioResult.Ativo ? false : true);
+
+        var (usuario, success) = await Update(usuarioResult);
+
+        return new AlterarStatusResponse(usuario.Ativo ? "Ativo" : "Inativo");
+    }
+
+
 }

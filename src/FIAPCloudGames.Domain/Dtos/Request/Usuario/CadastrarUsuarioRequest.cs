@@ -1,6 +1,6 @@
 ﻿using FIAPCloudGames.Domain.Enums;
 
-namespace FIAPCloudGames.Domain.Dtos.Request
+namespace FIAPCloudGames.Domain.Dtos.Request.Usuario
 {
     public class CadastrarUsuarioRequest
     {

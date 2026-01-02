@@ -36,10 +36,14 @@ public class Usuario
         };
     }
 
-    public void Atualizar(string nome, string senha, bool ativo)
+    public void AlterarSenha(string senha)
     {
-        Nome = nome;
         Senha = senha;
+        DataAtualizacao = DateTime.UtcNow;
+    }
+
+    public void AlterarStatus(bool ativo)
+    {
         Ativo = ativo;
         DataAtualizacao = DateTime.UtcNow;
     }

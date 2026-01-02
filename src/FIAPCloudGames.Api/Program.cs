@@ -59,9 +59,9 @@ builder.Services.AddDbContext<Contexto>(options =>
 #endregion
 
 #region Mappers
-//-------------------------------------------------------
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-//-------------------------------------------------------
+
 #endregion
 
 #region IoC / Injeção de Dependência

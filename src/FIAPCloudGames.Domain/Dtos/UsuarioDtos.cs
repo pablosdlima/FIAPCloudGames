@@ -1,16 +1,15 @@
-﻿using FIAPCloudGames.Domain.Enums;
-
-namespace FIAPCloudGames.Domain.Dtos;
+﻿namespace FIAPCloudGames.Domain.Dtos;
 
 public class UsuarioDtos
 {
     #region Propriedades
 
+    public Guid Id { get; set; }
     public string Nome { get; set; }
     public string Senha { get; set; }
-    public string Celular { get; set; }
-    public string Email { get; set; }
-    public TipoUsuario TipoUsuario { get; set; }
+    public bool Ativo { get; set; }
+    public DateTimeOffset? DataCriacao { get; set; }
+    public DateTimeOffset? DataAtualizacao { get; set; }
 
     #endregion
 }
