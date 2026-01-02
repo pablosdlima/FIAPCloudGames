@@ -28,35 +28,18 @@ public class UsuarioRoleAppService : IUsuarioRoleAppService
     #endregion
 
 
-    public UsuarioRoleRequest Inserir(UsuarioRoleRequest dto)
+    public async Task<bool> AlterarRoleUsuario(AlterarUsuarioRoleRequest request)
     {
-        if (dto is null)
+        var entity = new UsuarioRole((int)request.TipoUsuario)
         {
-            throw new ArgumentNullException(nameof(dto));
-        }
+            Id = request.IdUsuarioRole,
+            UsuarioId = request.UsuarioId,
+            RoleId = (int)request.TipoUsuario
+        };
 
-        var entity = _mapper.Map<UsuarioRole>(dto);
-        var criado = _usuarioRoleService.Insert(entity);
+        var resultado = await _usuarioRoleService.Update(entity);
 
-        return _mapper.Map<UsuarioRoleRequest>(criado);
-    }
-
-    public UsuarioRoleRequest Alterar(UsuarioRoleRequest dto)
-    {
-        if (dto is null)
-        {
-            throw new ArgumentNullException(nameof(dto));
-        }
-
-        var entity = _mapper.Map<UsuarioRole>(dto);
-        var atualizado = _usuarioRoleService.Update(entity);
-
-        return _mapper.Map<UsuarioRoleRequest>(atualizado);
-    }
-    public List<UsuarioRoleRequest> Listar()
-    {
-        var lista = _usuarioRoleService.Get();
-        return _mapper.Map<List<UsuarioRoleRequest>>(lista);
+        return resultado.success;
     }
 
     public async Task<IEnumerable<ListarRolesPorUsuarioResponse>> ListarRolesPorUsuario(ListarRolePorUsuarioRequest request)
@@ -67,23 +50,5 @@ public class UsuarioRoleAppService : IUsuarioRoleAppService
             .ToListAsync();
 
         return _mapper.Map<List<ListarRolesPorUsuarioResponse>>(listaRolesUsuario);
-    }
-
-
-    public UsuarioRoleRequest PorId(Guid id)
-    {
-        if (id == Guid.Empty)
-        {
-            throw new ArgumentException("Id inválido.", nameof(id));
-        }
-
-        var entity = _usuarioRoleService.GetById(id);
-
-        if (entity is null)
-        {
-            throw new KeyNotFoundException("UsuarioRole não encontrado.");
-        }
-
-        return _mapper.Map<UsuarioRoleRequest>(entity);
     }
 }

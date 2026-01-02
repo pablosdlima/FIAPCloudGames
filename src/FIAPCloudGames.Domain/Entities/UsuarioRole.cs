@@ -3,6 +3,8 @@
 public class UsuarioRole
 {
 
+    public UsuarioRole() { }
+
     public UsuarioRole(int roleId)
     {
         Id = Guid.NewGuid();

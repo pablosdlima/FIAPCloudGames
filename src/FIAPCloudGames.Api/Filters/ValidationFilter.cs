@@ -23,7 +23,7 @@ namespace FIAPCloudGames.Api.Filters
                 {
                     statusCode = 400,
                     message = "Erro de validação",
-                    errors = errors
+                    errors
                 };
 
                 return Results.BadRequest(response);

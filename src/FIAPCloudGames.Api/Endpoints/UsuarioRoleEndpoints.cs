@@ -18,10 +18,31 @@ public static class UsuarioRoleEndpoints
         });
 
 
-        app.MapPut("AlterarRoleUsuario/", (UsuarioRoleRequest dto, IUsuarioRoleAppService Usuarioservice) =>
+        app.MapPut("AlterarRoleUsuario", async (AlterarUsuarioRoleRequest request, IUsuarioRoleAppService usuarioRoleService) =>
         {
-            var result = Usuarioservice.Alterar(dto);
-            return result != null ? Results.Ok(dto) : Results.NotFound();
-        });
+            var result = await usuarioRoleService.AlterarRoleUsuario(request);
+
+            if (!result)
+            {
+                return Results.NotFound(new
+                {
+                    statusCode = 404,
+                    message = "Validation failed",
+                    errors = new
+                    {
+                        usuarioRole = new[] { "Registro não encontrado ou não foi possível atualizar." }
+                    }
+                });
+            }
+
+            return Results.Ok(new
+            {
+                statusCode = 200,
+                message = "Role do usuário alterada com sucesso."
+            });
+        })
+        .WithName("AlterarRoleUsuario")
+        .Produces(200)
+        .Produces(404);
     }
 }

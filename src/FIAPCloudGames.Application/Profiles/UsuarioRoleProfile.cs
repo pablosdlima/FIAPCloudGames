@@ -10,8 +10,8 @@ public class UsuarioRoleProfile : Profile
     //---------------------------------------------------
     public UsuarioRoleProfile()
     {
-        CreateMap<UsuarioRoleRequest, UsuarioRole>();
-        CreateMap<UsuarioRole, UsuarioRoleRequest>();
+        CreateMap<AlterarUsuarioRoleRequest, UsuarioRole>();
+        CreateMap<UsuarioRole, AlterarUsuarioRoleRequest>();
     }
     //---------------------------------------------------
     #endregion
