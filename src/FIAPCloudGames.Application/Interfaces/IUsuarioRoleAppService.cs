@@ -1,19 +1,13 @@
-﻿using FIAPCloudGames.Application.Dtos;
+﻿using FIAPCloudGames.Domain.Dtos.Request.UsuarioRole;
+using FIAPCloudGames.Domain.Dtos.Responses.UsuarioRole;
 
 namespace FIAPCloudGames.Application.Interfaces;
-//===================================================
+
 public interface IUsuarioRoleAppService
 {
-    //-------------------------------------------------------
-    List<UsuarioRoleDto> Listar();
-    //-------------------------------------------------------
-    UsuarioRoleDto PorId(Guid id);
-    //-------------------------------------------------------
-    UsuarioRoleDto Inserir(UsuarioRoleDto dto);
-    //-------------------------------------------------------
-    UsuarioRoleDto Alterar(UsuarioRoleDto dto);
-    //-------------------------------------------------------
-    UsuarioRoleDto Inativar(Guid id);
-    //-------------------------------------------------------
+    List<UsuarioRoleRequest> Listar();
+    UsuarioRoleRequest PorId(Guid id);
+    UsuarioRoleRequest Inserir(UsuarioRoleRequest dto);
+    UsuarioRoleRequest Alterar(UsuarioRoleRequest dto);
+    Task<IEnumerable<ListarRolesPorUsuarioResponse>> ListarRolesPorUsuario(ListarRolePorUsuarioRequest request);
 }
-//===================================================

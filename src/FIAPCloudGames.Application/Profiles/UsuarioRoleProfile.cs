@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using FIAPCloudGames.Application.Dtos;
+using FIAPCloudGames.Domain.Dtos.Request.UsuarioRole;
 using FIAPCloudGames.Domain.Models;
 
 namespace FIAPCloudGames.Application.Profiles;
@@ -10,8 +10,8 @@ public class UsuarioRoleProfile : Profile
     //---------------------------------------------------
     public UsuarioRoleProfile()
     {
-        CreateMap<UsuarioRoleDto, UsuarioRole>();
-        CreateMap<UsuarioRole, UsuarioRoleDto>();
+        CreateMap<UsuarioRoleRequest, UsuarioRole>();
+        CreateMap<UsuarioRole, UsuarioRoleRequest>();
     }
     //---------------------------------------------------
     #endregion

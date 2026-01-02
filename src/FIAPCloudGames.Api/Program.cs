@@ -133,7 +133,7 @@ app.MapControllers();
 app.MapUsuarios();
 //app.MapUsuariosPerfil();
 //app.MapUsuarioGames();
-//app.MapUsuarioRole();
+app.MapUsuarioRole();
 app.MapAuthentication();
 
 #endregion
