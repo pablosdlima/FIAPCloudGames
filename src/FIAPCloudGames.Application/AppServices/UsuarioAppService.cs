@@ -30,11 +30,6 @@ public class UsuarioAppService : IUsuarioAppService
 
     public async Task<CadastrarUsuarioResponse> Cadastrar(CadastrarUsuarioRequest request)
     {
-        if (request is null)
-        {
-            throw new ArgumentNullException(nameof(request));
-        }
-
         var cadastroUsuarioResult = await _usuarioService.CadastrarUsuario(request);
 
         return new CadastrarUsuarioResponse() { IdUsuario = cadastroUsuarioResult.Id };

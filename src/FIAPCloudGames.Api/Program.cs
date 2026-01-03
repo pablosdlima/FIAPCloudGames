@@ -4,9 +4,11 @@ using FIAPCloudGames.Api.Middleware;
 using FIAPCloudGames.Application.AppServices;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Data.Data;
+using FIAPCloudGames.Data.Repositories;
 using FIAPCloudGames.Data.Repositories.Generic;
 using FIAPCloudGames.Domain.Dtos.Validators;
 using FIAPCloudGames.Domain.Interfaces.Generic;
+using FIAPCloudGames.Domain.Interfaces.Repository;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Services;
 using FIAPCloudGames.IoC;
@@ -80,6 +82,7 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationServices>();
 
 // Repositório Genérico
 builder.Services.AddScoped(typeof(IGenericEntityRepository<>), typeof(GenericEntityRepository<>));
+builder.Services.AddScoped<IGameRepository, GameRepository>();
 
 // Application Services
 builder.Services.AddScoped<IContatoAppService, ContatoAppService>();
@@ -128,7 +131,7 @@ app.MapControllers();
 
 //app.MapContatos();
 //app.MapEnderecos();
-//app.MapGames();
+app.MapGames();
 //app.MapRoles();
 app.MapUsuarios();
 //app.MapUsuariosPerfil();

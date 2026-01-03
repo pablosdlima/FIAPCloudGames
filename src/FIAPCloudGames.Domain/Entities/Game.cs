@@ -9,9 +9,9 @@ public class Game
     public string Descricao { get; set; }
     public string Genero { get; set; }
     public string Desenvolvedor { get; set; }
-    public DateTimeOffset? DataRelease { get; set; }
     public decimal Preco { get; set; }
     public DateTimeOffset? DataCriacao { get; set; }
+    public DateTimeOffset? DataRelease { get; set; }
 
     #endregion
 
@@ -20,4 +20,20 @@ public class Game
     public virtual ICollection<UsuarioGameBiblioteca> Biblioteca { get; set; }
 
     #endregion
+
+
+    public static Game Criar(string nome, string descricao, string genero, string desenvolvedor, decimal preco, DateTimeOffset dataRelease)
+    {
+        return new Game
+        {
+            Id = Guid.NewGuid(),
+            Nome = nome,
+            Descricao = descricao,
+            Genero = genero,
+            Desenvolvedor = desenvolvedor,
+            Preco = preco,
+            DataCriacao = DateTime.UtcNow,
+            DataRelease = dataRelease,
+        };
+    }
 }

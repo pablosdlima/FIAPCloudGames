@@ -1,19 +1,14 @@
-﻿using FIAPCloudGames.Application.Dtos;
+﻿using FIAPCloudGames.Domain.Dtos.Request.Game;
+using FIAPCloudGames.Domain.Dtos.Responses.Game;
+using FIAPCloudGames.Domain.Models;
 
 namespace FIAPCloudGames.Application.Interfaces;
-//================================================
+
 public interface IGameAppService
 {
-    //-------------------------------------------------------
-    List<GameDtos> Listar();
-    //-------------------------------------------------------
-    GameDtos PorId(Guid id);
-    //-------------------------------------------------------
-    GameDtos Inserir(GameDtos dto);
-    //-------------------------------------------------------
-    GameDtos Alterar(GameDtos dto);
-    //-------------------------------------------------------
-    GameDtos Inativar(Guid id);
-    //-------------------------------------------------------
+    List<CadastrarGameRequest> Listar();
+    Game BuscarPorId(Guid id);
+    Task<Game> Cadastrar(CadastrarGameRequest request);
+    CadastrarGameRequest Alterar(CadastrarGameRequest dto);
+    Task<ListarGamesPaginadoResponse> ListarGamesPaginado(ListarGamesPaginadoRequest request);
 }
-//================================================

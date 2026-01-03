@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using FIAPCloudGames.Application.Dtos;
+using FIAPCloudGames.Domain.Dtos.Request.Game;
 using FIAPCloudGames.Domain.Models;
 
 namespace FIAPCloudGames.Application.Profiles;
@@ -10,8 +10,8 @@ public class GameProfile : Profile
     //---------------------------------------------------
     public GameProfile()
     {
-        CreateMap<GameDtos, Game>();
-        CreateMap<Game, GameDtos>();
+        CreateMap<CadastrarGameRequest, Game>();
+        CreateMap<Game, CadastrarGameRequest>();
     }
     //---------------------------------------------------
     #endregion
