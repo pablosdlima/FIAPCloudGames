@@ -60,11 +60,63 @@ public static class GameEndpoints
         .Produces(400);
 
 
-        // PUT
-        app.MapPut("/", (CadastrarGameRequest dto, IGameAppService GameService) =>
+        app.MapPut("AtualizarGame/{id:guid}", async (Guid id, AtualizarGameRequest request, IGameAppService gameService, IValidator<AtualizarGameRequest> validator) =>
         {
-            var result = GameService.Alterar(dto);
-            return result != null ? Results.Ok(dto) : Results.NotFound();
-        });
+            // Garante que o Id da URL é o mesmo do body
+            if (id != request.Id)
+            {
+                return Results.BadRequest(new
+                {
+                    statusCode = 400,
+                    message = "Validation failed",
+                    errors = new Dictionary<string, string[]>
+                {
+                    { "id", new[] { "Id da URL não corresponde ao Id do corpo da requisição." } }
+                }
+                });
+            }
+
+            var validationResult = await validator.ValidateAsync(request);
+            if (!validationResult.IsValid)
+            {
+                return Results.BadRequest(new
+                {
+                    statusCode = 400,
+                    message = "Validation failed",
+                    errors = validationResult.Errors
+                        .GroupBy(e => e.PropertyName)
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.Select(e => e.ErrorMessage).ToArray()
+                        )
+                });
+            }
+
+            var (game, sucesso) = await gameService.AtualizarGame(request);
+
+            if (!sucesso || game == null)
+            {
+                return Results.NotFound(new
+                {
+                    statusCode = 404,
+                    message = "Validation failed",
+                    errors = new Dictionary<string, string[]>
+            {
+                { "game", new[] { "Jogo não encontrado ou não foi possível atualizar." } }
+            }
+                });
+            }
+
+            return Results.Ok(new
+            {
+                statusCode = 200,
+                message = "Jogo atualizado com sucesso.",
+                data = game
+            });
+        })
+        .WithName("AtualizarGame")
+        .Produces<GameResponse>(200)
+        .Produces(400)
+        .Produces(404);
     }
 }

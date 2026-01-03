@@ -20,4 +20,24 @@ public class GamesServices : GenericServices<Game>, IGameService
     {
         return await _gameRepository.ListarPaginado(numeroPagina, tamanhoPagina, filtro, genero);
     }
+
+    public async Task<(Game? Game, bool Success)> AtualizarGame(Game game)
+    {
+        var gameExistente = _repository.GetById(game.Id);
+
+        if (gameExistente == null)
+        {
+            return (null, false);
+        }
+
+        gameExistente.Nome = game.Nome;
+        gameExistente.Descricao = game.Descricao;
+        gameExistente.Genero = game.Genero;
+        gameExistente.Desenvolvedor = game.Desenvolvedor;
+        gameExistente.Preco = game.Preco;
+        gameExistente.DataRelease = game.DataRelease;
+
+        var resultado = _repository.Update(gameExistente);
+        return (resultado.entity, resultado.success);
+    }
 }

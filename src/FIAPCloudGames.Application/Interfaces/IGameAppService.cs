@@ -11,4 +11,5 @@ public interface IGameAppService
     Task<Game> Cadastrar(CadastrarGameRequest request);
     CadastrarGameRequest Alterar(CadastrarGameRequest dto);
     Task<ListarGamesPaginadoResponse> ListarGamesPaginado(ListarGamesPaginadoRequest request);
+    Task<(AtualizarGameResponse? Game, bool Success)> AtualizarGame(AtualizarGameRequest request);
 }

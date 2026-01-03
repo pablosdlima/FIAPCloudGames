@@ -28,11 +28,6 @@ public class GameAppService : IGameAppService
 
     public CadastrarGameRequest Alterar(CadastrarGameRequest dto)
     {
-        if (dto is null)
-        {
-            throw new ArgumentNullException(nameof(dto));
-        }
-
         var entity = _mapper.Map<Game>(dto);
         var atualizado = _gameService.Update(entity);
 
@@ -84,5 +79,42 @@ public class GameAppService : IGameAppService
             TemProximaPagina = request.NumeroPagina < totalPaginas,
             Jogos = jogosResponse
         };
+    }
+
+    public async Task<(AtualizarGameResponse? Game, bool Success)> AtualizarGame(AtualizarGameRequest request)
+    {
+        var game = new Game
+        {
+            Id = request.Id,
+            Nome = request.Nome,
+            Descricao = request.Descricao,
+            Genero = request.Genero,
+            Desenvolvedor = request.Desenvolvedor,
+            Preco = request.Preco,
+            DataRelease = request.DataRelease.HasValue
+            ? new DateTimeOffset(request.DataRelease.Value.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero)
+            : null
+        };
+
+        var (gameAtualizado, sucesso) = await _gameService.AtualizarGame(game);
+
+        if (!sucesso || gameAtualizado == null)
+        {
+            return (null, false);
+        }
+
+        var response = new AtualizarGameResponse
+        {
+            Id = gameAtualizado.Id,
+            Nome = gameAtualizado.Nome,
+            Descricao = gameAtualizado.Descricao,
+            Genero = gameAtualizado.Genero,
+            Desenvolvedor = gameAtualizado.Desenvolvedor,
+            Preco = gameAtualizado.Preco,
+            DataCriacao = gameAtualizado.DataCriacao,
+            DataRelease = gameAtualizado.DataRelease
+        };
+
+        return (response, true);
     }
 }

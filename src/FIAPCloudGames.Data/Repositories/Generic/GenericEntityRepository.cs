@@ -106,23 +106,6 @@ public class GenericEntityRepository<T> : IGenericEntityRepository<T> where T : 
         return entity;
     }
 
-    //------------------------------------------------------------
-    //public int InsertReturnId(T entity)
-    //{
-    //    try
-    //    {
-    //        _context.Set<T>().Add(entity);
-    //        int result = _context.SaveChanges();
-    //        return result >= 1 ? ReturnPrimaryKey(entity) : 0;
-    //    }
-    //    catch (Exception err)
-    //    {
-    //        Console.WriteLine(err);
-    //        return 0;
-    //    }
-    //}
-    //------------------------------------------------------------
-
     public int LastId(Expression<Func<T, int>> predicate)
     {
         return _context.Set<T>().Max(predicate);
