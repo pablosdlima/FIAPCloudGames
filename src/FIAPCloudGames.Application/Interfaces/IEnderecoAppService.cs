@@ -1,19 +1,11 @@
-﻿using FIAPCloudGames.Application.Dtos;
+﻿using FIAPCloudGames.Domain.Dtos.Request.Enderecos;
 
 namespace FIAPCloudGames.Application.Interfaces;
-//====================================================
+
 public interface IEnderecoAppService
-{ 
-    //-------------------------------------------------------
-    List<EnderecoDtos> Listar();
-    //-------------------------------------------------------
-    EnderecoDtos PorId(Guid id);
-    //-------------------------------------------------------
-    EnderecoDtos Inserir(EnderecoDtos dto);
-    //-------------------------------------------------------
-    EnderecoDtos Alterar(EnderecoDtos dto);
-    //-------------------------------------------------------
-    EnderecoDtos Inativar(Guid id);
-    //-------------------------------------------------------
+{
+    Task<List<EnderecoResponse>> ListarPorUsuario(Guid usuarioId);
+    Task<EnderecoResponse> Cadastrar(CadastrarEnderecoRequest request);
+    Task<(EnderecoResponse? Endereco, bool Success)> Atualizar(AtualizarEnderecoRequest request);
+    Task<bool> Deletar(Guid id, Guid usuarioId);
 }
-//====================================================

@@ -83,6 +83,7 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationServices>();
 // Repositório Genérico
 builder.Services.AddScoped(typeof(IGenericEntityRepository<>), typeof(GenericEntityRepository<>));
 builder.Services.AddScoped<IGameRepository, GameRepository>();
+builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
 
 // Application Services
 builder.Services.AddScoped<IContatoAppService, ContatoAppService>();
@@ -130,7 +131,7 @@ app.MapControllers();
 #region Endpoints (Minimal APIs)
 
 //app.MapContatos();
-//app.MapEnderecos();
+app.MapEnderecos();
 app.MapGames();
 app.MapRoles();
 app.MapUsuarios();

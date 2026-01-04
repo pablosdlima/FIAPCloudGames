@@ -1,91 +1,109 @@
-﻿using AutoMapper;
-using FIAPCloudGames.Application.Dtos;
-using FIAPCloudGames.Application.Interfaces;
+﻿using FIAPCloudGames.Application.Interfaces;
+using FIAPCloudGames.Domain.Dtos.Request.Enderecos;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
-using FIAPCloudGames.Domain.Services;
 
 namespace FIAPCloudGames.Application.AppServices;
-//===================================================
+
 public class EnderecoAppService : IEnderecoAppService
 {
-    #region Properties
-    //-------------------------------------------------
     private readonly IEnderecoService _enderecoService;
-    private readonly IMapper _mapper;
-    //-------------------------------------------------
-    #endregion
 
-    #region Construtor
-    //-------------------------------------------------
-    public EnderecoAppService(IEnderecoService enderecoService, IMapper mapper)
+    public EnderecoAppService(IEnderecoService enderecoService)
     {
-        _enderecoService = enderecoService
-            ?? throw new ArgumentNullException(nameof(enderecoService));
-
-        _mapper = mapper
-            ?? throw new ArgumentNullException(nameof(mapper));
+        _enderecoService = enderecoService;
     }
-    //-------------------------------------------------
-    #endregion
 
-    #region Interfaces
-    //-------------------------------------------------
-    public EnderecoDtos Inserir(EnderecoDtos dto)
+    public async Task<List<EnderecoResponse>> ListarPorUsuario(Guid usuarioId)
     {
-        if (dto is null)
-            throw new ArgumentNullException(nameof(dto));
+        var enderecos = _enderecoService.ListarPorUsuario(usuarioId);
 
-        var entity = _mapper.Map<Endereco>(dto);
-        var criado = _enderecoService.Insert(entity);
+        var enderecosResponse = enderecos.Select(e => new EnderecoResponse
+        {
+            Id = e.Id,
+            UsuarioId = e.UsuarioId,
+            Rua = e.Rua,
+            Numero = e.Numero,
+            Complemento = e.Complemento,
+            Bairro = e.Bairro,
+            Cidade = e.Cidade,
+            Estado = e.Estado,
+            Cep = e.Cep
+        }).ToList();
 
-        return _mapper.Map<EnderecoDtos>(criado);
+        return await Task.FromResult(enderecosResponse);
     }
-    //-------------------------------------------------
-    public EnderecoDtos Alterar(EnderecoDtos dto)
+
+    public async Task<EnderecoResponse> Cadastrar(CadastrarEnderecoRequest request)
     {
-        if (dto is null)
-            throw new ArgumentNullException(nameof(dto));
+        var endereco = new Endereco
+        {
+            UsuarioId = request.UsuarioId,
+            Rua = request.Rua,
+            Numero = request.Numero,
+            Complemento = request.Complemento,
+            Bairro = request.Bairro,
+            Cidade = request.Cidade,
+            Estado = request.Estado,
+            Cep = request.Cep
+        };
 
-        var entity = _mapper.Map<Endereco>(dto);
-        var atualizado = _enderecoService.Update(entity);
+        var enderecoCadastrado = await _enderecoService.Cadastrar(endereco);
 
-        return _mapper.Map<EnderecoDtos>(atualizado);
+        return new EnderecoResponse
+        {
+            Id = enderecoCadastrado.Id,
+            UsuarioId = enderecoCadastrado.UsuarioId,
+            Rua = enderecoCadastrado.Rua,
+            Numero = enderecoCadastrado.Numero,
+            Complemento = enderecoCadastrado.Complemento,
+            Bairro = enderecoCadastrado.Bairro,
+            Cidade = enderecoCadastrado.Cidade,
+            Estado = enderecoCadastrado.Estado,
+            Cep = enderecoCadastrado.Cep
+        };
     }
-    //-------------------------------------------------
-    public EnderecoDtos Inativar(Guid id)
+
+    public async Task<(EnderecoResponse? Endereco, bool Success)> Atualizar(AtualizarEnderecoRequest request)
     {
-        //if (id == Guid.Empty)
-        //    throw new ArgumentException("Id inválido.", nameof(id));
+        var endereco = new Endereco
+        {
+            Id = request.Id,
+            UsuarioId = request.UsuarioId,
+            Rua = request.Rua,
+            Numero = request.Numero,
+            Complemento = request.Complemento,
+            Bairro = request.Bairro,
+            Cidade = request.Cidade,
+            Estado = request.Estado,
+            Cep = request.Cep
+        };
 
-        //var entity = _contatoService.Inativar(id);
+        var (enderecoAtualizado, sucesso) = await _enderecoService.Atualizar(endereco);
 
-        //if (entity is null)
-        //    throw new KeyNotFoundException("Contato não encontrado.");
+        if (!sucesso || enderecoAtualizado == null)
+        {
+            return (null, false);
+        }
 
-        //return _mapper.Map<ContatosDtos>(entity);
-        throw new KeyNotFoundException("Endereços não encontrado.");
+        var response = new EnderecoResponse
+        {
+            Id = enderecoAtualizado.Id,
+            UsuarioId = enderecoAtualizado.UsuarioId,
+            Rua = enderecoAtualizado.Rua,
+            Numero = enderecoAtualizado.Numero,
+            Complemento = enderecoAtualizado.Complemento,
+            Bairro = enderecoAtualizado.Bairro,
+            Cidade = enderecoAtualizado.Cidade,
+            Estado = enderecoAtualizado.Estado,
+            Cep = enderecoAtualizado.Cep
+        };
+
+        return (response, true);
     }
-    //-------------------------------------------------
-    public List<EnderecoDtos> Listar()
+
+    public async Task<bool> Deletar(Guid id, Guid usuarioId)
     {
-        var lista = _enderecoService.Get();
-        return _mapper.Map<List<EnderecoDtos>>(lista);
+        return await _enderecoService.Deletar(id, usuarioId);
     }
-    //-------------------------------------------------
-    public EnderecoDtos PorId(Guid id)
-    {
-        if (id == Guid.Empty)
-            throw new ArgumentException("Id inválido.", nameof(id));
-
-        var entity = _enderecoService.GetById(id);
-
-        if (entity is null)
-            throw new KeyNotFoundException("Endereços não encontrado.");
-
-        return _mapper.Map<EnderecoDtos>(entity);
-    }
-    //-------------------------------------------------
-    #endregion
 }
-//===================================================
