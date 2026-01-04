@@ -1,22 +1,20 @@
 ﻿using FIAPCloudGames.Data.Data;
+using FIAPCloudGames.Data.Repositories.Generic;
 using FIAPCloudGames.Domain.Interfaces.Repository;
 using FIAPCloudGames.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FIAPCloudGames.Data.Repositories
 {
-    public class GameRepository : IGameRepository
+    public class GameRepository : GenericEntityRepository<Game>, IGameRepository
     {
-        private readonly Contexto _context;
-
-        public GameRepository(Contexto context)
+        public GameRepository(Contexto context) : base(context)
         {
-            _context = context;
         }
 
         public async Task<(List<Game> Jogos, int TotalRegistros)> ListarPaginado(int numeroPagina, int tamanhoPagina, string? filtro, string? genero)
         {
-            var query = _context.Game.AsQueryable();
+            var query = _dbSet.AsQueryable();
 
             // Filtros
             if (!string.IsNullOrWhiteSpace(filtro))

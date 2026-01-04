@@ -75,7 +75,7 @@ builder.Services.AddScoped<IEnderecoService, EnderecoService>();
 builder.Services.AddScoped<IGameService, GamesServices>();
 builder.Services.AddScoped<IRoleServices, RoleServices>();
 builder.Services.AddScoped<IUsuarioService, UsuarioServices>();
-builder.Services.AddScoped<IUsuarioGameService, UsuarioGameServices>();
+builder.Services.AddScoped<IUsuarioGameBibliotecaService, UsuarioGameBibliotecaService>();
 builder.Services.AddScoped<IUsuarioPerfilService, UsuarioPerfilServices>();
 builder.Services.AddScoped<IUsuarioRoleServices, UsuarioRoleServices>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationServices>();
@@ -86,6 +86,7 @@ builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
 builder.Services.AddScoped<IContatoRepository, ContatoRepository>();
 builder.Services.AddScoped<IUsuarioPerfilRepository, UsuarioPerfilRepository>();
+builder.Services.AddScoped<IUsuarioGameBibliotecaRepository, UsuarioGameBibliotecaRepository>();
 
 // Application Services
 builder.Services.AddScoped<IContatoAppService, ContatoAppService>();
@@ -93,7 +94,7 @@ builder.Services.AddScoped<IEnderecoAppService, EnderecoAppService>();
 builder.Services.AddScoped<IGameAppService, GameAppService>();
 builder.Services.AddScoped<IRoleAppService, RoleAppService>();
 builder.Services.AddScoped<IUsuarioAppService, UsuarioAppService>();
-builder.Services.AddScoped<IUsuarioGameAppService, UsuarioGameAppService>();
+builder.Services.AddScoped<FIAPCloudGames.Application.Interfaces.IUsuarioGameBibliotecaAppService, FIAPCloudGames.Application.AppServices.UsuarioGameBibliotecaAppService>();
 builder.Services.AddScoped<IUsuarioPerfilAppService, UsuarioPerfilAppService>();
 builder.Services.AddScoped<IUsuarioRoleAppService, UsuarioRoleAppService>();
 
@@ -138,7 +139,7 @@ app.MapGames();
 app.MapRoles();
 app.MapUsuarios();
 app.MapUsuarioPerfil();
-//app.MapUsuarioGames();
+app.MapUsuarioGameBIbioteca();
 app.MapUsuarioRole();
 app.MapAuthentication();
 
