@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 
 namespace FIAPCloudGames.Domain.Services.Generic;
-public abstract class GenericServices<T> : IGenericService<T>
+public abstract class GenericServices<T> : IGenericServices<T>
 {
     #region Propertys
 

@@ -2,7 +2,7 @@
 
 namespace FIAPCloudGames.Domain.Interfaces.Generic;
 
-public interface IGenericService<T>
+public interface IGenericServices<T>
 {
     bool Exists(Expression<Func<T, bool>> predicate);
     void Delete(T entity);

@@ -1,20 +1,11 @@
-﻿using FIAPCloudGames.Application.Dtos;
+﻿using FIAPCloudGames.Domain.Dtos.Request.UsuarioPerfil;
 
 namespace FIAPCloudGames.Application.Interfaces;
-//====================================================
+
 public interface IUsuarioPerfilAppService
 {
-    //-------------------------------------------------------
-    List<UsuarioPerfilDto> Listar();
-    //-------------------------------------------------------
-    UsuarioPerfilDto PorId(Guid id);
-    //-------------------------------------------------------
-    UsuarioPerfilDto Inserir(UsuarioPerfilDto dto);
-    //-------------------------------------------------------
-    UsuarioPerfilDto Alterar(UsuarioPerfilDto dto);
-    //-------------------------------------------------------
-    UsuarioPerfilDto Inativar(Guid id);
-    //-------------------------------------------------------
-
+    Task<UsuarioPerfilResponse?> BuscarPorUsuarioId(Guid usuarioId);
+    Task<UsuarioPerfilResponse> Cadastrar(CadastrarUsuarioPerfilRequest request);
+    Task<(UsuarioPerfilResponse? Perfil, bool Success)> Atualizar(AtualizarUsuarioPerfilRequest request);
+    Task<bool> Deletar(Guid id, Guid usuarioId);
 }
-//====================================================

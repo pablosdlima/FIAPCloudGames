@@ -80,10 +80,12 @@ builder.Services.AddScoped<IUsuarioPerfilService, UsuarioPerfilServices>();
 builder.Services.AddScoped<IUsuarioRoleServices, UsuarioRoleServices>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationServices>();
 
-// Repositório Genérico
+// Repositório
 builder.Services.AddScoped(typeof(IGenericEntityRepository<>), typeof(GenericEntityRepository<>));
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
+builder.Services.AddScoped<IContatoRepository, ContatoRepository>();
+builder.Services.AddScoped<IUsuarioPerfilRepository, UsuarioPerfilRepository>();
 
 // Application Services
 builder.Services.AddScoped<IContatoAppService, ContatoAppService>();
@@ -130,12 +132,12 @@ app.MapControllers();
 
 #region Endpoints (Minimal APIs)
 
-//app.MapContatos();
+app.MapContatos();
 app.MapEnderecos();
 app.MapGames();
 app.MapRoles();
 app.MapUsuarios();
-//app.MapUsuariosPerfil();
+app.MapUsuarioPerfil();
 //app.MapUsuarioGames();
 app.MapUsuarioRole();
 app.MapAuthentication();

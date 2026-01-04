@@ -1,90 +1,80 @@
-﻿using AutoMapper;
-using FIAPCloudGames.Application.Dtos;
-using FIAPCloudGames.Application.Interfaces;
+﻿using FIAPCloudGames.Application.Interfaces;
+using FIAPCloudGames.Domain.Dtos.Request.Contato;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
 
 namespace FIAPCloudGames.Application.AppServices;
-//=====================================================
+
 public class ContatoAppService : IContatoAppService
 {
-    #region Properties
-    //-------------------------------------------------
     private readonly IContatoService _contatoService;
-    private readonly IMapper _mapper;
-    //-------------------------------------------------
-    #endregion
 
-    #region Construtor
-    //-------------------------------------------------
-    public ContatoAppService(IContatoService contatoService, IMapper mapper)
+    public ContatoAppService(IContatoService contatoService)
     {
-        _contatoService = contatoService
-            ?? throw new ArgumentNullException(nameof(contatoService));
-
-        _mapper = mapper
-            ?? throw new ArgumentNullException(nameof(mapper));
+        _contatoService = contatoService;
     }
-    //-------------------------------------------------
-    #endregion
 
-    #region Interfaces
-    //-------------------------------------------------
-    public ContatosDtos Inserir(ContatosDtos dto)
+    public async Task<List<ContatoResponse>> ListarPorUsuario(Guid usuarioId)
     {
-        if (dto is null)
-            throw new ArgumentNullException(nameof(dto));
+        var contatos = _contatoService.ListarPorUsuario(usuarioId);
 
-        var entity = _mapper.Map<Contato>(dto);
-        var criado = _contatoService.Insert(entity);
+        var contatosResponse = contatos.Select(c => new ContatoResponse
+        {
+            Id = c.Id,
+            UsuarioId = c.UsuarioId,
+            Celular = c.Celular,
+            Email = c.Email
+        }).ToList();
 
-        return _mapper.Map<ContatosDtos>(criado);
+        return await Task.FromResult(contatosResponse);
     }
-    //-------------------------------------------------
-    public ContatosDtos Alterar(ContatosDtos dto)
+
+    public async Task<ContatoResponse> Cadastrar(CadastrarContatoRequest request)
     {
-        if (dto is null)
-            throw new ArgumentNullException(nameof(dto));
+        var contato = new Contato(request.Celular, request.Email)
+        {
+            UsuarioId = request.UsuarioId
+        };
 
-        var entity = _mapper.Map<Contato>(dto);
-        var atualizado = _contatoService.Update(entity);
+        var contatoCadastrado = await _contatoService.Cadastrar(contato);
 
-        return _mapper.Map<ContatosDtos>(atualizado);
+        return new ContatoResponse
+        {
+            Id = contatoCadastrado.Id,
+            UsuarioId = contatoCadastrado.UsuarioId,
+            Celular = contatoCadastrado.Celular,
+            Email = contatoCadastrado.Email
+        };
     }
-    //-------------------------------------------------
-    public ContatosDtos Inativar(Guid id)
+
+    public async Task<(ContatoResponse? Contato, bool Success)> Atualizar(AtualizarContatoRequest request)
     {
-        //if (id == Guid.Empty)
-        //    throw new ArgumentException("Id inválido.", nameof(id));
+        var contato = new Contato(request.Celular, request.Email)
+        {
+            Id = request.Id,
+            UsuarioId = request.UsuarioId
+        };
 
-        //var entity = _contatoService.Inativar(id);
+        var (contatoAtualizado, sucesso) = await _contatoService.Atualizar(contato);
 
-        //if (entity is null)
-        //    throw new KeyNotFoundException("Contato não encontrado.");
+        if (!sucesso || contatoAtualizado == null)
+        {
+            return (null, false);
+        }
 
-        //return _mapper.Map<ContatosDtos>(entity);
-        throw new KeyNotFoundException("Contato não encontrado.");
+        var response = new ContatoResponse
+        {
+            Id = contatoAtualizado.Id,
+            UsuarioId = contatoAtualizado.UsuarioId,
+            Celular = contatoAtualizado.Celular,
+            Email = contatoAtualizado.Email
+        };
+
+        return (response, true);
     }
-    //-------------------------------------------------
-    public List<ContatosDtos> Listar()
+
+    public async Task<bool> Deletar(Guid id, Guid usuarioId)
     {
-        var lista = _contatoService.Get();
-        return _mapper.Map<List<ContatosDtos>>(lista);
+        return await _contatoService.Deletar(id, usuarioId);
     }
-    //-------------------------------------------------
-    public ContatosDtos PorId(Guid id)
-    {
-        if (id == Guid.Empty)
-            throw new ArgumentException("Id inválido.", nameof(id));
-
-        var entity = _contatoService.GetById(id);
-
-        if (entity is null)
-            throw new KeyNotFoundException("Contato não encontrado.");
-
-        return _mapper.Map<ContatosDtos>(entity);
-    }
-    //-------------------------------------------------
-    #endregion
 }
-//=====================================================

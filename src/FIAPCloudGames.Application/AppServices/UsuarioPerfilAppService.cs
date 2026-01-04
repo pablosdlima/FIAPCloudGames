@@ -1,90 +1,97 @@
-﻿using AutoMapper;
-using FIAPCloudGames.Application.Dtos;
-using FIAPCloudGames.Application.Interfaces;
+﻿using FIAPCloudGames.Application.Interfaces;
+using FIAPCloudGames.Domain.Dtos.Request.UsuarioPerfil;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
 
 namespace FIAPCloudGames.Application.AppServices;
-//==========================================================
+
 public class UsuarioPerfilAppService : IUsuarioPerfilAppService
 {
-    #region Properties
-    //-------------------------------------------------
     private readonly IUsuarioPerfilService _usuarioPerfilService;
-    private readonly IMapper _mapper;
-    //-------------------------------------------------
-    #endregion
 
-    #region Construtor
-    //-------------------------------------------------
-    public UsuarioPerfilAppService(IUsuarioPerfilService usuarioPerfilService, IMapper mapper)
+    public UsuarioPerfilAppService(IUsuarioPerfilService usuarioPerfilService)
     {
-        _usuarioPerfilService = usuarioPerfilService
-            ?? throw new ArgumentNullException(nameof(usuarioPerfilService));
-
-        _mapper = mapper
-            ?? throw new ArgumentNullException(nameof(mapper));
+        _usuarioPerfilService = usuarioPerfilService;
     }
-    //-------------------------------------------------
-    #endregion
 
-    #region Interfaces
-    //-------------------------------------------------
-    public UsuarioPerfilDto Inserir(UsuarioPerfilDto dto)
+    public async Task<UsuarioPerfilResponse?> BuscarPorUsuarioId(Guid usuarioId)
     {
-        if (dto is null)
-            throw new ArgumentNullException(nameof(dto));
+        var perfil = _usuarioPerfilService.BuscarPorUsuarioId(usuarioId);
 
-        var entity = _mapper.Map<UsuarioPerfil>(dto);
-        var criado = _usuarioPerfilService.Insert(entity);
+        if (perfil == null)
+        {
+            return null;
+        }
 
-        return _mapper.Map<UsuarioPerfilDto>(criado);
+        return new UsuarioPerfilResponse
+        {
+            Id = perfil.Id,
+            UsuarioId = perfil.UsuarioId,
+            NomeCompleto = perfil.NomeCompleto,
+            DataNascimento = perfil.DataNascimento,
+            Pais = perfil.Pais,
+            AvatarUrl = perfil.AvatarUrl
+        };
     }
-    //-------------------------------------------------
-    public UsuarioPerfilDto Alterar(UsuarioPerfilDto dto)
+
+    public async Task<UsuarioPerfilResponse> Cadastrar(CadastrarUsuarioPerfilRequest request)
     {
-        if (dto is null)
-            throw new ArgumentNullException(nameof(dto));
+        var perfil = new UsuarioPerfil(
+            request.NomeCompleto,
+            request.DataNascimento,
+            request.Pais,
+            request.AvatarUrl)
+        {
+            UsuarioId = request.UsuarioId
+        };
 
-        var entity = _mapper.Map<UsuarioPerfil>(dto);
-        var atualizado = _usuarioPerfilService.Update(entity);
+        var perfilCadastrado = await _usuarioPerfilService.Cadastrar(perfil);
 
-        return _mapper.Map<UsuarioPerfilDto>(atualizado);
+        return new UsuarioPerfilResponse
+        {
+            Id = perfilCadastrado.Id,
+            UsuarioId = perfilCadastrado.UsuarioId,
+            NomeCompleto = perfilCadastrado.NomeCompleto,
+            DataNascimento = perfilCadastrado.DataNascimento,
+            Pais = perfilCadastrado.Pais,
+            AvatarUrl = perfilCadastrado.AvatarUrl
+        };
     }
-    //-------------------------------------------------
-    public UsuarioPerfilDto Inativar(Guid id)
+
+    public async Task<(UsuarioPerfilResponse? Perfil, bool Success)> Atualizar(AtualizarUsuarioPerfilRequest request)
     {
-        //if (id == Guid.Empty)
-        //    throw new ArgumentException("Id inválido.", nameof(id));
+        var perfil = new UsuarioPerfil(
+            request.NomeCompleto,
+            request.DataNascimento,
+            request.Pais,
+            request.AvatarUrl)
+        {
+            Id = request.Id,
+            UsuarioId = request.UsuarioId
+        };
 
-        //var entity = _usuarioPerfilService.Inativar(id);
+        var (perfilAtualizado, sucesso) = await _usuarioPerfilService.Atualizar(perfil);
 
-        //if (entity is null)
-        //    throw new KeyNotFoundException("Contato não encontrado.");
+        if (!sucesso || perfilAtualizado == null)
+        {
+            return (null, false);
+        }
 
-        //return _mapper.Map<UsuarioPerfilDto>(entity);
-        throw new KeyNotFoundException("Contato não encontrado.");
+        var response = new UsuarioPerfilResponse
+        {
+            Id = perfilAtualizado.Id,
+            UsuarioId = perfilAtualizado.UsuarioId,
+            NomeCompleto = perfilAtualizado.NomeCompleto,
+            DataNascimento = perfilAtualizado.DataNascimento,
+            Pais = perfilAtualizado.Pais,
+            AvatarUrl = perfilAtualizado.AvatarUrl
+        };
+
+        return (response, true);
     }
-    //-------------------------------------------------
-    public List<UsuarioPerfilDto> Listar()
+
+    public async Task<bool> Deletar(Guid id, Guid usuarioId)
     {
-        var lista = _usuarioPerfilService.Get();
-        return _mapper.Map<List<UsuarioPerfilDto>>(lista);
+        return await _usuarioPerfilService.Deletar(id, usuarioId);
     }
-    //-------------------------------------------------
-    public UsuarioPerfilDto PorId(Guid id)
-    {
-        if (id == Guid.Empty)
-            throw new ArgumentException("Id inválido.", nameof(id));
-
-        var entity = _usuarioPerfilService.GetById(id);
-
-        if (entity is null)
-            throw new KeyNotFoundException("Contato não encontrado.");
-
-        return _mapper.Map<UsuarioPerfilDto>(entity);
-    }
-    //-------------------------------------------------
-    #endregion
 }
-//==========================================================

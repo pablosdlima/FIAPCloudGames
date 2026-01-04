@@ -5,7 +5,7 @@ using FIAPCloudGames.Domain.Models;
 
 namespace FIAPCloudGames.Domain.Interfaces.Services;
 
-public interface IUsuarioService : IGenericService<Usuario>
+public interface IUsuarioService : IGenericServices<Usuario>
 {
     Task<Usuario> CadastrarUsuario(CadastrarUsuarioRequest request);
 

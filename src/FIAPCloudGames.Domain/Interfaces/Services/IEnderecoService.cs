@@ -3,7 +3,7 @@ using FIAPCloudGames.Domain.Models;
 
 namespace FIAPCloudGames.Domain.Interfaces.Services;
 
-public interface IEnderecoService : IGenericService<Endereco>
+public interface IEnderecoService : IGenericServices<Endereco>
 {
     List<Endereco> ListarPorUsuario(Guid usuarioId);
     Task<Endereco> Cadastrar(Endereco endereco);

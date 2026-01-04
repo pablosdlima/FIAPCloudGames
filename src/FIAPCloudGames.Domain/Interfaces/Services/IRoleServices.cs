@@ -3,7 +3,7 @@ using FIAPCloudGames.Domain.Models;
 
 namespace FIAPCloudGames.Domain.Interfaces.Services;
 
-public interface IRoleServices : IGenericService<Role>
+public interface IRoleServices : IGenericServices<Role>
 {
     List<Role> ListarRoles();
     Task<(Role? Role, bool Success)> AtualizarRole(Role role);

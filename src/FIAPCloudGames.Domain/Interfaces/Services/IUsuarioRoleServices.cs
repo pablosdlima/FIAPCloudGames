@@ -3,7 +3,7 @@ using FIAPCloudGames.Domain.Models;
 
 namespace FIAPCloudGames.Domain.Interfaces.Services;
 //=========================================================
-public interface IUsuarioRoleServices : IGenericService<UsuarioRole>
+public interface IUsuarioRoleServices : IGenericServices<UsuarioRole>
 {
 
 }
