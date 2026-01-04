@@ -20,6 +20,8 @@ public interface IGenericEntityRepository<T>
 
     T GetById(Guid id);
 
+    T GetByIdInt(int id);
+
     List<T> GetContainsId(Expression<Func<T, bool>> predicate);
 
     int LastId(Expression<Func<T, int>> predicate);

@@ -132,7 +132,7 @@ app.MapControllers();
 //app.MapContatos();
 //app.MapEnderecos();
 app.MapGames();
-//app.MapRoles();
+app.MapRoles();
 app.MapUsuarios();
 //app.MapUsuariosPerfil();
 //app.MapUsuarioGames();

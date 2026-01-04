@@ -1,19 +1,13 @@
-﻿using FIAPCloudGames.Application.Dtos;
+﻿using FIAPCloudGames.Domain.Dtos.Request.Role;
 
 namespace FIAPCloudGames.Application.Interfaces;
-//========================================================
+
 public interface IRoleAppService
 {
-    //-------------------------------------------------------
-    List<RoleDtos> Listar();
-    //-------------------------------------------------------
-    RoleDtos PorId(Guid id);
-    //-------------------------------------------------------
-    RoleDtos Inserir(RoleDtos dto);
-    //-------------------------------------------------------
-    RoleDtos Alterar(RoleDtos dto);
-    //-------------------------------------------------------
-    RoleDtos Inativar(Guid id);
-    //-------------------------------------------------------
+    List<CadastrarRoleRequest> Listar();
+    CadastrarRoleRequest PorId(Guid id);
+    CadastrarRoleRequest Alterar(CadastrarRoleRequest dto);
+    Task<CadastrarRoleRequest> Cadastrar(CadastrarRoleRequest request);
+    Task<List<RolesResponse>> ListarRoles();
+    Task<(RolesResponse? Role, bool Success)> AtualizarRole(AtualizarRoleRequest request);
 }
-//========================================================

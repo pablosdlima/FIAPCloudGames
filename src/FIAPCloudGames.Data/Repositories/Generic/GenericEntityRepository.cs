@@ -94,6 +94,18 @@ public class GenericEntityRepository<T> : IGenericEntityRepository<T> where T : 
         }
     }
 
+    public T GetByIdInt(int id)
+    {
+        try
+        {
+            return _context.Set<T>().Find(id)!;
+        }
+        catch (Exception err)
+        {
+            throw err;
+        }
+    }
+
     public List<T> GetContainsId(Expression<Func<T, bool>> predicate)
     {
         return _context.Set<T>().Where(predicate).ToList();
