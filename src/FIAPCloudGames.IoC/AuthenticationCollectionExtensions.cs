@@ -8,9 +8,9 @@ using System.Diagnostics.CodeAnalysis;
 namespace FIAPCloudGames.IoC
 {
     [ExcludeFromCodeCoverage]
-    public static class AppServiceCollectionExtensions
+    public static class AuthenticationCollectionExtensions
     {
-        public static void ConfigureAppDependencies(this IServiceCollection services, IConfiguration configuration)
+        public static void AddAuthenticationDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IAuthenticationAppService, AuthenticationAppService>();
             services.AddScoped<IJwtGenerator, JwtGenerator>();
