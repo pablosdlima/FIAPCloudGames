@@ -4,22 +4,12 @@ using System.Linq.Expressions;
 namespace FIAPCloudGames.Domain.Services.Generic;
 public abstract class GenericServices<T> : IGenericServices<T>
 {
-    #region Propertys
-
     protected readonly IGenericEntityRepository<T> _repository;
-
-    #endregion
-
-    #region Construtor
 
     protected GenericServices(IGenericEntityRepository<T> repository)
     {
         _repository = repository;
     }
-
-    #endregion
-
-    #region Methods
 
     public void Delete(T entity)
     {
@@ -46,6 +36,11 @@ public abstract class GenericServices<T> : IGenericServices<T>
         return _repository.GetById(id);
     }
 
+    public T GetByIdInt(int id)
+    {
+        return _repository.GetByIdInt(id);
+    }
+
     public List<T> GetContainsId(Expression<Func<T, bool>> predicate)
     {
         return _repository.GetContainsId(predicate);
@@ -67,6 +62,4 @@ public abstract class GenericServices<T> : IGenericServices<T>
         var (updatedEntity, success) = _repository.Update(entity);
         return (updatedEntity, success);
     }
-
-    #endregion
 }

@@ -2,6 +2,7 @@
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Game;
 using FIAPCloudGames.Domain.Dtos.Responses.Game;
+using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
 
@@ -26,21 +27,13 @@ public class GameAppService : IGameAppService
         return gameCriado;
     }
 
-    public CadastrarGameRequest Alterar(CadastrarGameRequest dto)
-    {
-        var entity = _mapper.Map<Game>(dto);
-        var atualizado = _gameService.Update(entity);
-
-        return _mapper.Map<CadastrarGameRequest>(atualizado);
-    }
-
     public Game BuscarPorId(Guid id)
     {
         var entity = _gameService.GetById(id);
 
         if (entity is null)
         {
-            throw new KeyNotFoundException("Game não encontrado.");
+            throw new NotFoundException("Game não encontrado.");
         }
 
         return entity;

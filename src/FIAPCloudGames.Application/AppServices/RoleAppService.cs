@@ -2,6 +2,7 @@
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Role;
 using FIAPCloudGames.Domain.Dtos.Responses.Role;
+using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
 
@@ -18,62 +19,29 @@ public class RoleAppService : IRoleAppService
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<CadastrarRoleRequest> Cadastrar(CadastrarRoleRequest request)
+    public async Task<RolesResponse> Cadastrar(CadastrarRoleRequest request)
     {
         var entity = _mapper.Map<Role>(request);
         var criado = await _roleService.Insert(entity);
 
-        return _mapper.Map<CadastrarRoleRequest>(criado);
-    }
-
-    public CadastrarRoleRequest Alterar(CadastrarRoleRequest dto)
-    {
-        if (dto is null)
+        if (criado == null)
         {
-            throw new ArgumentNullException(nameof(dto));
+            throw new DomainException("Não foi possível cadastrar a role. Verifique os dados fornecidos.");
         }
 
-        var entity = _mapper.Map<Role>(dto);
-        var atualizado = _roleService.Update(entity);
-
-        return _mapper.Map<CadastrarRoleRequest>(atualizado);
-    }
-
-    public List<CadastrarRoleRequest> Listar()
-    {
-        var lista = _roleService.Get();
-        return _mapper.Map<List<CadastrarRoleRequest>>(lista);
-    }
-
-    public CadastrarRoleRequest PorId(Guid id)
-    {
-        if (id == Guid.Empty)
-        {
-            throw new ArgumentException("Id inválido.", nameof(id));
-        }
-
-        var entity = _roleService.GetById(id);
-
-        if (entity is null)
-        {
-            throw new KeyNotFoundException("role não encontrado.");
-        }
-
-        return _mapper.Map<CadastrarRoleRequest>(entity);
+        return _mapper.Map<RolesResponse>(criado);
     }
 
     public async Task<List<RolesResponse>> ListarRoles()
     {
         var roles = _roleService.ListarRoles();
 
-        // Mapeamento manual
         var rolesResponse = roles.Select(r => new RolesResponse
         {
             Id = r.Id,
             RoleName = r.RoleName,
             Description = r.Description
         }).ToList();
-
         return await Task.FromResult(rolesResponse);
     }
 
@@ -85,21 +53,17 @@ public class RoleAppService : IRoleAppService
             RoleName = request.RoleName,
             Description = request.Description
         };
-
         var (roleAtualizada, sucesso) = await _roleService.AtualizarRole(role);
-
         if (!sucesso || roleAtualizada == null)
         {
             return (null, false);
         }
-
         var response = new RolesResponse
         {
             Id = roleAtualizada.Id,
             RoleName = roleAtualizada.RoleName,
             Description = roleAtualizada.Description
         };
-
         return (response, true);
     }
 }

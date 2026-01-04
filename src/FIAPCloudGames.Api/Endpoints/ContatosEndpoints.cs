@@ -12,7 +12,6 @@ public static class ContatoEndpoints
     {
         var app = route.MapGroup("/api/usuarios/{usuarioId:guid}/contatos").WithTags("Contatos");
 
-
         app.MapGet("BuscarPorUsuarioId/", async (Guid usuarioId, IContatoAppService contatoService) =>
         {
             var contatos = await contatoService.ListarPorUsuario(usuarioId);

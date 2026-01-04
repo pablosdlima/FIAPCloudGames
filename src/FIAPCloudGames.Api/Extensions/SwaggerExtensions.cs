@@ -7,14 +7,23 @@ namespace FIAPCloudGames.Api.Extensions
         public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services)
         {
             services.AddEndpointsApiExplorer();
-
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "FIAPCloudGames",
+                    Title = "FIAPCloudGames API",
                     Version = "v1",
-                    Description = "Projeto FIAP Cloud Games",
+                    Description = "API para o projeto FIAP Cloud Games, gerenciando usuários, jogos, bibliotecas e autenticação.",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Equipe FIAP Cloud Games",
+                        Url = new Uri("https://github.com/pablosdlima/FIAPCloudGames")
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "Licença MIT",
+                        Url = new Uri("https://opensource.org/licenses/MIT")
+                    }
                 });
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -41,9 +50,7 @@ namespace FIAPCloudGames.Api.Extensions
                         Array.Empty<string>()
                     }
                 });
-
             });
-
             return services;
         }
 
@@ -52,11 +59,9 @@ namespace FIAPCloudGames.Api.Extensions
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Minha Minimal API v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FIAPCloudGames API v1");
             });
-
             return app;
         }
     }
-
 }

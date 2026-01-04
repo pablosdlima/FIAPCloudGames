@@ -42,11 +42,7 @@ public static class UsuariosEndpoints
                 return ApiResponses.Problem("Erro ao cadastrar o usuário.");
             }
 
-            return ApiResponses.Created(
-                $"/api/Usuarios/{result.IdUsuario}",
-                result,
-                "Usuário cadastrado com sucesso."
-            );
+            return ApiResponses.Created($"/api/Usuarios/{result.IdUsuario}", result, "Usuário cadastrado com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<CadastrarUsuarioRequest>>()
         .WithName("CadastrarUsuario")

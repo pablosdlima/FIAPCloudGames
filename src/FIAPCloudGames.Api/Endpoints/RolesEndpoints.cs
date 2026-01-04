@@ -12,7 +12,6 @@ public static class RolesEndpoints
     {
         var app = route.MapGroup("/api/Roles").WithTags("Roles");
 
-
         app.MapPost("Cadastrar/", async (CadastrarRoleRequest request, IRoleAppService roleService) =>
         {
             var result = await roleService.Cadastrar(request);

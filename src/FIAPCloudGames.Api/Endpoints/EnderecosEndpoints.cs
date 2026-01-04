@@ -12,7 +12,6 @@ public static class EnderecoEndpoints
     {
         var app = route.MapGroup("/api/usuarios/{usuarioId:guid}/enderecos").WithTags("Enderecos");
 
-
         app.MapGet("BuscarPorUsuarioId/", async (Guid usuarioId, IEnderecoAppService enderecoService) =>
         {
             var enderecos = await enderecoService.ListarPorUsuario(usuarioId);

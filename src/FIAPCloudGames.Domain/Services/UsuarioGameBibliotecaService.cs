@@ -29,20 +29,18 @@ public class UsuarioGameBibliotecaService : GenericServices<UsuarioGameBibliotec
 
     public async Task<(UsuarioGameBiblioteca? Biblioteca, bool Success, string? ErrorMessage)> ComprarGame(UsuarioGameBiblioteca biblioteca)
     {
-        // Verifica se o game existe
         var game = _gameRepository.GetById(biblioteca.GameId);
+
         if (game == null)
         {
             return (null, false, "Game não encontrado.");
         }
 
-        // Verifica se o usuário já possui o game
         if (_bibliotecaRepository.UsuarioJaPossuiGame(biblioteca.UsuarioId, biblioteca.GameId))
         {
             return (null, false, "Você já possui este jogo na sua biblioteca.");
         }
 
-        // Define o Id e data de aquisição
         biblioteca.Id = Guid.NewGuid();
         biblioteca.DataAquisicao ??= DateTimeOffset.UtcNow;
 
@@ -52,7 +50,6 @@ public class UsuarioGameBibliotecaService : GenericServices<UsuarioGameBibliotec
 
     public async Task<(UsuarioGameBiblioteca? Biblioteca, bool Success)> Atualizar(UsuarioGameBiblioteca biblioteca)
     {
-        // Busca e valida se pertence ao usuário
         var bibliotecaExistente = _bibliotecaRepository.BuscarPorIdEUsuario(biblioteca.Id, biblioteca.UsuarioId);
 
         if (bibliotecaExistente == null)
@@ -60,7 +57,6 @@ public class UsuarioGameBibliotecaService : GenericServices<UsuarioGameBibliotec
             return (null, false);
         }
 
-        // Atualiza as propriedades
         bibliotecaExistente.TipoAquisicao = biblioteca.TipoAquisicao;
         bibliotecaExistente.PrecoAquisicao = biblioteca.PrecoAquisicao;
         bibliotecaExistente.DataAquisicao = biblioteca.DataAquisicao;
@@ -72,7 +68,6 @@ public class UsuarioGameBibliotecaService : GenericServices<UsuarioGameBibliotec
 
     public async Task<bool> Deletar(Guid id, Guid usuarioId)
     {
-        // Valida se pertence ao usuário
         var biblioteca = _bibliotecaRepository.BuscarPorIdEUsuario(id, usuarioId);
 
         if (biblioteca == null)

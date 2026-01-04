@@ -1,5 +1,6 @@
 ﻿using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Responses.Authentication;
+using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
 
 namespace FIAPCloudGames.Application.AppServices
@@ -18,6 +19,11 @@ namespace FIAPCloudGames.Application.AppServices
         public async Task<LoginResponse> Login(string usuario, string senha)
         {
             var usuarioResult = await _usuarioService.ValidarLogin(usuario, senha);
+
+            if (usuarioResult == null)
+            {
+                throw new AutenticacaoException("Usuário ou senha inválidos.");
+            }
 
             var tokenJwt = _jwtGenerator.GenerateToken(usuarioResult);
 

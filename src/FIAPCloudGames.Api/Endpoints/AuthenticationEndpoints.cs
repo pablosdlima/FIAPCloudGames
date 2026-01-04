@@ -12,7 +12,6 @@ namespace FIAPCloudGames.Api.Endpoints
         {
             var app = route.MapGroup("/api/Authentication").WithTags("Authentication");
 
-
             app.MapPost("login/", async (LoginRequest request, IAuthenticationAppService authenticationService) =>
             {
                 try

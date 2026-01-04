@@ -12,7 +12,6 @@ public static class UsuarioGameBibliotecaEndpoints
     {
         var app = route.MapGroup("/api/usuarios/{usuarioId:guid}/biblioteca").WithTags("Biblioteca");
 
-
         app.MapGet("BuscarPorUsuarioId/", async (Guid usuarioId, IUsuarioGameBibliotecaAppService bibliotecaService) =>
         {
             var biblioteca = await bibliotecaService.ListarPorUsuario(usuarioId);
@@ -30,17 +29,10 @@ public static class UsuarioGameBibliotecaEndpoints
 
             if (!sucesso)
             {
-                return ApiResponses.BadRequest(
-                    "game",
-                    errorMessage ?? "Não foi possível comprar o jogo."
-                );
+                return ApiResponses.BadRequest("game", errorMessage ?? "Não foi possível comprar o jogo.");
             }
 
-            return ApiResponses.Created(
-                $"/api/usuarios/{usuarioId}/biblioteca/{biblioteca!.Id}",
-                biblioteca,
-                "Jogo comprado e adicionado à biblioteca com sucesso."
-            );
+            return ApiResponses.Created($"/api/usuarios/{usuarioId}/biblioteca/{biblioteca!.Id}", biblioteca, "Jogo comprado e adicionado à biblioteca com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<ComprarGameRequest>>()
         .WithName("ComprarGame")

@@ -78,7 +78,7 @@ builder.Services.AddScoped<IUsuarioService, UsuarioServices>();
 builder.Services.AddScoped<IUsuarioGameBibliotecaService, UsuarioGameBibliotecaService>();
 builder.Services.AddScoped<IUsuarioPerfilService, UsuarioPerfilServices>();
 builder.Services.AddScoped<IUsuarioRoleServices, UsuarioRoleServices>();
-builder.Services.AddScoped<IAuthenticationService, AuthenticationServices>();
+
 
 // Repositório
 builder.Services.AddScoped(typeof(IGenericEntityRepository<>), typeof(GenericEntityRepository<>));

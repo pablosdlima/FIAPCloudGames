@@ -11,6 +11,7 @@ public interface IGenericServices<T>
     Task<(T entity, bool success)> Update(T entity);
     IQueryable<T> Get();
     T GetById(Guid id);
+    T GetByIdInt(int id);
     List<T> GetContainsId(Expression<Func<T, bool>> predicate);
     int LastId(Expression<Func<T, int>> predicate);
 }

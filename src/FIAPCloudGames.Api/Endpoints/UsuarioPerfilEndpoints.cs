@@ -12,7 +12,6 @@ public static class UsuarioPerfilEndpoints
     {
         var app = route.MapGroup("/api/usuarios/{usuarioId:guid}/perfil").WithTags("UsuarioPerfil");
 
-
         app.MapGet("BuscarPorUsuarioId/", async (Guid usuarioId, IUsuarioPerfilAppService perfilService) =>
         {
             var perfil = await perfilService.BuscarPorUsuarioId(usuarioId);

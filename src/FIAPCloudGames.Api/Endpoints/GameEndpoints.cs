@@ -12,7 +12,6 @@ public static class GameEndpoints
     {
         var app = route.MapGroup("/api/Game").WithTags("Game");
 
-
         app.MapPost("Cadastrar/", async (CadastrarGameRequest request, IGameAppService gameService) =>
         {
             var result = await gameService.Cadastrar(request);

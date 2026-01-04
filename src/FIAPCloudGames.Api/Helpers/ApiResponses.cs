@@ -1,10 +1,7 @@
-﻿// API/Helpers/ApiResponses.cs
-namespace FIAPCloudGames.Api.Helpers;
+﻿namespace FIAPCloudGames.Api.Helpers;
 
 public static class ApiResponses
 {
-    // ========== SUCCESS RESPONSES ==========
-
     public static IResult Ok(object data, string message = "Operação realizada com sucesso.")
     {
         return Results.Ok(new
@@ -33,8 +30,6 @@ public static class ApiResponses
             data
         });
     }
-
-    // ========== ERROR RESPONSES ==========
 
     public static IResult NotFound(string key, string message)
     {

@@ -1,6 +1,7 @@
 ﻿using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Enderecos;
 using FIAPCloudGames.Domain.Dtos.Responses.Endereco;
+using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
 
@@ -9,16 +10,23 @@ namespace FIAPCloudGames.Application.AppServices;
 public class EnderecoAppService : IEnderecoAppService
 {
     private readonly IEnderecoService _enderecoService;
+    private readonly IUsuarioService _usuarioService;
 
-    public EnderecoAppService(IEnderecoService enderecoService)
+    public EnderecoAppService(IEnderecoService enderecoService, IUsuarioService usuarioService)
     {
         _enderecoService = enderecoService;
+        _usuarioService = usuarioService;
     }
 
     public async Task<List<EnderecoResponse>> ListarPorUsuario(Guid usuarioId)
     {
-        var enderecos = _enderecoService.ListarPorUsuario(usuarioId);
+        var usuarioExiste = _usuarioService.GetById(usuarioId);
+        if (usuarioExiste == null)
+        {
+            throw new NotFoundException($"Usuário com ID {usuarioId} não encontrado.");
+        }
 
+        var enderecos = _enderecoService.ListarPorUsuario(usuarioId);
         var enderecosResponse = enderecos.Select(e => new EnderecoResponse
         {
             Id = e.Id,
@@ -31,12 +39,17 @@ public class EnderecoAppService : IEnderecoAppService
             Estado = e.Estado,
             Cep = e.Cep
         }).ToList();
-
         return await Task.FromResult(enderecosResponse);
     }
 
     public async Task<EnderecoResponse> Cadastrar(CadastrarEnderecoRequest request)
     {
+        var usuarioExiste = _usuarioService.GetById(request.UsuarioId);
+        if (usuarioExiste == null)
+        {
+            throw new NotFoundException($"Usuário com ID {request.UsuarioId} não encontrado para cadastrar o endereço.");
+        }
+
         var endereco = new Endereco
         {
             UsuarioId = request.UsuarioId,
@@ -50,6 +63,11 @@ public class EnderecoAppService : IEnderecoAppService
         };
 
         var enderecoCadastrado = await _enderecoService.Cadastrar(endereco);
+
+        if (enderecoCadastrado == null)
+        {
+            throw new DomainException("Não foi possível cadastrar o endereço. Verifique os dados fornecidos.");
+        }
 
         return new EnderecoResponse
         {
@@ -67,6 +85,12 @@ public class EnderecoAppService : IEnderecoAppService
 
     public async Task<(EnderecoResponse? Endereco, bool Success)> Atualizar(AtualizarEnderecoRequest request)
     {
+        var usuarioExiste = _usuarioService.GetById(request.UsuarioId);
+        if (usuarioExiste == null)
+        {
+            throw new NotFoundException($"Usuário com ID {request.UsuarioId} não encontrado para atualizar o endereço.");
+        }
+
         var endereco = new Endereco
         {
             Id = request.Id,
@@ -79,14 +103,11 @@ public class EnderecoAppService : IEnderecoAppService
             Estado = request.Estado,
             Cep = request.Cep
         };
-
         var (enderecoAtualizado, sucesso) = await _enderecoService.Atualizar(endereco);
-
         if (!sucesso || enderecoAtualizado == null)
         {
             return (null, false);
         }
-
         var response = new EnderecoResponse
         {
             Id = enderecoAtualizado.Id,
@@ -99,12 +120,17 @@ public class EnderecoAppService : IEnderecoAppService
             Estado = enderecoAtualizado.Estado,
             Cep = enderecoAtualizado.Cep
         };
-
         return (response, true);
     }
 
     public async Task<bool> Deletar(Guid id, Guid usuarioId)
     {
+        var usuarioExiste = _usuarioService.GetById(usuarioId);
+        if (usuarioExiste == null)
+        {
+            throw new NotFoundException($"Usuário com ID {usuarioId} não encontrado para deletar o endereço.");
+        }
+
         return await _enderecoService.Deletar(id, usuarioId);
     }
 }

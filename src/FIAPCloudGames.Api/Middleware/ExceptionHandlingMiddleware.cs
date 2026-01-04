@@ -22,7 +22,7 @@ namespace FIAPCloudGames.Api.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Uma exceção não tratada ocorreu");
+                _logger.LogError(ex, "Uma exceção não tratada ocorreu: {Message}", ex.Message);
                 await HandleExceptionAsync(context, ex);
             }
         }
@@ -30,7 +30,6 @@ namespace FIAPCloudGames.Api.Middleware
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
-
             var response = new ErrorDetails
             {
                 Timestamp = DateTime.UtcNow,
@@ -45,40 +44,38 @@ namespace FIAPCloudGames.Api.Middleware
                     response.Message = validationEx.Message;
                     response.Errors = validationEx.Errors;
                     break;
-
                 case NotFoundException notFoundEx:
                     context.Response.StatusCode = StatusCodes.Status404NotFound;
                     response.StatusCode = StatusCodes.Status404NotFound;
                     response.Message = notFoundEx.Message;
                     break;
-
+                case AutenticacaoException autenticacaoEx:
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = autenticacaoEx.Message;
+                    break;
                 case UnauthorizedException unauthorizedEx:
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     response.Message = unauthorizedEx.Message;
                     break;
-
                 case ForbiddenException forbiddenEx:
                     context.Response.StatusCode = StatusCodes.Status403Forbidden;
                     response.StatusCode = StatusCodes.Status403Forbidden;
                     response.Message = forbiddenEx.Message;
                     break;
-
                 case DomainException domainEx:
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     response.StatusCode = StatusCodes.Status400BadRequest;
                     response.Message = domainEx.Message;
                     break;
-
                 default:
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                     response.StatusCode = StatusCodes.Status500InternalServerError;
                     response.Message = "Ocorreu um erro interno no servidor";
                     break;
             }
-
             return context.Response.WriteAsJsonAsync(response);
         }
     }
-
 }
