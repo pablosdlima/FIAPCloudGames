@@ -1,7 +1,7 @@
-﻿using FIAPCloudGames.Application.Interfaces;
+﻿using FIAPCloudGames.Api.Filters;
+using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Game;
 using FIAPCloudGames.Domain.Dtos.Responses.Game;
-using FluentValidation;
 
 namespace FIAPCloudGames.Api.Endpoints;
 
@@ -11,56 +11,80 @@ public static class GameEndpoints
     {
         var app = route.MapGroup("/api/Game").WithTags("Game");
 
-        app.MapPost("Cadastrar/", async (CadastrarGameRequest request, IGameAppService GameService) =>
-        {
-            var result = await GameService.Cadastrar(request);
-            return result != null ? Results.Created() : Results.Problem();
-        });
 
-
-        app.MapGet("BuscarPorId/{id}", (Guid id, IGameAppService GameService) =>
+        app.MapPost("Cadastrar/", async (CadastrarGameRequest request, IGameAppService gameService) =>
         {
-            var result = GameService.BuscarPorId(id);
+            var result = await gameService.Cadastrar(request);
+
             if (result == null)
             {
-                return Results.NotFound();
+                return Results.Problem(
+                    detail: "Erro ao cadastrar o jogo.",
+                    statusCode: 500
+                );
             }
 
-            return Results.Ok(result);
-        });
-
-        app.MapGet("ListarGames", async ([AsParameters] ListarGamesPaginadoRequest request, IGameAppService gameService, IValidator<ListarGamesPaginadoRequest> validator) =>
-        {
-            var validationResult = await validator.ValidateAsync(request);
-            if (!validationResult.IsValid)
+            return Results.Created($"/api/Game/{result.Id}", new
             {
-                return Results.BadRequest(new
+                statusCode = 201,
+                message = "Jogo cadastrado com sucesso.",
+                data = result
+            });
+        })
+        .AddEndpointFilter<ValidationEndpointFilter<CadastrarGameRequest>>()
+        .WithName("CadastrarGame")
+        .Produces<GameResponse>(201)
+        .Produces(400)
+        .Produces(500);
+
+
+        app.MapGet("BuscarPorId/{id}", (Guid id, IGameAppService gameService) =>
+        {
+            var result = gameService.BuscarPorId(id);
+
+            if (result == null)
+            {
+                return Results.NotFound(new
                 {
-                    statusCode = 400,
+                    statusCode = 404,
                     message = "Validation failed",
-                    errors = validationResult.Errors
-                        .GroupBy(e => e.PropertyName)
-                        .ToDictionary(
-                            g => g.Key,
-                            g => g.Select(e => e.ErrorMessage).ToArray()
-                        )
+                    errors = new Dictionary<string, string[]>
+                    {
+                        { "game", new[] { "Jogo não encontrado." } }
+                    }
                 });
             }
 
+            return Results.Ok(new
+            {
+                statusCode = 200,
+                message = "Jogo encontrado com sucesso.",
+                data = result
+            });
+        })
+        .WithName("BuscarGamePorId")
+        .Produces<GameResponse>(200)
+        .Produces(404);
+
+
+        app.MapGet("ListarGames", async ([AsParameters] ListarGamesPaginadoRequest request, IGameAppService gameService) =>
+        {
             var result = await gameService.ListarGamesPaginado(request);
 
             return Results.Ok(new
             {
                 statusCode = 200,
+                message = "Games listados com sucesso.",
                 data = result
             });
         })
+        .AddEndpointFilter<ValidationEndpointFilter<ListarGamesPaginadoRequest>>()
         .WithName("ListarGamesPaginado")
         .Produces<ListarGamesPaginadoResponse>(200)
         .Produces(400);
 
 
-        app.MapPut("AtualizarGame/{id:guid}", async (Guid id, AtualizarGameRequest request, IGameAppService gameService, IValidator<AtualizarGameRequest> validator) =>
+        app.MapPut("AtualizarGame/{id:guid}", async (Guid id, AtualizarGameRequest request, IGameAppService gameService) =>
         {
             // Garante que o Id da URL é o mesmo do body
             if (id != request.Id)
@@ -70,25 +94,9 @@ public static class GameEndpoints
                     statusCode = 400,
                     message = "Validation failed",
                     errors = new Dictionary<string, string[]>
-                {
-                    { "id", new[] { "Id da URL não corresponde ao Id do corpo da requisição." } }
-                }
-                });
-            }
-
-            var validationResult = await validator.ValidateAsync(request);
-            if (!validationResult.IsValid)
-            {
-                return Results.BadRequest(new
-                {
-                    statusCode = 400,
-                    message = "Validation failed",
-                    errors = validationResult.Errors
-                        .GroupBy(e => e.PropertyName)
-                        .ToDictionary(
-                            g => g.Key,
-                            g => g.Select(e => e.ErrorMessage).ToArray()
-                        )
+                    {
+                        { "id", new[] { "Id da URL não corresponde ao Id do corpo da requisição." } }
+                    }
                 });
             }
 
@@ -101,9 +109,9 @@ public static class GameEndpoints
                     statusCode = 404,
                     message = "Validation failed",
                     errors = new Dictionary<string, string[]>
-            {
-                { "game", new[] { "Jogo não encontrado ou não foi possível atualizar." } }
-            }
+                    {
+                        { "game", new[] { "Jogo não encontrado ou não foi possível atualizar." } }
+                    }
                 });
             }
 
@@ -114,6 +122,7 @@ public static class GameEndpoints
                 data = game
             });
         })
+        .AddEndpointFilter<ValidationEndpointFilter<AtualizarGameRequest>>()
         .WithName("AtualizarGame")
         .Produces<GameResponse>(200)
         .Produces(400)

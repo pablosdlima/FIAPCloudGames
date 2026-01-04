@@ -1,7 +1,7 @@
 ﻿using FIAPCloudGames.Api.Filters;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioGameBiblioteca;
-using FluentValidation;
+using FIAPCloudGames.Domain.Dtos.Responses.UsuarioGameBiblioteca;
 
 namespace FIAPCloudGames.Api.Endpoints;
 
@@ -27,15 +27,9 @@ public static class UsuarioGameBibiotecaEndpoints
         .Produces<List<BibliotecaResponse>>(200);
 
 
-        app.MapPost("Comprar/", async (Guid usuarioId, ComprarGameRequest request, IUsuarioGameBibliotecaAppService bibliotecaService, IValidator<ComprarGameRequest> validator) =>
+        app.MapPost("Comprar/", async (Guid usuarioId, ComprarGameRequest request, IUsuarioGameBibliotecaAppService bibliotecaService) =>
         {
             request = request with { UsuarioId = usuarioId };
-
-            var validationError = await ValidationFilter.ValidateAsync(request, validator);
-            if (validationError != null)
-            {
-                return validationError;
-            }
 
             var (biblioteca, sucesso, errorMessage) = await bibliotecaService.ComprarGame(request);
 
@@ -59,12 +53,13 @@ public static class UsuarioGameBibiotecaEndpoints
                 data = biblioteca
             });
         })
+        .AddEndpointFilter<ValidationEndpointFilter<ComprarGameRequest>>()
         .WithName("ComprarGame")
         .Produces<BibliotecaResponse>(201)
         .Produces(400);
 
 
-        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarBibliotecaRequest request, IUsuarioGameBibliotecaAppService bibliotecaService, IValidator<AtualizarBibliotecaRequest> validator) =>
+        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarBibliotecaRequest request, IUsuarioGameBibliotecaAppService bibliotecaService) =>
         {
             if (id != request.Id)
             {
@@ -80,12 +75,6 @@ public static class UsuarioGameBibiotecaEndpoints
             }
 
             request = request with { UsuarioId = usuarioId };
-
-            var validationError = await ValidationFilter.ValidateAsync(request, validator);
-            if (validationError != null)
-            {
-                return validationError;
-            }
 
             var (biblioteca, sucesso) = await bibliotecaService.Atualizar(request);
 
@@ -109,6 +98,7 @@ public static class UsuarioGameBibiotecaEndpoints
                 data = biblioteca
             });
         })
+        .AddEndpointFilter<ValidationEndpointFilter<AtualizarBibliotecaRequest>>()
         .WithName("AtualizarBiblioteca")
         .Produces<BibliotecaResponse>(200)
         .Produces(400)

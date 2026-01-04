@@ -1,4 +1,4 @@
-﻿namespace FIAPCloudGames.Domain.Dtos.Request.UsuarioGameBiblioteca
+﻿namespace FIAPCloudGames.Domain.Dtos.Responses.UsuarioGameBiblioteca
 {
     public record BibliotecaResponse
     {

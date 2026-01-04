@@ -1,4 +1,4 @@
-﻿namespace FIAPCloudGames.Domain.Dtos.Request.Enderecos
+﻿namespace FIAPCloudGames.Domain.Dtos.Responses.Endereco
 {
     public record EnderecoResponse
     {

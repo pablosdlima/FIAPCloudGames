@@ -1,6 +1,6 @@
-﻿namespace FIAPCloudGames.Domain.Dtos.Request.UsuarioPerfil
+﻿namespace FIAPCloudGames.Domain.Dtos.Responses.UsuarioPerfil
 {
-    public record UsuarioPerfilResponse
+    public record BuscarUsuarioPerfilResponse
     {
         public Guid Id { get; init; }
         public Guid UsuarioId { get; init; }

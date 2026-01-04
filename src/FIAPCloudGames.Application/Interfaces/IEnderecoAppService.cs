@@ -1,4 +1,5 @@
 ﻿using FIAPCloudGames.Domain.Dtos.Request.Enderecos;
+using FIAPCloudGames.Domain.Dtos.Responses.Endereco;
 
 namespace FIAPCloudGames.Application.Interfaces;
 

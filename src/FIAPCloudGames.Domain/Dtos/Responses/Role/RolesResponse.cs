@@ -1,4 +1,4 @@
-﻿namespace FIAPCloudGames.Domain.Dtos.Request.Role
+﻿namespace FIAPCloudGames.Domain.Dtos.Responses.Role
 {
     public record RolesResponse
     {

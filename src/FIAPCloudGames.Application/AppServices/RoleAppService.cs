@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Role;
+using FIAPCloudGames.Domain.Dtos.Responses.Role;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
 

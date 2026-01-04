@@ -1,4 +1,5 @@
 ﻿using FIAPCloudGames.Domain.Dtos.Request.UsuarioGameBiblioteca;
+using FIAPCloudGames.Domain.Dtos.Responses.UsuarioGameBiblioteca;
 
 namespace FIAPCloudGames.Application.Interfaces;
 

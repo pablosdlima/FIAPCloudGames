@@ -1,7 +1,7 @@
 ﻿using FIAPCloudGames.Api.Filters;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Enderecos;
-using FluentValidation;
+using FIAPCloudGames.Domain.Dtos.Responses.Endereco;
 
 namespace FIAPCloudGames.Api.Endpoints;
 
@@ -10,6 +10,7 @@ public static class EnderecoEndpoints
     public static void MapEnderecos(this IEndpointRouteBuilder route)
     {
         var app = route.MapGroup("/api/usuarios/{usuarioId:guid}/enderecos").WithTags("Enderecos");
+
 
         app.MapGet("BuscarPorUsuarioId/", async (Guid usuarioId, IEnderecoAppService enderecoService) =>
         {
@@ -26,15 +27,9 @@ public static class EnderecoEndpoints
         .Produces<List<EnderecoResponse>>(200);
 
 
-        app.MapPost("Cadastrar/", async (Guid usuarioId, CadastrarEnderecoRequest request, IEnderecoAppService enderecoService, IValidator<CadastrarEnderecoRequest> validator) =>
+        app.MapPost("Cadastrar/", async (Guid usuarioId, CadastrarEnderecoRequest request, IEnderecoAppService enderecoService) =>
         {
             request = request with { UsuarioId = usuarioId };
-
-            var validationError = await ValidationFilter.ValidateAsync(request, validator);
-            if (validationError != null)
-            {
-                return validationError;
-            }
 
             var endereco = await enderecoService.Cadastrar(request);
 
@@ -45,11 +40,13 @@ public static class EnderecoEndpoints
                 data = endereco
             });
         })
+        .AddEndpointFilter<ValidationEndpointFilter<CadastrarEnderecoRequest>>()
         .WithName("CadastrarEndereco")
         .Produces<EnderecoResponse>(201)
         .Produces(400);
 
-        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarEnderecoRequest request, IEnderecoAppService enderecoService, IValidator<AtualizarEnderecoRequest> validator) =>
+
+        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarEnderecoRequest request, IEnderecoAppService enderecoService) =>
         {
             if (id != request.Id)
             {
@@ -66,12 +63,6 @@ public static class EnderecoEndpoints
 
             // Garante que pertence ao usuário correto
             request = request with { UsuarioId = usuarioId };
-
-            var validationError = await ValidationFilter.ValidateAsync(request, validator);
-            if (validationError != null)
-            {
-                return validationError;
-            }
 
             var (endereco, sucesso) = await enderecoService.Atualizar(request);
 
@@ -95,10 +86,12 @@ public static class EnderecoEndpoints
                 data = endereco
             });
         })
+        .AddEndpointFilter<ValidationEndpointFilter<AtualizarEnderecoRequest>>()
         .WithName("AtualizarEndereco")
         .Produces<EnderecoResponse>(200)
         .Produces(400)
         .Produces(404);
+
 
         app.MapDelete("Deletar/{id:guid}", async (Guid usuarioId, Guid id, IEnderecoAppService enderecoService) =>
         {

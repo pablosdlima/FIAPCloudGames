@@ -1,7 +1,7 @@
 ﻿using FIAPCloudGames.Api.Filters;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Contato;
-using FluentValidation;
+using FIAPCloudGames.Domain.Dtos.Responses.Contato;
 
 namespace FIAPCloudGames.Api.Endpoints;
 
@@ -10,6 +10,7 @@ public static class ContatoEndpoints
     public static void MapContatos(this IEndpointRouteBuilder route)
     {
         var app = route.MapGroup("/api/usuarios/{usuarioId:guid}/contatos").WithTags("Contatos");
+
 
         app.MapGet("BuscarPorUsuarioId/", async (Guid usuarioId, IContatoAppService contatoService) =>
         {
@@ -26,15 +27,9 @@ public static class ContatoEndpoints
         .Produces<List<ContatoResponse>>(200);
 
 
-        app.MapPost("Cadastrar/", async (Guid usuarioId, CadastrarContatoRequest request, IContatoAppService contatoService, IValidator<CadastrarContatoRequest> validator) =>
+        app.MapPost("Cadastrar/", async (Guid usuarioId, CadastrarContatoRequest request, IContatoAppService contatoService) =>
         {
             request = request with { UsuarioId = usuarioId };
-
-            var validationError = await ValidationFilter.ValidateAsync(request, validator);
-            if (validationError != null)
-            {
-                return validationError;
-            }
 
             var contato = await contatoService.Cadastrar(request);
 
@@ -45,12 +40,13 @@ public static class ContatoEndpoints
                 data = contato
             });
         })
+        .AddEndpointFilter<ValidationEndpointFilter<CadastrarContatoRequest>>()
         .WithName("CadastrarContato")
         .Produces<ContatoResponse>(201)
         .Produces(400);
 
 
-        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarContatoRequest request, IContatoAppService contatoService, IValidator<AtualizarContatoRequest> validator) =>
+        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarContatoRequest request, IContatoAppService contatoService) =>
         {
             if (id != request.Id)
             {
@@ -66,12 +62,6 @@ public static class ContatoEndpoints
             }
 
             request = request with { UsuarioId = usuarioId };
-
-            var validationError = await ValidationFilter.ValidateAsync(request, validator);
-            if (validationError != null)
-            {
-                return validationError;
-            }
 
             var (contato, sucesso) = await contatoService.Atualizar(request);
 
@@ -95,6 +85,7 @@ public static class ContatoEndpoints
                 data = contato
             });
         })
+        .AddEndpointFilter<ValidationEndpointFilter<AtualizarContatoRequest>>()
         .WithName("AtualizarContato")
         .Produces<ContatoResponse>(200)
         .Produces(400)

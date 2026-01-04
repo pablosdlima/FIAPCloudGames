@@ -47,8 +47,18 @@ public class UsuarioRoleAppService : IUsuarioRoleAppService
         var listaRolesUsuario = await _usuarioRoleService.Get()
             .Include(ur => ur.Role)
             .Where(x => x.UsuarioId == request.UsuarioId)
+            .AsNoTracking()
             .ToListAsync();
 
-        return _mapper.Map<List<ListarRolesPorUsuarioResponse>>(listaRolesUsuario);
+        var response = listaRolesUsuario.Select(x => new ListarRolesPorUsuarioResponse
+        {
+            Id = x.Id,
+            UsuarioId = x.UsuarioId,
+            RoleId = x.Role.Id,
+            RoleName = x.Role.RoleName,
+            Description = x.Role.Description
+        }).ToList();
+
+        return response;
     }
 }

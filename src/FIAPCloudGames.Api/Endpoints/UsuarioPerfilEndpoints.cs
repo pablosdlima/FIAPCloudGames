@@ -1,6 +1,7 @@
 ﻿using FIAPCloudGames.Api.Filters;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioPerfil;
+using FIAPCloudGames.Domain.Dtos.Responses.UsuarioPerfil;
 using FluentValidation;
 
 namespace FIAPCloudGames.Api.Endpoints;
@@ -36,19 +37,13 @@ public static class UsuarioPerfilEndpoints
             });
         })
         .WithName("BuscarPerfilDoUsuario")
-        .Produces<UsuarioPerfilResponse>(200)
+        .Produces<BuscarUsuarioPerfilResponse>(200)
         .Produces(404);
 
 
-        app.MapPost("Cadastrar/", async (Guid usuarioId, CadastrarUsuarioPerfilRequest request, IUsuarioPerfilAppService perfilService, IValidator<CadastrarUsuarioPerfilRequest> validator) =>
+        app.MapPost("Cadastrar/", async (Guid usuarioId, CadastrarUsuarioPerfilRequest request, IUsuarioPerfilAppService perfilService) =>
         {
             request = request with { UsuarioId = usuarioId };
-
-            var validationError = await ValidationFilter.ValidateAsync(request, validator);
-            if (validationError != null)
-            {
-                return validationError;
-            }
 
             var perfil = await perfilService.Cadastrar(request);
 
@@ -59,12 +54,13 @@ public static class UsuarioPerfilEndpoints
                 data = perfil
             });
         })
+        .AddEndpointFilter<ValidationEndpointFilter<CadastrarUsuarioPerfilRequest>>()
         .WithName("CadastrarPerfil")
-        .Produces<UsuarioPerfilResponse>(201)
+        .Produces<BuscarUsuarioPerfilResponse>(201)
         .Produces(400);
 
 
-        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarUsuarioPerfilRequest request, IUsuarioPerfilAppService perfilService, IValidator<AtualizarUsuarioPerfilRequest> validator) =>
+        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarUsuarioPerfilRequest request, IUsuarioPerfilAppService perfilService) =>
         {
             if (id != request.Id)
             {
@@ -80,12 +76,6 @@ public static class UsuarioPerfilEndpoints
             }
 
             request = request with { UsuarioId = usuarioId };
-
-            var validationError = await ValidationFilter.ValidateAsync(request, validator);
-            if (validationError != null)
-            {
-                return validationError;
-            }
 
             var (perfil, sucesso) = await perfilService.Atualizar(request);
 
@@ -109,8 +99,9 @@ public static class UsuarioPerfilEndpoints
                 data = perfil
             });
         })
+        .AddEndpointFilter<ValidationEndpointFilter<AtualizarUsuarioPerfilRequest>>()
         .WithName("AtualizarPerfil")
-        .Produces<UsuarioPerfilResponse>(200)
+        .Produces<BuscarUsuarioPerfilResponse>(200)
         .Produces(400)
         .Produces(404);
 

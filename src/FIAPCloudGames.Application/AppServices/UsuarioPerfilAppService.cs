@@ -1,5 +1,6 @@
 ﻿using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioPerfil;
+using FIAPCloudGames.Domain.Dtos.Responses.UsuarioPerfil;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
 
@@ -14,7 +15,7 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
         _usuarioPerfilService = usuarioPerfilService;
     }
 
-    public async Task<UsuarioPerfilResponse?> BuscarPorUsuarioId(Guid usuarioId)
+    public async Task<BuscarUsuarioPerfilResponse?> BuscarPorUsuarioId(Guid usuarioId)
     {
         var perfil = _usuarioPerfilService.BuscarPorUsuarioId(usuarioId);
 
@@ -23,7 +24,7 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
             return null;
         }
 
-        return new UsuarioPerfilResponse
+        return new BuscarUsuarioPerfilResponse
         {
             Id = perfil.Id,
             UsuarioId = perfil.UsuarioId,
@@ -34,7 +35,7 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
         };
     }
 
-    public async Task<UsuarioPerfilResponse> Cadastrar(CadastrarUsuarioPerfilRequest request)
+    public async Task<BuscarUsuarioPerfilResponse> Cadastrar(CadastrarUsuarioPerfilRequest request)
     {
         var perfil = new UsuarioPerfil(
             request.NomeCompleto,
@@ -47,7 +48,7 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
 
         var perfilCadastrado = await _usuarioPerfilService.Cadastrar(perfil);
 
-        return new UsuarioPerfilResponse
+        return new BuscarUsuarioPerfilResponse
         {
             Id = perfilCadastrado.Id,
             UsuarioId = perfilCadastrado.UsuarioId,
@@ -58,7 +59,7 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
         };
     }
 
-    public async Task<(UsuarioPerfilResponse? Perfil, bool Success)> Atualizar(AtualizarUsuarioPerfilRequest request)
+    public async Task<(BuscarUsuarioPerfilResponse? Perfil, bool Success)> Atualizar(AtualizarUsuarioPerfilRequest request)
     {
         var perfil = new UsuarioPerfil(
             request.NomeCompleto,
@@ -77,7 +78,7 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
             return (null, false);
         }
 
-        var response = new UsuarioPerfilResponse
+        var response = new BuscarUsuarioPerfilResponse
         {
             Id = perfilAtualizado.Id,
             UsuarioId = perfilAtualizado.UsuarioId,

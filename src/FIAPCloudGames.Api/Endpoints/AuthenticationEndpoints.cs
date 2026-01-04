@@ -2,7 +2,6 @@
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Authentication;
 using FIAPCloudGames.Domain.Exceptions;
-using FluentValidation;
 
 namespace FIAPCloudGames.Api.Endpoints
 {
@@ -12,14 +11,8 @@ namespace FIAPCloudGames.Api.Endpoints
         {
             var app = route.MapGroup("/api/Authentication").WithTags("Authentication");
 
-            app.MapPost("login/", async (LoginRequest request, IAuthenticationAppService authenticationService, IValidator<LoginRequest> validator) =>
+            app.MapPost("login/", async (LoginRequest request, IAuthenticationAppService authenticationService) =>
             {
-                var validationError = await ValidationFilter.ValidateAsync(request, validator);
-                if (validationError != null)
-                {
-                    return validationError;
-                }
-
                 try
                 {
                     var result = await authenticationService.Login(request.Usuario, request.Senha);
@@ -36,7 +29,13 @@ namespace FIAPCloudGames.Api.Endpoints
                         statusCode: 500
                     );
                 }
-            });
+            })
+            .AddEndpointFilter<ValidationEndpointFilter<LoginRequest>>()
+            .WithName("Login")
+            .Produces(200)
+            .Produces(400)
+            .Produces(401)
+            .Produces(500);
         }
     }
 }

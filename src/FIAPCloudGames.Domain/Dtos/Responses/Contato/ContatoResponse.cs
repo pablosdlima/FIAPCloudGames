@@ -1,4 +1,4 @@
-﻿namespace FIAPCloudGames.Domain.Dtos.Request.Contato
+﻿namespace FIAPCloudGames.Domain.Dtos.Responses.Contato
 {
     public record ContatoResponse
     {

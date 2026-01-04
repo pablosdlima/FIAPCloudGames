@@ -1,6 +1,7 @@
-﻿using FIAPCloudGames.Application.Interfaces;
+﻿using FIAPCloudGames.Api.Filters;
+using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Role;
-using FluentValidation;
+using FIAPCloudGames.Domain.Dtos.Responses.Role;
 
 namespace FIAPCloudGames.Api.Endpoints;
 
@@ -10,12 +11,31 @@ public static class RolesEndpoints
     {
         var app = route.MapGroup("/api/Roles").WithTags("Roles");
 
-        app.MapPost("Cadastrar/", async (CadastrarRoleRequest request, IRoleAppService Roleservice) =>
-        {
-            var result = await Roleservice.Cadastrar(request);
-            return result != null ? Results.Created() : Results.Problem();
-        });
 
+        app.MapPost("Cadastrar/", async (CadastrarRoleRequest request, IRoleAppService roleService) =>
+        {
+            var result = await roleService.Cadastrar(request);
+
+            if (result == null)
+            {
+                return Results.Problem(
+                    detail: "Erro ao cadastrar a role.",
+                    statusCode: 500
+                );
+            }
+
+            return Results.Created($"/api/Roles/{result.Id}", new
+            {
+                statusCode = 201,
+                message = "Role cadastrada com sucesso.",
+                data = result
+            });
+        })
+        .AddEndpointFilter<ValidationEndpointFilter<CadastrarRoleRequest>>()
+        .WithName("CadastrarRole")
+        .Produces<RolesResponse>(201)
+        .Produces(400)
+        .Produces(500);
 
         app.MapGet("ListarRoles/", async (IRoleAppService roleService) =>
         {
@@ -24,6 +44,7 @@ public static class RolesEndpoints
             return Results.Ok(new
             {
                 statusCode = 200,
+                message = "Roles listadas com sucesso.",
                 data = roles
             });
         })
@@ -31,7 +52,7 @@ public static class RolesEndpoints
         .Produces<List<RolesResponse>>(200);
 
 
-        app.MapPut("Atualizar/{id:int}", async (int id, AtualizarRoleRequest request, IRoleAppService roleService, IValidator<AtualizarRoleRequest> validator) =>
+        app.MapPut("Atualizar/{id:int}", async (int id, AtualizarRoleRequest request, IRoleAppService roleService) =>
         {
             // Garante que o Id da URL é o mesmo do body
             if (id != request.Id)
@@ -44,22 +65,6 @@ public static class RolesEndpoints
                     {
                         { "id", new[] { "Id da URL não corresponde ao Id do corpo da requisição." } }
                     }
-                });
-            }
-
-            var validationResult = await validator.ValidateAsync(request);
-            if (!validationResult.IsValid)
-            {
-                return Results.BadRequest(new
-                {
-                    statusCode = 400,
-                    message = "Validation failed",
-                    errors = validationResult.Errors
-                        .GroupBy(e => e.PropertyName)
-                        .ToDictionary(
-                            g => g.Key,
-                            g => g.Select(e => e.ErrorMessage).ToArray()
-                        )
                 });
             }
 
@@ -81,9 +86,11 @@ public static class RolesEndpoints
             return Results.Ok(new
             {
                 statusCode = 200,
+                message = "Role atualizada com sucesso.",
                 data = role
             });
         })
+        .AddEndpointFilter<ValidationEndpointFilter<AtualizarRoleRequest>>()
         .WithName("AtualizarRole")
         .Produces<RolesResponse>(200)
         .Produces(400)
