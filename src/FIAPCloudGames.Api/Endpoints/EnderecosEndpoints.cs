@@ -1,4 +1,5 @@
 ﻿using FIAPCloudGames.Api.Filters;
+using FIAPCloudGames.Api.Helpers;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Enderecos;
 using FIAPCloudGames.Domain.Dtos.Responses.Endereco;
@@ -15,13 +16,7 @@ public static class EnderecoEndpoints
         app.MapGet("BuscarPorUsuarioId/", async (Guid usuarioId, IEnderecoAppService enderecoService) =>
         {
             var enderecos = await enderecoService.ListarPorUsuario(usuarioId);
-
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Endereços listados com sucesso.",
-                data = enderecos
-            });
+            return ApiResponses.Ok(enderecos, "Endereços listados com sucesso.");
         })
         .WithName("ListarEnderecosDoUsuario")
         .Produces<List<EnderecoResponse>>(200);
@@ -30,15 +25,9 @@ public static class EnderecoEndpoints
         app.MapPost("Cadastrar/", async (Guid usuarioId, CadastrarEnderecoRequest request, IEnderecoAppService enderecoService) =>
         {
             request = request with { UsuarioId = usuarioId };
-
             var endereco = await enderecoService.Cadastrar(request);
 
-            return Results.Created($"/api/usuarios/{usuarioId}/enderecos/{endereco.Id}", new
-            {
-                statusCode = 201,
-                message = "Endereço cadastrado com sucesso.",
-                data = endereco
-            });
+            return ApiResponses.Created($"/api/usuarios/{usuarioId}/enderecos/{endereco.Id}", endereco, "Endereço cadastrado com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<CadastrarEnderecoRequest>>()
         .WithName("CadastrarEndereco")
@@ -50,41 +39,19 @@ public static class EnderecoEndpoints
         {
             if (id != request.Id)
             {
-                return Results.BadRequest(new
-                {
-                    statusCode = 400,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "id", new[] { "Id da URL não corresponde ao Id do corpo da requisição." } }
-                    }
-                });
+                return ApiResponses.BadRequest("id", "Id da URL não corresponde ao Id do corpo da requisição.");
             }
 
             // Garante que pertence ao usuário correto
             request = request with { UsuarioId = usuarioId };
-
             var (endereco, sucesso) = await enderecoService.Atualizar(request);
 
             if (!sucesso || endereco == null)
             {
-                return Results.NotFound(new
-                {
-                    statusCode = 404,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "endereco", new[] { "Endereço não encontrado ou não pertence ao usuário." } }
-                    }
-                });
+                return ApiResponses.NotFound("endereco", "Endereço não encontrado ou não pertence ao usuário.");
             }
 
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Endereço atualizado com sucesso.",
-                data = endereco
-            });
+            return ApiResponses.Ok(endereco, "Endereço atualizado com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<AtualizarEnderecoRequest>>()
         .WithName("AtualizarEndereco")
@@ -97,24 +64,9 @@ public static class EnderecoEndpoints
         {
             var sucesso = await enderecoService.Deletar(id, usuarioId);
 
-            if (!sucesso)
-            {
-                return Results.NotFound(new
-                {
-                    statusCode = 404,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "endereco", new[] { "Endereço não encontrado ou não pertence ao usuário." } }
-                    }
-                });
-            }
-
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Endereço removido com sucesso."
-            });
+            return !sucesso
+                ? ApiResponses.NotFound("endereco", "Endereço não encontrado ou não pertence ao usuário.")
+                : ApiResponses.OkMessage("Endereço removido com sucesso.");
         })
         .WithName("DeletarEndereco")
         .Produces(200)

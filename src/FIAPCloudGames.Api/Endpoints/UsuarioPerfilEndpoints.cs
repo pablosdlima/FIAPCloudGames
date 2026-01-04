@@ -1,8 +1,8 @@
 ﻿using FIAPCloudGames.Api.Filters;
+using FIAPCloudGames.Api.Helpers;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioPerfil;
 using FIAPCloudGames.Domain.Dtos.Responses.UsuarioPerfil;
-using FluentValidation;
 
 namespace FIAPCloudGames.Api.Endpoints;
 
@@ -12,29 +12,14 @@ public static class UsuarioPerfilEndpoints
     {
         var app = route.MapGroup("/api/usuarios/{usuarioId:guid}/perfil").WithTags("UsuarioPerfil");
 
+
         app.MapGet("BuscarPorUsuarioId/", async (Guid usuarioId, IUsuarioPerfilAppService perfilService) =>
         {
             var perfil = await perfilService.BuscarPorUsuarioId(usuarioId);
 
-            if (perfil == null)
-            {
-                return Results.NotFound(new
-                {
-                    statusCode = 404,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "perfil", new[] { "Perfil não encontrado para este usuário." } }
-                    }
-                });
-            }
-
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Perfil encontrado com sucesso.",
-                data = perfil
-            });
+            return perfil == null
+                ? ApiResponses.NotFound("perfil", "Perfil não encontrado para este usuário.")
+                : ApiResponses.Ok(perfil, "Perfil encontrado com sucesso.");
         })
         .WithName("BuscarPerfilDoUsuario")
         .Produces<BuscarUsuarioPerfilResponse>(200)
@@ -47,12 +32,7 @@ public static class UsuarioPerfilEndpoints
 
             var perfil = await perfilService.Cadastrar(request);
 
-            return Results.Created($"/api/usuarios/{usuarioId}/perfil/{perfil.Id}", new
-            {
-                statusCode = 201,
-                message = "Perfil cadastrado com sucesso.",
-                data = perfil
-            });
+            return ApiResponses.Created($"/api/usuarios/{usuarioId}/perfil/{perfil.Id}", perfil, "Perfil cadastrado com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<CadastrarUsuarioPerfilRequest>>()
         .WithName("CadastrarPerfil")
@@ -64,15 +44,7 @@ public static class UsuarioPerfilEndpoints
         {
             if (id != request.Id)
             {
-                return Results.BadRequest(new
-                {
-                    statusCode = 400,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "id", new[] { "Id da URL não corresponde ao Id do corpo da requisição." } }
-                    }
-                });
+                return ApiResponses.BadRequest("id", "Id da URL não corresponde ao Id do corpo da requisição.");
             }
 
             request = request with { UsuarioId = usuarioId };
@@ -81,23 +53,10 @@ public static class UsuarioPerfilEndpoints
 
             if (!sucesso || perfil == null)
             {
-                return Results.NotFound(new
-                {
-                    statusCode = 404,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "perfil", new[] { "Perfil não encontrado ou não pertence ao usuário." } }
-                    }
-                });
+                return ApiResponses.NotFound("perfil", "Perfil não encontrado ou não pertence ao usuário.");
             }
 
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Perfil atualizado com sucesso.",
-                data = perfil
-            });
+            return ApiResponses.Ok(perfil, "Perfil atualizado com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<AtualizarUsuarioPerfilRequest>>()
         .WithName("AtualizarPerfil")
@@ -110,24 +69,9 @@ public static class UsuarioPerfilEndpoints
         {
             var sucesso = await perfilService.Deletar(id, usuarioId);
 
-            if (!sucesso)
-            {
-                return Results.NotFound(new
-                {
-                    statusCode = 404,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "perfil", new[] { "Perfil não encontrado ou não pertence ao usuário." } }
-                    }
-                });
-            }
-
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Perfil removido com sucesso."
-            });
+            return !sucesso
+                ? ApiResponses.NotFound("perfil", "Perfil não encontrado ou não pertence ao usuário.")
+                : ApiResponses.OkMessage("Perfil removido com sucesso.");
         })
         .WithName("DeletarPerfil")
         .Produces(200)

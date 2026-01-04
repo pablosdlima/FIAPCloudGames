@@ -1,4 +1,5 @@
 ﻿using FIAPCloudGames.Api.Filters;
+using FIAPCloudGames.Api.Helpers;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Game;
 using FIAPCloudGames.Domain.Dtos.Responses.Game;
@@ -18,18 +19,10 @@ public static class GameEndpoints
 
             if (result == null)
             {
-                return Results.Problem(
-                    detail: "Erro ao cadastrar o jogo.",
-                    statusCode: 500
-                );
+                return ApiResponses.Problem("Erro ao cadastrar o jogo.");
             }
 
-            return Results.Created($"/api/Game/{result.Id}", new
-            {
-                statusCode = 201,
-                message = "Jogo cadastrado com sucesso.",
-                data = result
-            });
+            return ApiResponses.Created($"/api/Game/{result.Id}", result, "Jogo cadastrado com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<CadastrarGameRequest>>()
         .WithName("CadastrarGame")
@@ -42,25 +35,9 @@ public static class GameEndpoints
         {
             var result = gameService.BuscarPorId(id);
 
-            if (result == null)
-            {
-                return Results.NotFound(new
-                {
-                    statusCode = 404,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "game", new[] { "Jogo não encontrado." } }
-                    }
-                });
-            }
-
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Jogo encontrado com sucesso.",
-                data = result
-            });
+            return result == null
+                ? ApiResponses.NotFound("game", "Jogo não encontrado.")
+                : ApiResponses.Ok(result, "Jogo encontrado com sucesso.");
         })
         .WithName("BuscarGamePorId")
         .Produces<GameResponse>(200)
@@ -70,13 +47,7 @@ public static class GameEndpoints
         app.MapGet("ListarGames", async ([AsParameters] ListarGamesPaginadoRequest request, IGameAppService gameService) =>
         {
             var result = await gameService.ListarGamesPaginado(request);
-
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Games listados com sucesso.",
-                data = result
-            });
+            return ApiResponses.Ok(result, "Jogos listados com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<ListarGamesPaginadoRequest>>()
         .WithName("ListarGamesPaginado")
@@ -89,38 +60,17 @@ public static class GameEndpoints
             // Garante que o Id da URL é o mesmo do body
             if (id != request.Id)
             {
-                return Results.BadRequest(new
-                {
-                    statusCode = 400,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "id", new[] { "Id da URL não corresponde ao Id do corpo da requisição." } }
-                    }
-                });
+                return ApiResponses.BadRequest("id", "Id da URL não corresponde ao Id do corpo da requisição.");
             }
 
             var (game, sucesso) = await gameService.AtualizarGame(request);
 
             if (!sucesso || game == null)
             {
-                return Results.NotFound(new
-                {
-                    statusCode = 404,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "game", new[] { "Jogo não encontrado ou não foi possível atualizar." } }
-                    }
-                });
+                return ApiResponses.NotFound("game", "Jogo não encontrado ou não foi possível atualizar.");
             }
 
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Jogo atualizado com sucesso.",
-                data = game
-            });
+            return ApiResponses.Ok(game, "Jogo atualizado com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<AtualizarGameRequest>>()
         .WithName("AtualizarGame")

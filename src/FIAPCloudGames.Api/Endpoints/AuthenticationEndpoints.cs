@@ -1,4 +1,5 @@
 ﻿using FIAPCloudGames.Api.Filters;
+using FIAPCloudGames.Api.Helpers;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Authentication;
 using FIAPCloudGames.Domain.Exceptions;
@@ -11,23 +12,21 @@ namespace FIAPCloudGames.Api.Endpoints
         {
             var app = route.MapGroup("/api/Authentication").WithTags("Authentication");
 
+
             app.MapPost("login/", async (LoginRequest request, IAuthenticationAppService authenticationService) =>
             {
                 try
                 {
                     var result = await authenticationService.Login(request.Usuario, request.Senha);
-                    return Results.Ok(result);
+                    return ApiResponses.Ok(result, "Login realizado com sucesso.");
                 }
                 catch (AutenticacaoException)
                 {
-                    return Results.Unauthorized();
+                    return ApiResponses.Unauthorized("credenciais", "Usuário ou senha inválidos.");
                 }
                 catch (Exception)
                 {
-                    return Results.Problem(
-                        detail: "Erro interno no servidor.",
-                        statusCode: 500
-                    );
+                    return ApiResponses.Problem("Ocorreu um erro inesperado durante o login.");
                 }
             })
             .AddEndpointFilter<ValidationEndpointFilter<LoginRequest>>()

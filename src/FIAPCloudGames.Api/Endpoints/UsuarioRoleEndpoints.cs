@@ -1,4 +1,5 @@
 ﻿using FIAPCloudGames.Api.Filters;
+using FIAPCloudGames.Api.Helpers;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioRole;
 using FIAPCloudGames.Domain.Dtos.Responses.UsuarioRole;
@@ -11,32 +12,17 @@ public static class UsuarioRoleEndpoints
     {
         var app = route.MapGroup("/api/UsuarioRole").WithTags("UsuarioRole");
 
-
         app.MapGet("ListarRolesPorUsuario/", async (Guid usuarioId, IUsuarioRoleAppService usuarioService) =>
         {
             var request = new ListarRolePorUsuarioRequest(usuarioId);
-
             var result = await usuarioService.ListarRolesPorUsuario(request);
 
             if (result == null || !result.Any())
             {
-                return Results.NotFound(new
-                {
-                    statusCode = 404,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "roles", new[] { "Nenhuma role encontrada para este usuário." } }
-                    }
-                });
+                return ApiResponses.NotFound("roles", "Nenhuma role encontrada para este usuário.");
             }
 
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Roles listadas com sucesso.",
-                data = result
-            });
+            return ApiResponses.Ok(result, "Roles listadas com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<ListarRolePorUsuarioRequest>>()
         .WithName("ListarRolesPorUsuario")
@@ -44,29 +30,13 @@ public static class UsuarioRoleEndpoints
         .Produces(400)
         .Produces(404);
 
-
         app.MapPut("AlterarRoleUsuario", async (AlterarUsuarioRoleRequest request, IUsuarioRoleAppService usuarioRoleService) =>
         {
             var result = await usuarioRoleService.AlterarRoleUsuario(request);
 
-            if (!result)
-            {
-                return Results.NotFound(new
-                {
-                    statusCode = 404,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "usuarioRole", new[] { "Registro não encontrado ou não foi possível atualizar." } }
-                    }
-                });
-            }
-
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Role do usuário alterada com sucesso."
-            });
+            return !result
+                ? ApiResponses.NotFound("usuarioRole", "Registro não encontrado ou não foi possível atualizar.")
+                : ApiResponses.OkMessage("Role do usuário alterada com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<AlterarUsuarioRoleRequest>>()
         .WithName("AlterarRoleUsuario")

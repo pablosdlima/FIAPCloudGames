@@ -1,13 +1,14 @@
 ﻿using FIAPCloudGames.Api.Filters;
+using FIAPCloudGames.Api.Helpers;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioGameBiblioteca;
 using FIAPCloudGames.Domain.Dtos.Responses.UsuarioGameBiblioteca;
 
 namespace FIAPCloudGames.Api.Endpoints;
 
-public static class UsuarioGameBibiotecaEndpoints
+public static class UsuarioGameBibliotecaEndpoints
 {
-    public static void MapUsuarioGameBIbioteca(this IEndpointRouteBuilder route)
+    public static void MapUsuarioGameBiblioteca(this IEndpointRouteBuilder route)
     {
         var app = route.MapGroup("/api/usuarios/{usuarioId:guid}/biblioteca").WithTags("Biblioteca");
 
@@ -15,13 +16,7 @@ public static class UsuarioGameBibiotecaEndpoints
         app.MapGet("BuscarPorUsuarioId/", async (Guid usuarioId, IUsuarioGameBibliotecaAppService bibliotecaService) =>
         {
             var biblioteca = await bibliotecaService.ListarPorUsuario(usuarioId);
-
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Biblioteca listada com sucesso.",
-                data = biblioteca
-            });
+            return ApiResponses.Ok(biblioteca, "Biblioteca listada com sucesso.");
         })
         .WithName("ListarBibliotecaDoUsuario")
         .Produces<List<BibliotecaResponse>>(200);
@@ -35,23 +30,17 @@ public static class UsuarioGameBibiotecaEndpoints
 
             if (!sucesso)
             {
-                return Results.BadRequest(new
-                {
-                    statusCode = 400,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "game", new[] { errorMessage ?? "Não foi possível comprar o jogo." } }
-                    }
-                });
+                return ApiResponses.BadRequest(
+                    "game",
+                    errorMessage ?? "Não foi possível comprar o jogo."
+                );
             }
 
-            return Results.Created($"/api/usuarios/{usuarioId}/biblioteca/{biblioteca!.Id}", new
-            {
-                statusCode = 201,
-                message = "Jogo comprado e adicionado à biblioteca com sucesso.",
-                data = biblioteca
-            });
+            return ApiResponses.Created(
+                $"/api/usuarios/{usuarioId}/biblioteca/{biblioteca!.Id}",
+                biblioteca,
+                "Jogo comprado e adicionado à biblioteca com sucesso."
+            );
         })
         .AddEndpointFilter<ValidationEndpointFilter<ComprarGameRequest>>()
         .WithName("ComprarGame")
@@ -63,15 +52,7 @@ public static class UsuarioGameBibiotecaEndpoints
         {
             if (id != request.Id)
             {
-                return Results.BadRequest(new
-                {
-                    statusCode = 400,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "id", new[] { "Id da URL não corresponde ao Id do corpo da requisição." } }
-                    }
-                });
+                return ApiResponses.BadRequest("id", "Id da URL não corresponde ao Id do corpo da requisição.");
             }
 
             request = request with { UsuarioId = usuarioId };
@@ -80,23 +61,10 @@ public static class UsuarioGameBibiotecaEndpoints
 
             if (!sucesso || biblioteca == null)
             {
-                return Results.NotFound(new
-                {
-                    statusCode = 404,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "biblioteca", new[] { "Item da biblioteca não encontrado ou não pertence ao usuário." } }
-                    }
-                });
+                return ApiResponses.NotFound("biblioteca", "Item da biblioteca não encontrado ou não pertence ao usuário.");
             }
 
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Item da biblioteca atualizado com sucesso.",
-                data = biblioteca
-            });
+            return ApiResponses.Ok(biblioteca, "Item da biblioteca atualizado com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<AtualizarBibliotecaRequest>>()
         .WithName("AtualizarBiblioteca")
@@ -109,24 +77,9 @@ public static class UsuarioGameBibiotecaEndpoints
         {
             var sucesso = await bibliotecaService.Deletar(id, usuarioId);
 
-            if (!sucesso)
-            {
-                return Results.NotFound(new
-                {
-                    statusCode = 404,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "biblioteca", new[] { "Item da biblioteca não encontrado ou não pertence ao usuário." } }
-                    }
-                });
-            }
-
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Jogo removido da biblioteca com sucesso."
-            });
+            return !sucesso
+                ? ApiResponses.NotFound("biblioteca", "Item da biblioteca não encontrado ou não pertence ao usuário.")
+                : ApiResponses.OkMessage("Jogo removido da biblioteca com sucesso.");
         })
         .WithName("DeletarDaBiblioteca")
         .Produces(200)

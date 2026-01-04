@@ -139,7 +139,7 @@ app.MapGames();
 app.MapRoles();
 app.MapUsuarios();
 app.MapUsuarioPerfil();
-app.MapUsuarioGameBIbioteca();
+app.MapUsuarioGameBiblioteca();
 app.MapUsuarioRole();
 app.MapAuthentication();
 

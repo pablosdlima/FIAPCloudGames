@@ -1,4 +1,5 @@
 ﻿using FIAPCloudGames.Api.Filters;
+using FIAPCloudGames.Api.Helpers;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Usuario;
 using FIAPCloudGames.Domain.Dtos.Responses.Usuario;
@@ -10,36 +11,18 @@ public static class UsuariosEndpoints
 {
     public static void MapUsuarios(this IEndpointRouteBuilder route)
     {
-        var app = route.MapGroup("/api/Usuarios")
-            .WithTags("Usuarios");
+        var app = route.MapGroup("/api/Usuarios").WithTags("Usuarios");
 
-        // GET - Sem validação (ID vem da rota)
-        app.MapGet("BuscarPorId/{id}", (
-            Guid id,
-            IUsuarioAppService usuarioService) =>
+        app.MapGet("BuscarPorId/{id}", (Guid id, IUsuarioAppService usuarioService) =>
         {
             try
             {
                 var result = usuarioService.BuscarPorId(id);
-
-                return Results.Ok(new
-                {
-                    statusCode = 200,
-                    message = "Usuário encontrado com sucesso.",
-                    data = result
-                });
+                return ApiResponses.Ok(result, "Usuário encontrado com sucesso.");
             }
             catch (KeyNotFoundException)
             {
-                return Results.NotFound(new
-                {
-                    statusCode = 404,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "usuario", new[] { "Usuário não encontrado." } }
-                    }
-                });
+                return ApiResponses.NotFound("usuario", "Usuário não encontrado.");
             }
         })
         .WithName("BuscarUsuarioPorId")
@@ -49,27 +32,21 @@ public static class UsuariosEndpoints
         // }).RequireAuthorization(policy => policy.RequireRole("administrador"));
         // }).RequireAuthorization();
 
-        // POST - Com validação automática
-        app.MapPost("Cadastrar/", async (
-            CadastrarUsuarioRequest request,
-            IUsuarioAppService usuarioService) =>
+
+        app.MapPost("Cadastrar/", async (CadastrarUsuarioRequest request, IUsuarioAppService usuarioService) =>
         {
             var result = await usuarioService.Cadastrar(request);
 
             if (result == null)
             {
-                return Results.Problem(
-                    detail: "Erro ao cadastrar o usuário.",
-                    statusCode: 500
-                );
+                return ApiResponses.Problem("Erro ao cadastrar o usuário.");
             }
 
-            return Results.Created($"/api/Usuarios/{result.IdUsuario}", new
-            {
-                statusCode = 201,
-                message = "Usuário cadastrado com sucesso.",
-                data = result
-            });
+            return ApiResponses.Created(
+                $"/api/Usuarios/{result.IdUsuario}",
+                result,
+                "Usuário cadastrado com sucesso."
+            );
         })
         .AddEndpointFilter<ValidationEndpointFilter<CadastrarUsuarioRequest>>()
         .WithName("CadastrarUsuario")
@@ -77,31 +54,14 @@ public static class UsuariosEndpoints
         .Produces(400)
         .Produces(500);
 
-        // PUT - Com validação automática
-        app.MapPut("AlterarSenha/", async (
-            AlterarSenhaRequest request,
-            IUsuarioAppService usuarioService) =>
+
+        app.MapPut("AlterarSenha/", async (AlterarSenhaRequest request, IUsuarioAppService usuarioService) =>
         {
             var sucesso = await usuarioService.AlterarSenha(request);
 
-            if (!sucesso)
-            {
-                return Results.NotFound(new
-                {
-                    statusCode = 404,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "usuario", new[] { "Usuário não encontrado ou senha atual incorreta." } }
-                    }
-                });
-            }
-
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Senha alterada com sucesso."
-            });
+            return !sucesso
+                ? ApiResponses.NotFound("usuario", "Usuário não encontrado ou senha atual incorreta.")
+                : ApiResponses.OkMessage("Senha alterada com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<AlterarSenhaRequest>>()
         .WithName("AlterarSenha")
@@ -109,34 +69,16 @@ public static class UsuariosEndpoints
         .Produces(400)
         .Produces(404);
 
-        // PUT - Sem validação (apenas route parameter)
-        app.MapPut("AlterarStatus/", async (
-            Guid id,
-            IUsuarioAppService usuarioService) =>
+
+        app.MapPut("AlterarStatus/", async (Guid id, IUsuarioAppService usuarioService) =>
         {
             var result = await usuarioService.AlterarStatus(id);
 
-            if (result == null)
-            {
-                return Results.NotFound(new
-                {
-                    statusCode = 404,
-                    message = "Validation failed",
-                    errors = new Dictionary<string, string[]>
-                    {
-                        { "usuario", new[] { "Usuário não encontrado." } }
-                    }
-                });
-            }
-
-            return Results.Ok(new
-            {
-                statusCode = 200,
-                message = "Status do usuário alterado com sucesso.",
-                data = result
-            });
+            return result == null
+                ? ApiResponses.NotFound("usuario", "Usuário não encontrado.")
+                : ApiResponses.Ok(result, "Status do usuário alterado com sucesso.");
         })
-        .WithName("ToggleUsuarioStatus")
+        .WithName("AlterarStatus")
         .Produces<AlterarStatusResponse>(200)
         .Produces(404);
     }
