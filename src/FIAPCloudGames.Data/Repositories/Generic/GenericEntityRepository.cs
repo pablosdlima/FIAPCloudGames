@@ -1,7 +1,6 @@
 ﻿using FIAPCloudGames.Data.Data;
 using FIAPCloudGames.Domain.Interfaces.Generic;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 
 namespace FIAPCloudGames.Data.Repositories.Generic;
@@ -23,15 +22,6 @@ public class GenericEntityRepository<T> : IGenericEntityRepository<T> where T : 
         _dbSet = _context.Set<T>();
     }
 
-
-    #endregion
-
-    #region Auxiliares
-
-    private int ReturnPrimaryKey(T entity)
-    {
-        return (int)entity.GetType().GetProperties().FirstOrDefault(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).GetValue(entity);
-    }
 
     #endregion
 

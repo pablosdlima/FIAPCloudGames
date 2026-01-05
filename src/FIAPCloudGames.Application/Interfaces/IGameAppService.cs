@@ -6,7 +6,6 @@ namespace FIAPCloudGames.Application.Interfaces;
 
 public interface IGameAppService
 {
-    List<CadastrarGameRequest> Listar();
     Game BuscarPorId(Guid id);
     Task<Game> Cadastrar(CadastrarGameRequest request);
     Task<ListarGamesPaginadoResponse> ListarGamesPaginado(ListarGamesPaginadoRequest request);

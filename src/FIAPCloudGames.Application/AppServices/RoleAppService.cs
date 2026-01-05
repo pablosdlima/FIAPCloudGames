@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using FIAPCloudGames.Application.Interfaces;
+﻿using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Role;
 using FIAPCloudGames.Domain.Dtos.Responses.Role;
 using FIAPCloudGames.Domain.Exceptions;
@@ -11,17 +10,21 @@ namespace FIAPCloudGames.Application.AppServices;
 public class RoleAppService : IRoleAppService
 {
     private readonly IRoleServices _roleService;
-    private readonly IMapper _mapper;
 
-    public RoleAppService(IRoleServices roleService, IMapper mapper)
+    public RoleAppService(IRoleServices roleService)
     {
         _roleService = roleService ?? throw new ArgumentNullException(nameof(roleService));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public async Task<RolesResponse> Cadastrar(CadastrarRoleRequest request)
     {
-        var entity = _mapper.Map<Role>(request);
+        var entity = new Role
+        {
+            Id = request.Id,
+            RoleName = request.RoleName,
+            Description = request.Description
+        };
+
         var criado = await _roleService.Insert(entity);
 
         if (criado == null)
@@ -29,7 +32,12 @@ public class RoleAppService : IRoleAppService
             throw new DomainException("Não foi possível cadastrar a role. Verifique os dados fornecidos.");
         }
 
-        return _mapper.Map<RolesResponse>(criado);
+        return new RolesResponse
+        {
+            Id = criado.Id,
+            RoleName = criado.RoleName,
+            Description = criado.Description
+        };
     }
 
     public async Task<List<RolesResponse>> ListarRoles()

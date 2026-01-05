@@ -44,8 +44,7 @@ public class UsuarioGameBibliotecaMap : IEntityTypeConfiguration<UsuarioGameBibl
                .OnDelete(DeleteBehavior.Restrict);
 
         // Índices
-        builder.HasIndex(ugb => new { ugb.UsuarioId, ugb.GameId })
-               .IsUnique();
+        builder.HasIndex(ugb => new { ugb.UsuarioId, ugb.GameId }).IsUnique();
         #endregion
     }
     #endregion

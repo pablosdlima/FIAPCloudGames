@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using FIAPCloudGames.Application.Interfaces;
+﻿using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Usuario;
 using FIAPCloudGames.Domain.Dtos.Responses.Usuario;
 using FIAPCloudGames.Domain.Dtos.Responses.Usuarios;
@@ -10,18 +9,13 @@ namespace FIAPCloudGames.Application.AppServices;
 
 public class UsuarioAppService : IUsuarioAppService
 {
-    #region Properties
     private readonly IUsuarioService _usuarioService;
-    private readonly IMapper _mapper;
-    #endregion
 
-    #region Construtor
-    public UsuarioAppService(IUsuarioService usuarioService, IMapper mapper)
+    public UsuarioAppService(IUsuarioService usuarioService)
     {
         _usuarioService = usuarioService ?? throw new ArgumentNullException(nameof(usuarioService));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
-    #endregion
+
 
     public async Task<CadastrarUsuarioResponse> Cadastrar(CadastrarUsuarioRequest request)
     {
@@ -42,7 +36,31 @@ public class UsuarioAppService : IUsuarioAppService
         {
             throw new NotFoundException("Usuário não encontrado.");
         }
-        var result = _mapper.Map<BuscarPorIdResponse>(usuario);
+
+        var result = new BuscarPorIdResponse
+        {
+            Id = usuario.Id,
+            Nome = usuario.Nome,
+            Ativo = usuario.Ativo,
+            DataCriacao = usuario.DataCriacao,
+            DataAtualizacao = usuario.DataAtualizacao,
+            Perfil = usuario.Perfil != null ? new UsuarioPerfilResponse
+            {
+                Id = usuario.Perfil.Id,
+                NomeCompleto = usuario.Perfil.NomeCompleto,
+                DataNascimento = usuario.Perfil.DataNascimento,
+                Pais = usuario.Perfil.Pais,
+                AvatarUrl = usuario.Perfil.AvatarUrl,
+            } : null,
+            Roles = usuario.UsuarioRoles?.Select(ur => new UsuarioRoleResponse
+            {
+                Id = ur.Id,
+                RoleId = ur.RoleId,
+                RoleName = ur.Role?.RoleName,
+                Description = ur.Role?.Description,
+            }).ToList() ?? []
+        };
+
         return result;
     }
 

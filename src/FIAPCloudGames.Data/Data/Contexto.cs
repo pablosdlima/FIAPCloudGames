@@ -17,11 +17,9 @@ public class Contexto : DbContext
 
     #region Override
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder) //carrega as configs dos maps.
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(Contexto).Assembly);
-
-
 
         modelBuilder.Entity<Role>().HasData(
             new Role
@@ -58,5 +56,4 @@ public class Contexto : DbContext
     public DbSet<UsuarioRole> UsuarioRole { set; get; }
 
     #endregion
-
 }

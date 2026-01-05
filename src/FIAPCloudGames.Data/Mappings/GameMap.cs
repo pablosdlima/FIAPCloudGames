@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FIAPCloudGames.Data.Mappings;
-//=====================================================
+
 public class GameMap : IEntityTypeConfiguration<Game>
 {
     #region Interfaces
-    //-------------------------------------------------------
+
     public void Configure(EntityTypeBuilder<Game> builder)
     {
         builder.ToTable("Game");
@@ -44,15 +44,14 @@ public class GameMap : IEntityTypeConfiguration<Game>
 
 
         #region Foreign Key
-        //---------------------------------------------------------------
+
         builder.HasMany(g => g.Biblioteca)
               .WithOne(b => b.Game)
               .HasForeignKey(b => b.GameId)
               .OnDelete(DeleteBehavior.Restrict);
-        //---------------------------------------------------------------
+
         #endregion
     }
-    //-------------------------------------------------------
+
     #endregion
 }
-//=====================================================

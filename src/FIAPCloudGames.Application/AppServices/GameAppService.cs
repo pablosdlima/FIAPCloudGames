@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using FIAPCloudGames.Application.Interfaces;
+﻿using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Game;
 using FIAPCloudGames.Domain.Dtos.Responses.Game;
 using FIAPCloudGames.Domain.Exceptions;
@@ -11,12 +10,10 @@ namespace FIAPCloudGames.Application.AppServices;
 public class GameAppService : IGameAppService
 {
     private readonly IGameService _gameService;
-    private readonly IMapper _mapper;
 
-    public GameAppService(IGameService gameService, IMapper mapper)
+    public GameAppService(IGameService gameService)
     {
         _gameService = gameService ?? throw new ArgumentNullException(nameof(gameService));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
 
@@ -37,12 +34,6 @@ public class GameAppService : IGameAppService
         }
 
         return entity;
-    }
-
-    public List<CadastrarGameRequest> Listar()
-    {
-        var lista = _gameService.Get();
-        return _mapper.Map<List<CadastrarGameRequest>>(lista);
     }
 
     public async Task<ListarGamesPaginadoResponse> ListarGamesPaginado(ListarGamesPaginadoRequest request)

@@ -1,10 +1,8 @@
-﻿using AutoMapper;
-using FIAPCloudGames.Application.Interfaces;
+﻿using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioRole;
 using FIAPCloudGames.Domain.Dtos.Responses.UsuarioRole;
 using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
-using FIAPCloudGames.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FIAPCloudGames.Application.AppServices;
@@ -15,20 +13,14 @@ public class UsuarioRoleAppService : IUsuarioRoleAppService
     private readonly IUsuarioRoleServices _usuarioRoleService;
     private readonly IUsuarioService _usuarioService;
     private readonly IRoleServices _roleService;
-    private readonly IMapper _mapper;
     #endregion
 
     #region Construtor
-    public UsuarioRoleAppService(
-        IUsuarioRoleServices usuarioRoleService,
-        IUsuarioService usuarioService,
-        IRoleServices roleService,
-        IMapper mapper)
+    public UsuarioRoleAppService(IUsuarioRoleServices usuarioRoleService, IUsuarioService usuarioService, IRoleServices roleService)
     {
         _usuarioRoleService = usuarioRoleService ?? throw new ArgumentNullException(nameof(usuarioRoleService));
         _usuarioService = usuarioService ?? throw new ArgumentNullException(nameof(usuarioService));
         _roleService = roleService ?? throw new ArgumentNullException(nameof(roleService));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
     #endregion
 
@@ -52,14 +44,10 @@ public class UsuarioRoleAppService : IUsuarioRoleAppService
             throw new NotFoundException($"Associação Usuário-Role com ID {request.IdUsuarioRole} não encontrada.");
         }
 
-        var entity = new UsuarioRole((int)request.TipoUsuario)
-        {
-            Id = request.IdUsuarioRole,
-            UsuarioId = request.UsuarioId,
-            RoleId = (int)request.TipoUsuario
-        };
+        usuarioRoleExistente.UsuarioId = request.UsuarioId;
+        usuarioRoleExistente.RoleId = (int)request.TipoUsuario;
 
-        var (updatedEntity, sucesso) = await _usuarioRoleService.Update(entity);
+        var (updatedEntity, sucesso) = await _usuarioRoleService.Update(usuarioRoleExistente);
 
         if (!sucesso)
         {

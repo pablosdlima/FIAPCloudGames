@@ -41,8 +41,7 @@ public class UsuarioPerfilMap : IEntityTypeConfiguration<UsuarioPerfil>
                .HasForeignKey<UsuarioPerfil>(c => new { c.UsuarioId })
                .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(c => new { c.UsuarioId }) //1:1
-              .IsUnique();
+        builder.HasIndex(c => new { c.UsuarioId }).IsUnique();
 
         #endregion
     }

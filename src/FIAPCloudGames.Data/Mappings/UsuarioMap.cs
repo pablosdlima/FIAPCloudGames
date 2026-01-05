@@ -6,9 +6,6 @@ namespace FIAPCloudGames.Data.Mappings;
 
 public class UsuarioMap : IEntityTypeConfiguration<Usuario>
 {
-    #region Interfaces
-
-    #endregion
     public void Configure(EntityTypeBuilder<Usuario> builder)
     {
         builder.ToTable("Usuario");
@@ -42,8 +39,7 @@ public class UsuarioMap : IEntityTypeConfiguration<Usuario>
                .IsRequired(false);
 
 
-        #region Foreign Keys
-        //-----------------------------------------------------------
+        #region Foreign Keys        
 
         //(1:1)
         builder.HasOne(u => u.Perfil)
@@ -74,8 +70,6 @@ public class UsuarioMap : IEntityTypeConfiguration<Usuario>
                .WithOne(c => c.Usuario)
                .HasForeignKey(c => c.UsuarioId)
                .OnDelete(DeleteBehavior.Cascade);
-        //-----------------------------------------------------------
         #endregion
     }
-
 }
