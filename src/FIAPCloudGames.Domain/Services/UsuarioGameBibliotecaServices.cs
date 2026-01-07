@@ -6,13 +6,13 @@ using FIAPCloudGames.Domain.Services.Generic;
 
 namespace FIAPCloudGames.Domain.Services;
 
-public class UsuarioGameBibliotecaService : GenericServices<UsuarioGameBiblioteca>, IUsuarioGameBibliotecaService
+public class UsuarioGameBibliotecaServices : GenericServices<UsuarioGameBiblioteca>, IUsuarioGameBibliotecaService
 {
     private readonly IUsuarioGameBibliotecaRepository _bibliotecaRepository;
     private readonly IGameRepository _gameRepository;
 
     #region Construtor
-    public UsuarioGameBibliotecaService(
+    public UsuarioGameBibliotecaServices(
         IGenericEntityRepository<UsuarioGameBiblioteca> repository,
         IUsuarioGameBibliotecaRepository bibliotecaRepository,
         IGameRepository gameRepository) : base(repository)

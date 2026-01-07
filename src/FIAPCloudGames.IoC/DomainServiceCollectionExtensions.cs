@@ -15,7 +15,7 @@ namespace FIAPCloudGames.IoC
             services.AddScoped<IGameService, GamesServices>();
             services.AddScoped<IRoleServices, RoleServices>();
             services.AddScoped<IUsuarioService, UsuarioServices>();
-            services.AddScoped<IUsuarioGameBibliotecaService, UsuarioGameBibliotecaService>();
+            services.AddScoped<IUsuarioGameBibliotecaService, UsuarioGameBibliotecaServices>();
             services.AddScoped<IUsuarioPerfilService, UsuarioPerfilServices>();
             services.AddScoped<IUsuarioRoleServices, UsuarioRoleServices>();
 
