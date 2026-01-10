@@ -20,13 +20,11 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         {
             var guid = Guid.Parse(usuarioId);
             var usuario = Usuario.Criar("Marcio", "Senha@123");
-            usuario.Id = guid; // Força o ID
+            usuario.Id = guid;
 
-            // Armazena no contexto
             _scenarioContext["UsuarioId"] = guid;
             _scenarioContext["Usuario"] = usuario;
 
-            // Configura TODOS os mocks de IUsuarioService que existem no contexto
             ConfigurarMockUsuarioService(guid, usuario);
         }
 
@@ -35,17 +33,14 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         {
             var guid = Guid.Parse(usuarioId);
 
-            // Armazena no contexto
             _scenarioContext["UsuarioId"] = guid;
             _scenarioContext["Usuario"] = null;
 
-            // Configura TODOS os mocks de IUsuarioService que existem no contexto
             ConfigurarMockUsuarioService(guid, null);
         }
 
         private void ConfigurarMockUsuarioService(Guid usuarioId, Usuario? usuario)
         {
-            // Procura por todos os mocks de IUsuarioService no contexto e configura
             var keys = _scenarioContext.Keys.Where(k => k.StartsWith("MockUsuarioService_")).ToList();
 
             foreach (var key in keys)

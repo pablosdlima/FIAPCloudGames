@@ -19,7 +19,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
 
         private Guid _enderecoId;
         private List<Endereco> _enderecosUsuario;
-
         private string _rua;
         private string _numero;
         private string? _complemento;
@@ -27,10 +26,8 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         private string _cidade;
         private string _estado;
         private string _cep;
-
         private bool _cadastroDeveRetornarNull;
         private bool _deletarDeveRetornarFalse;
-
         private List<EnderecoResponse>? _listagemResult;
         private EnderecoResponse? _enderecoResult;
         private (EnderecoResponse? Endereco, bool Success)? _atualizacaoResult;
@@ -42,15 +39,11 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _scenarioContext = scenarioContext;
             _mockEnderecoService = new Mock<IEnderecoService>();
             _mockUsuarioService = new Mock<IUsuarioService>();
-
-            // Registra o mock no contexto com chave única
             _scenarioContext["MockUsuarioService_Endereco"] = _mockUsuarioService;
-
             _enderecoAppService = new EnderecoAppService(
                 _mockEnderecoService.Object,
                 _mockUsuarioService.Object
             );
-
             _enderecosUsuario = [];
             _rua = string.Empty;
             _numero = string.Empty;
@@ -63,7 +56,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         [Given(@"que o serviço de endereços está configurado")]
         public void DadoQueOServicoDeEnderecosEstaConfigurado()
         {
-            // O serviço já está configurado no construtor
         }
 
         [Given(@"o usuário possui (.*) endereços cadastrados")]
@@ -89,9 +81,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
                 _enderecosUsuario.Add(endereco);
             }
 
-            _mockEnderecoService
-                .Setup(s => s.ListarPorUsuario(usuarioId))
-                .Returns(_enderecosUsuario);
+            _mockEnderecoService.Setup(s => s.ListarPorUsuario(usuarioId)).Returns(_enderecosUsuario);
         }
 
         [Given(@"o usuário não possui endereços cadastrados")]
@@ -100,9 +90,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             var usuarioId = _scenarioContext.Get<Guid>("UsuarioId");
             _enderecosUsuario = [];
 
-            _mockEnderecoService
-                .Setup(s => s.ListarPorUsuario(usuarioId))
-                .Returns(_enderecosUsuario);
+            _mockEnderecoService.Setup(s => s.ListarPorUsuario(usuarioId)).Returns(_enderecosUsuario);
         }
 
         [Given(@"tenho os dados do endereço:")]
@@ -146,10 +134,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         public void DadoQueOEnderecoNaoExiste(string enderecoId)
         {
             _enderecoId = Guid.Parse(enderecoId);
-
-            _mockEnderecoService
-                .Setup(s => s.Atualizar(It.Is<Endereco>(e => e.Id == _enderecoId)))
-                .ReturnsAsync(((Endereco?)null, false));
+            _mockEnderecoService.Setup(s => s.Atualizar(It.Is<Endereco>(e => e.Id == _enderecoId))).ReturnsAsync(((Endereco?)null, false));
         }
 
         [Given(@"o endereço ""(.*)"" não pode ser deletado")]
@@ -159,19 +144,15 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _deletarDeveRetornarFalse = true;
 
             var usuarioId = _scenarioContext.Get<Guid>("UsuarioId");
-            _mockEnderecoService
-                .Setup(s => s.Deletar(_enderecoId, usuarioId))
-                .ReturnsAsync(false);
+
+            _mockEnderecoService.Setup(s => s.Deletar(_enderecoId, usuarioId)).ReturnsAsync(false);
         }
 
         [Given(@"o serviço de endereço não consegue cadastrar")]
         public void DadoQueOServicoDeEnderecoNaoConsegueCadastrar()
         {
             _cadastroDeveRetornarNull = true;
-
-            _mockEnderecoService
-                .Setup(s => s.Cadastrar(It.IsAny<Endereco>()))
-                .ReturnsAsync((Endereco?)null);
+            _mockEnderecoService.Setup(s => s.Cadastrar(It.IsAny<Endereco>())).ReturnsAsync((Endereco?)null);
         }
 
         [When(@"eu listar os endereços do usuário ""(.*)""")]
@@ -187,11 +168,8 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             {
                 _exception = ex;
                 _enderecoResult = null;
-
-
                 _scenarioContext["Exception"] = ex;
             }
-
         }
 
         [When(@"eu cadastrar o endereço para o usuário ""(.*)""")]
@@ -227,9 +205,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
                         Cep = _cep
                     };
 
-                    _mockEnderecoService
-                        .Setup(s => s.Cadastrar(It.IsAny<Endereco>()))
-                        .ReturnsAsync(enderecoCadastrado);
+                    _mockEnderecoService.Setup(s => s.Cadastrar(It.IsAny<Endereco>())).ReturnsAsync(enderecoCadastrado);
                 }
 
                 _enderecoResult = await _enderecoAppService.Cadastrar(request);
@@ -239,8 +215,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             {
                 _exception = ex;
                 _enderecoResult = null;
-
-
                 _scenarioContext["Exception"] = ex;
             }
 
@@ -274,8 +248,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             {
                 _exception = ex;
                 _enderecoResult = null;
-
-
                 _scenarioContext["Exception"] = ex;
             }
 
@@ -303,8 +275,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             {
                 _exception = ex;
                 _enderecoResult = null;
-
-
                 _scenarioContext["Exception"] = ex;
             }
         }

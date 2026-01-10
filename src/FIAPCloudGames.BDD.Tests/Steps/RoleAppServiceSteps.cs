@@ -18,16 +18,10 @@ namespace FIAPCloudGames.BDD.Tests.Steps
 
         private int _roleId;
         private List<Role> _rolesCadastradas;
-
-        // Dados da role
         private int _id;
         private string _roleName;
         private string? _description;
-
-        // Flags de controle
         private bool _cadastroDeveRetornarNull;
-
-        // Resultados
         private RolesResponse? _roleResult;
         private List<RolesResponse>? _listagemResult;
         private (RolesResponse? Role, bool Success)? _atualizacaoResult;
@@ -37,31 +31,24 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         {
             _scenarioContext = scenarioContext;
             _mockRoleService = new Mock<IRoleServices>();
-
             _roleAppService = new RoleAppService(_mockRoleService.Object);
-
             _rolesCadastradas = [];
             _roleName = string.Empty;
         }
 
-        // ==================== CONTEXTO ====================
-
         [Given(@"que o serviço de roles está configurado")]
         public void DadoQueOServicoDeRolesEstaConfigurado()
         {
-            // O serviço já está configurado no construtor
         }
 
-        // ==================== SETUP DE DADOS DA ROLE ====================
 
         [Given(@"que tenho os dados da role:")]
-        [Given(@"tenho os dados da role:")]  // ✅ ADICIONAR esta linha
+        [Given(@"tenho os dados da role:")]
         [Given(@"tenho os dados atualizados da role:")]
         public void DadoQueTenhoOsDadosDaRole(Table table)
         {
             var dados = table.Rows.ToDictionary(r => r["Campo"], r => r["Valor"]);
 
-            // Id é opcional - só pega se existir na tabela
             if (dados.ContainsKey("Id"))
             {
                 _id = int.Parse(dados["Id"]);
@@ -71,7 +58,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _description = dados.ContainsKey("Description") ? dados["Description"] : null;
         }
 
-        // ==================== SETUP DE ROLE ESPECÍFICA ====================
 
         [Given(@"que existe uma role com ID (.*)")]
         public void DadoQueExisteUmaRoleComID(int roleId)
@@ -85,7 +71,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
                 Description = "Role administrativa"
             };
 
-            // Para atualização
             _mockRoleService
                 .Setup(s => s.AtualizarRole(It.Is<Role>(r => r.Id == roleId)))
                 .ReturnsAsync((Role roleAtualizada) => (roleAtualizada, true));
@@ -100,8 +85,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
                 .Setup(s => s.AtualizarRole(It.Is<Role>(r => r.Id == roleId)))
                 .ReturnsAsync(((Role?)null, false));
         }
-
-        // ==================== SETUP DE LISTAGEM ====================
 
         [Given(@"que existem (.*) roles cadastradas")]
         public void DadoQueExistemRolesCadastradas(int quantidade)
@@ -119,9 +102,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
                 _rolesCadastradas.Add(role);
             }
 
-            _mockRoleService
-                .Setup(s => s.ListarRoles())
-                .Returns(_rolesCadastradas);
+            _mockRoleService.Setup(s => s.ListarRoles()).Returns(_rolesCadastradas);
         }
 
         [Given(@"que não existem roles cadastradas")]
@@ -129,9 +110,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         {
             _rolesCadastradas = [];
 
-            _mockRoleService
-                .Setup(s => s.ListarRoles())
-                .Returns(_rolesCadastradas);
+            _mockRoleService.Setup(s => s.ListarRoles()).Returns(_rolesCadastradas);
         }
 
         [Given(@"que existem roles cadastradas com diferentes nomes")]
@@ -144,24 +123,17 @@ namespace FIAPCloudGames.BDD.Tests.Steps
                 new Role { Id = 3, RoleName = "Usuário", Description = "Acesso básico" }
             ];
 
-            _mockRoleService
-                .Setup(s => s.ListarRoles())
-                .Returns(_rolesCadastradas);
+            _mockRoleService.Setup(s => s.ListarRoles()).Returns(_rolesCadastradas);
         }
 
-        // ==================== SETUP DE FALHA NO SERVIÇO ====================
 
-        [Given(@"que o serviço de role não consegue cadastrar")]  // ✅ ADICIONAR esta linha        
+        [Given(@"que o serviço de role não consegue cadastrar")]
         public void DadoQueOServicoDeRoleNaoConsegueCadastrar()
         {
             _cadastroDeveRetornarNull = true;
-
-            _mockRoleService
-                .Setup(s => s.Insert(It.IsAny<Role>()))
-                .ReturnsAsync((Role?)null);
+            _mockRoleService.Setup(s => s.Insert(It.IsAny<Role>())).ReturnsAsync((Role?)null);
         }
 
-        // ==================== WHEN - AÇÕES ====================
 
         [When(@"eu cadastrar a role")]
         public async Task QuandoEuCadastrarARole()
@@ -175,7 +147,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
                     Description = _description ?? string.Empty
                 };
 
-                // Só configura o mock de sucesso se NÃO deve retornar null
                 if (!_cadastroDeveRetornarNull)
                 {
                     var roleCadastrada = new Role
@@ -185,9 +156,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
                         Description = _description
                     };
 
-                    _mockRoleService
-                        .Setup(s => s.Insert(It.IsAny<Role>()))
-                        .ReturnsAsync(roleCadastrada);
+                    _mockRoleService.Setup(s => s.Insert(It.IsAny<Role>())).ReturnsAsync(roleCadastrada);
                 }
 
                 _roleResult = await _roleAppService.Cadastrar(request);
@@ -224,7 +193,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             {
                 var request = new AtualizarRoleRequest
                 {
-                    Id = _roleId, // Usa o ID já definido no Given "existe uma role com ID X"
+                    Id = _roleId,
                     RoleName = _roleName,
                     Description = _description
                 };
@@ -240,7 +209,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             }
         }
 
-        // ==================== THEN - VALIDAÇÕES DE CADASTRO ====================
 
         [Then(@"a role deve ser cadastrada com sucesso")]
         public void EntaoARoleDeveSerCadastradaComSucesso()
@@ -261,7 +229,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         {
             Assert.NotNull(_roleResult);
 
-            // ✅ CORRIGIDO: Só valida o ID se foi fornecido (_id > 0)
             if (_id > 0)
             {
                 Assert.Equal(_id, _roleResult.Id);
@@ -271,7 +238,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             Assert.Equal(_description, _roleResult.Description);
         }
 
-        // ==================== THEN - VALIDAÇÕES DE LISTAGEM ====================
 
         [Then(@"a listagem deve retornar (.*) roles")]
         public void EntaoAListagemDeveRetornarRoles(int quantidade)
@@ -286,12 +252,10 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             Assert.NotNull(_listagemResult);
             Assert.True(_listagemResult.Count > 0);
 
-            // Verifica se existem pelo menos 2 nomes diferentes
             var nomesDistintos = _listagemResult.Select(r => r.RoleName).Distinct().Count();
             Assert.True(nomesDistintos > 1, "Deve haver roles com nomes distintos");
         }
 
-        // ==================== THEN - VALIDAÇÕES DE ATUALIZAÇÃO ====================
 
         [Then(@"a role deve ser atualizada com sucesso")]
         public void EntaoARoleDeveSerAtualizadaComSucesso()
@@ -324,7 +288,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             Assert.Null(_atualizacaoResult.Value.Role);
         }
 
-        // ==================== CLEANUP ====================
 
         [AfterScenario(Order = 1)]
         public void LimparCenario()

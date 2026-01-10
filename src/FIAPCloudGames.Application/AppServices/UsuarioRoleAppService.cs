@@ -9,20 +9,16 @@ namespace FIAPCloudGames.Application.AppServices;
 
 public class UsuarioRoleAppService : IUsuarioRoleAppService
 {
-    #region Properties
     private readonly IUsuarioRoleServices _usuarioRoleService;
     private readonly IUsuarioService _usuarioService;
     private readonly IRoleServices _roleService;
-    #endregion
 
-    #region Construtor
     public UsuarioRoleAppService(IUsuarioRoleServices usuarioRoleService, IUsuarioService usuarioService, IRoleServices roleService)
     {
         _usuarioRoleService = usuarioRoleService ?? throw new ArgumentNullException(nameof(usuarioRoleService));
         _usuarioService = usuarioService ?? throw new ArgumentNullException(nameof(usuarioService));
         _roleService = roleService ?? throw new ArgumentNullException(nameof(roleService));
     }
-    #endregion
 
     public async Task<bool> AlterarRoleUsuario(AlterarUsuarioRoleRequest request)
     {

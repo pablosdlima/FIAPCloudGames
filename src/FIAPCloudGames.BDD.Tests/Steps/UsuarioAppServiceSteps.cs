@@ -19,8 +19,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         private readonly IUsuarioAppService _usuarioAppService;
 
         private Guid _usuarioId;
-
-        // Dados do usuário
         private string _nome;
         private string _senha;
         private string _celular;
@@ -29,12 +27,8 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         private DateTimeOffset? _dataNascimento;
         private string _pais;
         private string _avatarUrl;
-
-        // Flags de controle
         private bool _cadastroDeveRetornarNull;
         private bool _alterarSenhaDeveFalhar;
-
-        // Resultados
         private CadastrarUsuarioResponse? _cadastroResult;
         private BuscarPorIdResponse? _usuarioResult;
         private bool? _alterarSenhaResult;
@@ -46,7 +40,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _scenarioContext = scenarioContext;
             _mockUsuarioService = new Mock<IUsuarioService>();
 
-            // Registra o mock no contexto com chave única
             _scenarioContext["MockUsuarioService_Usuario"] = _mockUsuarioService;
 
             _usuarioAppService = new UsuarioAppService(_mockUsuarioService.Object);
@@ -60,15 +53,12 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _avatarUrl = string.Empty;
         }
 
-        // ==================== CONTEXTO ====================
 
         [Given(@"que o serviço de usuários está configurado")]
         public void DadoQueOServicoDeUsuariosEstaConfigurado()
         {
-            // O serviço já está configurado no construtor
         }
 
-        // ==================== SETUP DE DADOS DO USUÁRIO ====================
 
         [Given(@"que tenho os dados do usuário:")]
         [Given(@"tenho os dados do usuário:")]
@@ -85,7 +75,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _avatarUrl = dados["AvatarUrl"];
         }
 
-        // ==================== SETUP ESPECÍFICO PARA USUÁRIO APP SERVICE ====================
 
         [Given(@"que existe um usuário completo com perfil e roles com ID ""(.*)""")]
         public void DadoQueExisteUmUsuarioCompletoComPerfilERolesComID(string usuarioId)
@@ -95,7 +84,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             var usuario = Usuario.Criar("Marcio Silva", "Senha@123", true);
             usuario.Id = _usuarioId;
 
-            // Usa o construtor de UsuarioPerfil
             var perfil = new UsuarioPerfil(
                 "Marcio Silva",
                 new DateTimeOffset(new DateTime(1990, 5, 15), TimeSpan.Zero),
@@ -123,9 +111,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
                 }
             ];
 
-            _mockUsuarioService
-                .Setup(s => s.GetById(_usuarioId))
-                .Returns(usuario);
+            _mockUsuarioService.Setup(s => s.GetById(_usuarioId)).Returns(usuario);
         }
 
         [Given(@"que existe um usuário ativo para alteração de status com ID ""(.*)""")]
@@ -136,12 +122,9 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             var usuario = Usuario.Criar("Marcio Silva", "Senha@123", true);
             usuario.Id = _usuarioId;
 
-            _mockUsuarioService
-                .Setup(s => s.GetById(_usuarioId))
-                .Returns(usuario);
+            _mockUsuarioService.Setup(s => s.GetById(_usuarioId)).Returns(usuario);
 
-            _mockUsuarioService
-                .Setup(s => s.AlterarStatus(_usuarioId))
+            _mockUsuarioService.Setup(s => s.AlterarStatus(_usuarioId))
                 .ReturnsAsync(new AlterarStatusResponse("Inativo"));
         }
 
@@ -153,12 +136,9 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             var usuario = Usuario.Criar("Marcio Silva", "Senha@123", false);
             usuario.Id = _usuarioId;
 
-            _mockUsuarioService
-                .Setup(s => s.GetById(_usuarioId))
-                .Returns(usuario);
+            _mockUsuarioService.Setup(s => s.GetById(_usuarioId)).Returns(usuario);
 
-            _mockUsuarioService
-                .Setup(s => s.AlterarStatus(_usuarioId))
+            _mockUsuarioService.Setup(s => s.AlterarStatus(_usuarioId))
                 .ReturnsAsync(new AlterarStatusResponse("Ativo"));
         }
 
@@ -170,38 +150,26 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             var usuario = Usuario.Criar("Marcio Silva", "Senha@123", true);
             usuario.Id = _usuarioId;
 
-            _mockUsuarioService
-                .Setup(s => s.GetById(_usuarioId))
-                .Returns(usuario);
+            _mockUsuarioService.Setup(s => s.GetById(_usuarioId)).Returns(usuario);
 
-            _mockUsuarioService
-                .Setup(s => s.AlterarSenha(It.IsAny<AlterarSenhaRequest>()))
-                .ReturnsAsync(true);
+            _mockUsuarioService.Setup(s => s.AlterarSenha(It.IsAny<AlterarSenhaRequest>())).ReturnsAsync(true);
         }
 
-        // ==================== SETUP DE FALHAS ====================
 
         [Given(@"que o serviço de usuário não consegue cadastrar")]
         public void DadoQueOServicoDeUsuarioNaoConsegueCadastrar()
         {
             _cadastroDeveRetornarNull = true;
-
-            _mockUsuarioService
-                .Setup(s => s.CadastrarUsuario(It.IsAny<CadastrarUsuarioRequest>()))
-                .ReturnsAsync((Usuario?)null);
+            _mockUsuarioService.Setup(s => s.CadastrarUsuario(It.IsAny<CadastrarUsuarioRequest>())).ReturnsAsync((Usuario?)null);
         }
 
         [Given(@"que a alteração de senha vai falhar")]
         public void DadoQueAAlteracaoDeSenhaVaiFalhar()
         {
             _alterarSenhaDeveFalhar = true;
-
-            _mockUsuarioService
-                .Setup(s => s.AlterarSenha(It.IsAny<AlterarSenhaRequest>()))
-                .ReturnsAsync(false);
+            _mockUsuarioService.Setup(s => s.AlterarSenha(It.IsAny<AlterarSenhaRequest>())).ReturnsAsync(false);
         }
 
-        // ==================== WHEN - AÇÕES ====================
 
         [When(@"eu cadastrar o usuário")]
         public async Task QuandoEuCadastrarOUsuario()
@@ -295,7 +263,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             }
         }
 
-        // ==================== THEN - VALIDAÇÕES DE CADASTRO ====================
 
         [Then(@"o usuário deve ser cadastrado com sucesso")]
         public void EntaoOUsuarioDeveSerCadastradoComSucesso()
@@ -311,7 +278,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             Assert.NotEqual(Guid.Empty, _cadastroResult.IdUsuario);
         }
 
-        // ==================== THEN - VALIDAÇÕES DE BUSCA ====================
 
         [Then(@"o usuário deve ser retornado com sucesso")]
         public void EntaoOUsuarioDeveSerRetornadoComSucesso()
@@ -343,7 +309,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             Assert.True(_usuarioResult.Roles.Count > 0);
         }
 
-        // ==================== THEN - VALIDAÇÕES DE ALTERAR SENHA ====================
 
         [Then(@"a alteração de senha deve ser bem-sucedida")]
         public void EntaoAAlteracaoDeSenhaDeveSerBemSucedida()
@@ -360,7 +325,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             Assert.False(_alterarSenhaResult.Value);
         }
 
-        // ==================== THEN - VALIDAÇÕES DE ALTERAR STATUS ====================
 
         [Then(@"o status deve ser alterado com sucesso")]
         public void EntaoOStatusDeveSerAlteradoComSucesso()
@@ -376,7 +340,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             Assert.Equal(statusEsperado, _alterarStatusResult.StatusAtual);
         }
 
-        // ==================== CLEANUP ====================
 
         [AfterScenario(Order = 1)]
         public void LimparCenario()

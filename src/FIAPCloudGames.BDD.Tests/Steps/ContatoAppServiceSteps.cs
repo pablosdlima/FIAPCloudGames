@@ -23,7 +23,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         private string _email;
         private bool _cadastroDeveRetornarNull;
         private bool _deletarDeveRetornarFalse;
-
         private List<ContatoResponse>? _listagemResult;
         private ContatoResponse? _contatoResult;
         private (ContatoResponse? Contato, bool Success)? _atualizacaoResult;
@@ -35,15 +34,11 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _scenarioContext = scenarioContext;
             _mockContatoService = new Mock<IContatoService>();
             _mockUsuarioService = new Mock<IUsuarioService>();
-
-            // Registra o mock no contexto com chave única
             _scenarioContext["MockUsuarioService_Contato"] = _mockUsuarioService;
-
             _contatoAppService = new ContatoAppService(
                 _mockContatoService.Object,
                 _mockUsuarioService.Object
             );
-
             _contatosUsuario = [];
             _celular = string.Empty;
             _email = string.Empty;
@@ -52,7 +47,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         [Given(@"que o serviço de contatos está configurado")]
         public void DadoQueOServicoDeContatosEstaConfigurado()
         {
-            // O serviço já está configurado no construtor
         }
 
         [Given(@"o usuário possui (.*) contatos cadastrados")]
@@ -71,9 +65,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
                 _contatosUsuario.Add(contato);
             }
 
-            _mockContatoService
-                .Setup(s => s.ListarPorUsuario(usuarioId))
-                .Returns(_contatosUsuario);
+            _mockContatoService.Setup(s => s.ListarPorUsuario(usuarioId)).Returns(_contatosUsuario);
         }
 
         [Given(@"o usuário não possui contatos cadastrados")]
@@ -82,9 +74,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             var usuarioId = _scenarioContext.Get<Guid>("UsuarioId");
             _contatosUsuario = [];
 
-            _mockContatoService
-                .Setup(s => s.ListarPorUsuario(usuarioId))
-                .Returns(_contatosUsuario);
+            _mockContatoService.Setup(s => s.ListarPorUsuario(usuarioId)).Returns(_contatosUsuario);
         }
 
         [Given(@"tenho os dados do contato:")]
@@ -110,10 +100,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         public void DadoQueOContatoNaoExiste(string contatoId)
         {
             _contatoId = Guid.Parse(contatoId);
-
-            _mockContatoService
-                .Setup(s => s.Atualizar(It.Is<Contato>(c => c.Id == _contatoId)))
-                .ReturnsAsync(((Contato?)null, false));
+            _mockContatoService.Setup(s => s.Atualizar(It.Is<Contato>(c => c.Id == _contatoId))).ReturnsAsync(((Contato?)null, false));
         }
 
         [Given(@"o contato ""(.*)"" não pode ser deletado")]
@@ -123,19 +110,15 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _deletarDeveRetornarFalse = true;
 
             var usuarioId = _scenarioContext.Get<Guid>("UsuarioId");
-            _mockContatoService
-                .Setup(s => s.Deletar(_contatoId, usuarioId))
-                .ReturnsAsync(false);
+
+            _mockContatoService.Setup(s => s.Deletar(_contatoId, usuarioId)).ReturnsAsync(false);
         }
 
         [Given(@"o serviço de contato não consegue cadastrar")]
         public void DadoQueOServicoDeContatoNaoConsegueCadastrar()
         {
             _cadastroDeveRetornarNull = true;
-
-            _mockContatoService
-                .Setup(s => s.Cadastrar(It.IsAny<Contato>()))
-                .ReturnsAsync((Contato?)null);
+            _mockContatoService.Setup(s => s.Cadastrar(It.IsAny<Contato>())).ReturnsAsync((Contato?)null);
         }
 
         [When(@"eu listar os contatos do usuário ""(.*)""")]
@@ -151,7 +134,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             {
                 _exception = ex;
                 _contatoResult = null;
-
                 _scenarioContext["Exception"] = ex;
             }
         }
@@ -189,7 +171,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             {
                 _exception = ex;
                 _contatoResult = null;
-
                 _scenarioContext["Exception"] = ex;
             }
         }
@@ -217,8 +198,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             {
                 _exception = ex;
                 _contatoResult = null;
-
-
                 _scenarioContext["Exception"] = ex;
             }
         }
@@ -245,8 +224,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             {
                 _exception = ex;
                 _contatoResult = null;
-
-
                 _scenarioContext["Exception"] = ex;
             }
         }

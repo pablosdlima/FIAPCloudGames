@@ -16,8 +16,4 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.11" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Dtos\Dapper\" />
-  </ItemGroup>
-
 </Project>

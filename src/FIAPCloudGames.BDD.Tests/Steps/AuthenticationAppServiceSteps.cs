@@ -27,50 +27,37 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _scenarioContext = scenarioContext;
             _mockJwtGenerator = new Mock<IJwtGenerator>();
             _mockUsuarioService = new Mock<IUsuarioService>();
-
-            // Registra o mock no contexto com chave única
             _scenarioContext["MockUsuarioService_Authentication"] = _mockUsuarioService;
-
             _authenticationAppService = new AuthenticationAppService(
                 _mockJwtGenerator.Object,
                 _mockUsuarioService.Object
             );
-
             _tokenGerado = string.Empty;
         }
 
         [Given(@"que o serviço de autenticação está configurado")]
         public void DadoQueOServicoDeAutenticacaoEstaConfigurado()
         {
-            // O serviço já está configurado no construtor
         }
 
         [Given(@"que existe um usuário com login ""(.*)"" e senha ""(.*)""")]
         public void DadoQueExisteUmUsuarioComLoginESenha(string login, string senha)
         {
-            // Cria o usuário
             _usuarioExistente = Usuario.Criar(login, senha);
 
-            // Configura o mock para retornar o usuário quando as credenciais corretas forem fornecidas
             _mockUsuarioService
                 .Setup(s => s.ValidarLogin(login, senha))
                 .ReturnsAsync(_usuarioExistente);
 
-            // Configura o mock do JWT para retornar um token válido
             _tokenGerado = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ0ZXN0IiwibmFtZSI6InRlc3QifQ.test";
 
-            _mockJwtGenerator
-                .Setup(j => j.GenerateToken(_usuarioExistente))
-                .Returns(_tokenGerado);
+            _mockJwtGenerator.Setup(j => j.GenerateToken(_usuarioExistente)).Returns(_tokenGerado);
         }
 
         [Given(@"que não existe um usuário com login ""(.*)""")]
         public void DadoQueNaoExisteUmUsuarioComLogin(string login)
         {
-            // Configura o mock para retornar null para qualquer senha com este login
-            _mockUsuarioService
-                .Setup(s => s.ValidarLogin(login, It.IsAny<string>()))
-                .ReturnsAsync((Usuario?)null);
+            _mockUsuarioService.Setup(s => s.ValidarLogin(login, It.IsAny<string>())).ReturnsAsync((Usuario?)null);
         }
 
         [When(@"eu realizar o login com usuário ""(.*)"" e senha ""(.*)""")]
@@ -102,7 +89,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             Assert.NotNull(_loginResponse.Token);
             Assert.NotEmpty(_loginResponse.Token);
 
-            // Verifica se o token tem o formato JWT básico (três partes separadas por pontos)
             var tokenParts = _loginResponse.Token.Split('.');
             Assert.Equal(3, tokenParts.Length);
         }
@@ -128,7 +114,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             Assert.NotNull(_loginResponse);
             Assert.NotNull(_loginResponse.Token);
 
-            // Verifica se o GenerateToken foi chamado com o usuário correto
             _mockJwtGenerator.Verify(
                 j => j.GenerateToken(It.Is<Usuario>(u => u == _usuarioExistente)),
                 Times.Once,

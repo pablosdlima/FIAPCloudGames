@@ -18,22 +18,16 @@ namespace FIAPCloudGames.BDD.Tests.Steps
 
         private Guid _gameId;
         private List<Game> _gamesCadastrados;
-
-        // Dados do game
         private string _nome;
         private string _descricao;
         private string _genero;
         private string _desenvolvedor;
         private decimal _preco;
         private DateTime? _dataRelease;
-
-        // Dados de paginação
         private int _numeroPagina;
         private int _tamanhoPagina;
         private string? _filtro;
         private string? _generoFiltro;
-
-        // Resultados
         private Game? _gameResult;
         private ListarGamesPaginadoResponse? _listagemResult;
         private (AtualizarGameResponse? Game, bool Success)? _atualizacaoResult;
@@ -53,15 +47,12 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _desenvolvedor = string.Empty;
         }
 
-        // ==================== CONTEXTO ====================
 
         [Given(@"que o serviço de games está configurado")]
         public void DadoQueOServicoDeGamesEstaConfigurado()
         {
-            // O serviço já está configurado no construtor
         }
 
-        // ==================== SETUP DE DADOS DO GAME ====================
 
         [Given(@"que tenho os dados do game:")]
         [Given(@"tenho os dados atualizados do game:")]
@@ -76,7 +67,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _dataRelease = DateTime.Parse(dados["DataRelease"]);
         }
 
-        // ==================== SETUP DE GAME ESPECÍFICO ====================
 
         [Given(@"que existe um game com ID ""(.*)""")]
         public void DadoQueExisteUmGameComID(string gameId)
@@ -94,11 +84,8 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             );
             game.Id = _gameId;
 
-            _mockGameService
-                .Setup(s => s.GetById(_gameId))
-                .Returns(game);
+            _mockGameService.Setup(s => s.GetById(_gameId)).Returns(game);
 
-            // Para atualização
             _mockGameService
                 .Setup(s => s.AtualizarGame(It.Is<Game>(g => g.Id == _gameId)))
                 .ReturnsAsync((Game gameAtualizado) => (gameAtualizado, true));
@@ -109,16 +96,13 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         {
             _gameId = Guid.Parse(gameId);
 
-            _mockGameService
-                .Setup(s => s.GetById(_gameId))
-                .Returns((Game?)null);
+            _mockGameService.Setup(s => s.GetById(_gameId)).Returns((Game?)null);
 
             _mockGameService
                 .Setup(s => s.AtualizarGame(It.Is<Game>(g => g.Id == _gameId)))
                 .ReturnsAsync(((Game?)null, false));
         }
 
-        // ==================== SETUP DE LISTAGEM ====================
 
         [Given(@"que existem (.*) games cadastrados")]
         public void DadoQueExistemGamesCadastrados(int quantidade)
@@ -140,7 +124,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
                 _gamesCadastrados.Add(game);
             }
 
-            // Setup para listar todos
             _mockGameService
                 .Setup(s => s.ListarPaginado(It.IsAny<int>(), It.IsAny<int>(), null, null))
                 .ReturnsAsync((int numeroPagina, int tamanhoPagina, string? filtro, string? genero) =>
@@ -228,7 +211,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
                 });
         }
 
-        // ==================== WHEN - AÇÕES ====================
 
         [When(@"eu cadastrar o game")]
         public async Task QuandoEuCadastrarOGame()
@@ -245,7 +227,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
                     DataRelease = _dataRelease!.Value
                 };
 
-                // Converte DateTime para DateTimeOffset
                 var dataReleaseOffset = new DateTimeOffset(_dataRelease.Value, TimeSpan.Zero);
                 var gameCadastrado = Game.Criar(_nome, _descricao, _genero, _desenvolvedor, _preco, dataReleaseOffset);
                 gameCadastrado.Id = Guid.NewGuid();
@@ -368,10 +349,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             {
                 _gameId = Guid.Parse(gameId);
 
-                // Converte DateTime? para DateOnly?
-                DateOnly? dataReleaseOnly = _dataRelease.HasValue
-                    ? DateOnly.FromDateTime(_dataRelease.Value)
-                    : null;
+                DateOnly? dataReleaseOnly = _dataRelease.HasValue ? DateOnly.FromDateTime(_dataRelease.Value) : null;
 
                 var request = new AtualizarGameRequest
                 {
@@ -395,7 +373,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             }
         }
 
-        // ==================== THEN - VALIDAÇÕES DE CADASTRO ====================
 
         [Then(@"o game deve ser cadastrado com sucesso")]
         public void EntaoOGameDeveSerCadastradoComSucesso()
@@ -422,7 +399,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             Assert.Equal(_preco, _gameResult.Preco);
         }
 
-        // ==================== THEN - VALIDAÇÕES DE BUSCA ====================
 
         [Then(@"o game deve ser retornado com sucesso")]
         public void EntaoOGameDeveSerRetornadoComSucesso()
@@ -438,7 +414,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             Assert.Equal(Guid.Parse(gameId), _gameResult.Id);
         }
 
-        // ==================== THEN - VALIDAÇÕES DE LISTAGEM ====================
 
         [Then(@"a listagem deve retornar (.*) games")]
         public void EntaoAListagemDeveRetornarGames(int quantidade)
@@ -494,11 +469,9 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         public void EntaoAListagemDeveRetornarApenasGamesDoGenero(string genero)
         {
             Assert.NotNull(_listagemResult);
-            Assert.All(_listagemResult.Jogos, g =>
-                Assert.Equal(genero, g.Genero, StringComparer.OrdinalIgnoreCase));
+            Assert.All(_listagemResult.Jogos, g => Assert.Equal(genero, g.Genero, StringComparer.OrdinalIgnoreCase));
         }
 
-        // ==================== THEN - VALIDAÇÕES DE ATUALIZAÇÃO ====================
 
         [Then(@"o game deve ser atualizado com sucesso")]
         public void EntaoOGameDeveSerAtualizadoComSucesso()
@@ -534,7 +507,6 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             Assert.Null(_atualizacaoResult.Value.Game);
         }
 
-        // ==================== CLEANUP ====================
 
         [AfterScenario(Order = 1)]
         public void LimparCenario()
