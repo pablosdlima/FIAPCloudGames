@@ -11,9 +11,12 @@
     <PackageReference Include="AspNetCore.HealthChecks.UI" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
     <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="GraphQL" Version="8.8.3" />
+    <PackageReference Include="GraphQL.SystemTextJson" Version="8.8.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.11" />
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
     <PackageReference Include="Serilog.Enrichers.Process" Version="3.0.0" />
@@ -26,6 +29,13 @@
   <ItemGroup>
     <ProjectReference Include="..\FIAPCloudGames.Data\FIAPCloudGames.Data.csproj" />
     <ProjectReference Include="..\FIAPCloudGames.IoC\FIAPCloudGames.IoC.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="GraphQL\Schemas\" />
+    <Folder Include="GraphQL\Queries\" />
+    <Folder Include="GraphQL\Types\Inputs\" />
+    <Folder Include="GraphQL\Types\Enums\" />
   </ItemGroup>
 
 </Project>
