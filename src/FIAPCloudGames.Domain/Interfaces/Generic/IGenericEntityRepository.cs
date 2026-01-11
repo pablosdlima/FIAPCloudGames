@@ -26,5 +26,7 @@ public interface IGenericEntityRepository<T>
 
     int LastId(Expression<Func<T, int>> predicate);
 
+    Task<List<T>> ListarPaginacao(int take, int skip);
+
     #endregion
 }

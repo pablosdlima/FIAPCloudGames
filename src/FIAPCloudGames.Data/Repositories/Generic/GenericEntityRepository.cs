@@ -127,5 +127,11 @@ public class GenericEntityRepository<T> : IGenericEntityRepository<T> where T : 
         }
     }
 
+    public async Task<List<T>> ListarPaginacao(int take, int skip)
+    {
+        return await _context.Set<T>().AsNoTracking()
+            .Skip(skip).Take(take).ToListAsync();
+    }
+
     #endregion
 }

@@ -23,7 +23,6 @@ public class ContatoService : GenericServices<Contato>, IContatoService
     {
         return _contatoRepository.ListarPorUsuario(usuarioId);
     }
-
     public async Task<Contato> Cadastrar(Contato contato)
     {
         return await _repository.Insert(contato);

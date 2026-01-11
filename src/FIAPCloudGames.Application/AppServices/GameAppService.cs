@@ -1,5 +1,6 @@
 ﻿using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Game;
+using FIAPCloudGames.Domain.Dtos.Responses.Contato;
 using FIAPCloudGames.Domain.Dtos.Responses.Game;
 using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
@@ -63,6 +64,24 @@ public class GameAppService : IGameAppService
             TemProximaPagina = request.NumeroPagina < totalPaginas,
             Jogos = jogosResponse
         };
+    }
+
+    public async Task<List<GameResponse>> ListarPaginacao(int take, int skip)
+    {
+        var games = await _gameService.ListarPaginacao(take, skip);
+
+        var gamesResponse = games.Select(g => new GameResponse
+        {
+            Id = g.Id,
+            Nome = g.Nome,
+            Descricao = g.Descricao,
+            Genero = g.Genero,
+            Desenvolvedor = g.Desenvolvedor,
+            Preco = g.Preco,
+            DataRelease = g.DataRelease
+        }).ToList();
+
+        return await Task.FromResult(gamesResponse);
     }
 
     public async Task<(AtualizarGameResponse? Game, bool Success)> AtualizarGame(AtualizarGameRequest request)

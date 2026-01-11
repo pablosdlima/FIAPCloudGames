@@ -37,6 +37,21 @@ public class ContatoAppService : IContatoAppService
         return await Task.FromResult(contatosResponse);
     }
 
+    public async Task<List<ContatoResponse>> ListarPaginacao(int take, int skip)
+    {
+        var contatos = await _contatoService.ListarPaginacao(take, skip);
+
+        var contatosResponse = contatos.Select(c => new ContatoResponse
+        {
+            Id = c.Id,
+            UsuarioId = c.UsuarioId,
+            Celular = c.Celular,
+            Email = c.Email
+        }).ToList();
+
+        return await Task.FromResult(contatosResponse);
+    }
+
     public async Task<ContatoResponse> Cadastrar(CadastrarContatoRequest request)
     {
         var usuarioExiste = _usuarioService.GetById(request.UsuarioId);
@@ -104,4 +119,6 @@ public class ContatoAppService : IContatoAppService
 
         return await _contatoService.Deletar(id, usuarioId);
     }
+
+    
 }

@@ -1,9 +1,11 @@
 ﻿using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioPerfil;
+using FIAPCloudGames.Domain.Dtos.Responses.Contato;
 using FIAPCloudGames.Domain.Dtos.Responses.UsuarioPerfil;
 using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
+using FIAPCloudGames.Domain.Services;
 
 namespace FIAPCloudGames.Application.AppServices;
 
@@ -40,6 +42,24 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
             Pais = perfil.Pais,
             AvatarUrl = perfil.AvatarUrl
         };
+    }
+
+    public async Task<List<BuscarUsuarioPerfilResponse>> ListarPaginacao(int take, int skip)
+    {
+        var usuariosPerfils = await _usuarioPerfilService.ListarPaginacao(take, skip);
+
+        var usuariosResponse = usuariosPerfils.Select(c => new BuscarUsuarioPerfilResponse
+        {
+            Id = c.Id,
+            UsuarioId = c.UsuarioId,
+            NomeCompleto = c.NomeCompleto,
+            DataNascimento = c.DataNascimento,
+            Pais = c.Pais,
+            AvatarUrl = c.AvatarUrl
+
+        }).ToList();
+
+        return await Task.FromResult(usuariosResponse);
     }
 
     public async Task<BuscarUsuarioPerfilResponse> Cadastrar(CadastrarUsuarioPerfilRequest request)

@@ -9,4 +9,5 @@ public interface IUsuarioPerfilAppService
     Task<BuscarUsuarioPerfilResponse> Cadastrar(CadastrarUsuarioPerfilRequest request);
     Task<(BuscarUsuarioPerfilResponse? Perfil, bool Success)> Atualizar(AtualizarUsuarioPerfilRequest request);
     Task<bool> Deletar(Guid id, Guid usuarioId);
+    Task<List<BuscarUsuarioPerfilResponse>> ListarPaginacao(int take, int skip);
 }

@@ -1,9 +1,11 @@
 ﻿using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Enderecos;
+using FIAPCloudGames.Domain.Dtos.Responses.Contato;
 using FIAPCloudGames.Domain.Dtos.Responses.Endereco;
 using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
+using FIAPCloudGames.Domain.Services;
 
 namespace FIAPCloudGames.Application.AppServices;
 
@@ -39,6 +41,26 @@ public class EnderecoAppService : IEnderecoAppService
             Estado = e.Estado,
             Cep = e.Cep
         }).ToList();
+        return await Task.FromResult(enderecosResponse);
+    }
+
+    public async Task<List<EnderecoResponse>> ListarPaginacao(int take, int skip)
+    {
+        var enderecos = await _enderecoService.ListarPaginacao(take, skip);
+
+        var enderecosResponse = enderecos.Select(e => new EnderecoResponse
+        {
+            Id = e.Id,
+            UsuarioId = e.UsuarioId,
+            Rua = e.Rua,
+            Numero = e.Numero,
+            Complemento = e.Complemento,
+            Bairro = e.Bairro,
+            Cidade = e.Cidade,
+            Estado = e.Estado,
+            Cep = e.Cep
+        }).ToList();
+
         return await Task.FromResult(enderecosResponse);
     }
 

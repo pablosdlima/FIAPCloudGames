@@ -57,6 +57,11 @@ public abstract class GenericServices<T> : IGenericServices<T>
         return _repository.LastId(predicate);
     }
 
+    public Task<List<T>> ListarPaginacao(int take, int skip)
+    {
+        return _repository.ListarPaginacao(take, skip);
+    }
+
     public async Task<(T entity, bool success)> Update(T entity)
     {
         var (updatedEntity, success) = _repository.Update(entity);

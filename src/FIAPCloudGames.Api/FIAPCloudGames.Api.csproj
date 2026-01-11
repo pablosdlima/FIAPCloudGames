@@ -32,8 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="GraphQL\Schemas\" />
-    <Folder Include="GraphQL\Queries\" />
     <Folder Include="GraphQL\Types\Inputs\" />
     <Folder Include="GraphQL\Types\Enums\" />
   </ItemGroup>
