@@ -3,17 +3,22 @@ using FIAPCloudGames.Domain.Interfaces.Repository;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
 using FIAPCloudGames.Domain.Services.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace FIAPCloudGames.Domain.Services;
 
 public class GamesServices : GenericServices<Game>, IGameService
 {
     private readonly IGameRepository _gameRepository;
+    private readonly ILogger<GamesServices> _logger;
 
-
-    public GamesServices(IGenericEntityRepository<Game> repository, IGameRepository gameRepository) : base(repository)
+    public GamesServices(
+        IGenericEntityRepository<Game> repository,
+        IGameRepository gameRepository,
+        ILogger<GamesServices> logger) : base(repository)
     {
         _gameRepository = gameRepository;
+        _logger = logger;
     }
 
     public async Task<(List<Game> Jogos, int TotalRegistros)> ListarPaginado(int numeroPagina, int tamanhoPagina, string? filtro, string? genero)
@@ -24,20 +29,22 @@ public class GamesServices : GenericServices<Game>, IGameService
     public async Task<(Game? Game, bool Success)> AtualizarGame(Game game)
     {
         var gameExistente = _repository.GetById(game.Id);
-
         if (gameExistente == null)
         {
+            _logger.LogWarning("Jogo não encontrado para atualização | GameId: {GameId}", game.Id);
             return (null, false);
         }
-
         gameExistente.Nome = game.Nome;
         gameExistente.Descricao = game.Descricao;
         gameExistente.Genero = game.Genero;
         gameExistente.Desenvolvedor = game.Desenvolvedor;
         gameExistente.Preco = game.Preco;
         gameExistente.DataRelease = game.DataRelease;
-
         var resultado = _repository.Update(gameExistente);
+        if (!resultado.success)
+        {
+            _logger.LogError("Falha ao atualizar jogo no repositório | GameId: {GameId}", game.Id);
+        }
         return (resultado.entity, resultado.success);
     }
 }

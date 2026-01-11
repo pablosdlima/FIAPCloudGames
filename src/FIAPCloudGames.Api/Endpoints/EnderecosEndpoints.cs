@@ -25,7 +25,6 @@ public static class EnderecoEndpoints
         {
             request = request with { UsuarioId = usuarioId };
             var endereco = await enderecoService.Cadastrar(request);
-
             return ApiResponses.Created($"/api/usuarios/{usuarioId}/enderecos/{endereco.Id}", endereco, "Endereço cadastrado com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<CadastrarEnderecoRequest>>()
@@ -34,10 +33,11 @@ public static class EnderecoEndpoints
         .Produces(400);
 
 
-        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarEnderecoRequest request, IEnderecoAppService enderecoService) =>
+        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarEnderecoRequest request, IEnderecoAppService enderecoService, ILogger<Program> logger) =>
         {
             if (id != request.Id)
             {
+                logger.LogWarning("Falha na atualização: Id da URL não corresponde ao Id do corpo da requisição | EnderecoId: {EnderecoId} | RequestId: {RequestId}", id, request.Id);
                 return ApiResponses.BadRequest("id", "Id da URL não corresponde ao Id do corpo da requisição.");
             }
 
@@ -47,6 +47,7 @@ public static class EnderecoEndpoints
 
             if (!sucesso || endereco == null)
             {
+                logger.LogWarning("Falha na atualização: Endereço não encontrado ou não pertence ao usuário | EnderecoId: {EnderecoId} | UsuarioId: {UsuarioId}", id, usuarioId);
                 return ApiResponses.NotFound("endereco", "Endereço não encontrado ou não pertence ao usuário.");
             }
 
@@ -59,13 +60,17 @@ public static class EnderecoEndpoints
         .Produces(404);
 
 
-        app.MapDelete("Deletar/{id:guid}", async (Guid usuarioId, Guid id, IEnderecoAppService enderecoService) =>
+        app.MapDelete("Deletar/{id:guid}", async (Guid usuarioId, Guid id, IEnderecoAppService enderecoService, ILogger<Program> logger) =>
         {
             var sucesso = await enderecoService.Deletar(id, usuarioId);
 
-            return !sucesso
-                ? ApiResponses.NotFound("endereco", "Endereço não encontrado ou não pertence ao usuário.")
-                : ApiResponses.OkMessage("Endereço removido com sucesso.");
+            if (!sucesso)
+            {
+                logger.LogWarning("Falha na exclusão: Endereço não encontrado ou não pertence ao usuário | EnderecoId: {EnderecoId} | UsuarioId: {UsuarioId}", id, usuarioId);
+                return ApiResponses.NotFound("endereco", "Endereço não encontrado ou não pertence ao usuário.");
+            }
+
+            return ApiResponses.OkMessage("Endereço removido com sucesso.");
         })
         .WithName("DeletarEndereco")
         .Produces(200)

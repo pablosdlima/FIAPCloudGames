@@ -12,25 +12,31 @@ public static class UsuarioPerfilEndpoints
     {
         var app = route.MapGroup("/api/usuarios/{usuarioId:guid}/perfil").WithTags("UsuarioPerfil");
 
-        app.MapGet("BuscarPorUsuarioId/", async (Guid usuarioId, IUsuarioPerfilAppService perfilService) =>
+        app.MapGet("BuscarPorUsuarioId/", async (Guid usuarioId, IUsuarioPerfilAppService perfilService, ILogger<Program> logger) =>
         {
             var perfil = await perfilService.BuscarPorUsuarioId(usuarioId);
-
-            return perfil == null
-                ? ApiResponses.NotFound("perfil", "Perfil não encontrado para este usuário.")
-                : ApiResponses.Ok(perfil, "Perfil encontrado com sucesso.");
+            if (perfil == null)
+            {
+                logger.LogWarning("Perfil não encontrado para o usuário | UsuarioId: {UsuarioId}", usuarioId);
+                return ApiResponses.NotFound("perfil", "Perfil não encontrado para este usuário.");
+            }
+            return ApiResponses.Ok(perfil, "Perfil encontrado com sucesso.");
         })
         .WithName("BuscarPerfilDoUsuario")
         .Produces<BuscarUsuarioPerfilResponse>(200)
         .Produces(404);
 
 
-        app.MapPost("Cadastrar/", async (Guid usuarioId, CadastrarUsuarioPerfilRequest request, IUsuarioPerfilAppService perfilService) =>
+        app.MapPost("Cadastrar/", async (Guid usuarioId, CadastrarUsuarioPerfilRequest request, IUsuarioPerfilAppService perfilService, ILogger<Program> logger) =>
         {
             request = request with { UsuarioId = usuarioId };
-
             var perfil = await perfilService.Cadastrar(request);
 
+            if (perfil == null)
+            {
+                logger.LogError("Erro inesperado ao cadastrar perfil para o usuário | UsuarioId: {UsuarioId} | Request: {@Request}", usuarioId, request);
+                return ApiResponses.Problem("Erro ao cadastrar o perfil.");
+            }
             return ApiResponses.Created($"/api/usuarios/{usuarioId}/perfil/{perfil.Id}", perfil, "Perfil cadastrado com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<CadastrarUsuarioPerfilRequest>>()
@@ -39,22 +45,20 @@ public static class UsuarioPerfilEndpoints
         .Produces(400);
 
 
-        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarUsuarioPerfilRequest request, IUsuarioPerfilAppService perfilService) =>
+        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarUsuarioPerfilRequest request, IUsuarioPerfilAppService perfilService, ILogger<Program> logger) =>
         {
             if (id != request.Id)
             {
+                logger.LogWarning("Id da URL não corresponde ao Id do corpo da requisição | URLId: {URLId} | RequestId: {RequestId}", id, request.Id);
                 return ApiResponses.BadRequest("id", "Id da URL não corresponde ao Id do corpo da requisição.");
             }
-
             request = request with { UsuarioId = usuarioId };
-
             var (perfil, sucesso) = await perfilService.Atualizar(request);
-
             if (!sucesso || perfil == null)
             {
+                logger.LogWarning("Perfil não encontrado ou falha na atualização | PerfilId: {PerfilId} | UsuarioId: {UsuarioId}", id, usuarioId);
                 return ApiResponses.NotFound("perfil", "Perfil não encontrado ou não pertence ao usuário.");
             }
-
             return ApiResponses.Ok(perfil, "Perfil atualizado com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<AtualizarUsuarioPerfilRequest>>()
@@ -64,13 +68,19 @@ public static class UsuarioPerfilEndpoints
         .Produces(404);
 
 
-        app.MapDelete("Deletar/{id:guid}", async (Guid usuarioId, Guid id, IUsuarioPerfilAppService perfilService) =>
+        app.MapDelete("Deletar/{id:guid}", async (
+            Guid usuarioId,
+            Guid id,
+            IUsuarioPerfilAppService perfilService,
+            ILogger<Program> logger) =>
         {
             var sucesso = await perfilService.Deletar(id, usuarioId);
-
-            return !sucesso
-                ? ApiResponses.NotFound("perfil", "Perfil não encontrado ou não pertence ao usuário.")
-                : ApiResponses.OkMessage("Perfil removido com sucesso.");
+            if (!sucesso)
+            {
+                logger.LogWarning("Perfil não encontrado ou falha na exclusão | PerfilId: {PerfilId} | UsuarioId: {UsuarioId}", id, usuarioId);
+                return ApiResponses.NotFound("perfil", "Perfil não encontrado ou não pertence ao usuário.");
+            }
+            return ApiResponses.OkMessage("Perfil removido com sucesso.");
         })
         .WithName("DeletarPerfil")
         .Produces(200)

@@ -3,18 +3,23 @@ using FIAPCloudGames.Domain.Interfaces.Repository;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
 using FIAPCloudGames.Domain.Services.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace FIAPCloudGames.Domain.Services;
-
 
 public class UsuarioPerfilServices : GenericServices<UsuarioPerfil>, IUsuarioPerfilService
 {
     private readonly IUsuarioPerfilRepository _usuarioPerfilRepository;
+    private readonly ILogger<UsuarioPerfilServices> _logger;
 
     #region Construtor
-    public UsuarioPerfilServices(IGenericEntityRepository<UsuarioPerfil> repository, IUsuarioPerfilRepository usuarioPerfilRepository) : base(repository)
+    public UsuarioPerfilServices(
+        IGenericEntityRepository<UsuarioPerfil> repository,
+        IUsuarioPerfilRepository usuarioPerfilRepository,
+        ILogger<UsuarioPerfilServices> logger) : base(repository)
     {
         _usuarioPerfilRepository = usuarioPerfilRepository;
+        _logger = logger;
     }
     #endregion
 
@@ -25,7 +30,12 @@ public class UsuarioPerfilServices : GenericServices<UsuarioPerfil>, IUsuarioPer
 
     public async Task<UsuarioPerfil> Cadastrar(UsuarioPerfil perfil)
     {
-        return await _repository.Insert(perfil);
+        var perfilCadastrado = await _repository.Insert(perfil);
+        if (perfilCadastrado == null)
+        {
+            _logger.LogError("Falha ao inserir perfil no repositório | UsuarioId: {UsuarioId} | NomeCompleto: {NomeCompleto}", perfil.UsuarioId, perfil.NomeCompleto);
+        }
+        return perfilCadastrado;
     }
 
     public async Task<(UsuarioPerfil? Perfil, bool Success)> Atualizar(UsuarioPerfil perfil)
@@ -34,6 +44,7 @@ public class UsuarioPerfilServices : GenericServices<UsuarioPerfil>, IUsuarioPer
 
         if (perfilExistente == null)
         {
+            _logger.LogWarning("Perfil não encontrado para atualização | PerfilId: {PerfilId} | UsuarioId: {UsuarioId}", perfil.Id, perfil.UsuarioId);
             return (null, false);
         }
 
@@ -43,7 +54,10 @@ public class UsuarioPerfilServices : GenericServices<UsuarioPerfil>, IUsuarioPer
         perfilExistente.AvatarUrl = perfil.AvatarUrl;
 
         var resultado = _repository.Update(perfilExistente);
-
+        if (!resultado.success)
+        {
+            _logger.LogError("Falha ao atualizar perfil no repositório | PerfilId: {PerfilId} | UsuarioId: {UsuarioId}", perfil.Id, perfil.UsuarioId);
+        }
         return await Task.FromResult((resultado.entity, resultado.success));
     }
 
@@ -53,9 +67,15 @@ public class UsuarioPerfilServices : GenericServices<UsuarioPerfil>, IUsuarioPer
 
         if (perfil == null)
         {
+            _logger.LogWarning("Perfil não encontrado para exclusão | PerfilId: {PerfilId} | UsuarioId: {UsuarioId}", id, usuarioId);
             return false;
         }
 
-        return await _repository.DeleteById(id);
+        var sucesso = await _repository.DeleteById(id);
+        if (!sucesso)
+        {
+            _logger.LogError("Falha ao deletar perfil no repositório | PerfilId: {PerfilId} | UsuarioId: {UsuarioId}", id, usuarioId);
+        }
+        return sucesso;
     }
 }

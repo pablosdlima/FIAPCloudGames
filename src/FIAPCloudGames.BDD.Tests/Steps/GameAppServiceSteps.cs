@@ -4,6 +4,7 @@ using FIAPCloudGames.Domain.Dtos.Request.Game;
 using FIAPCloudGames.Domain.Dtos.Responses.Game;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
+using Microsoft.Extensions.Logging;
 using Moq;
 using TechTalk.SpecFlow;
 
@@ -14,6 +15,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
     {
         private readonly ScenarioContext _scenarioContext;
         private readonly Mock<IGameService> _mockGameService;
+        private readonly Mock<ILogger<GameAppService>> _mockLogger;
         private readonly IGameAppService _gameAppService;
 
         private Guid _gameId;
@@ -37,9 +39,8 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         {
             _scenarioContext = scenarioContext;
             _mockGameService = new Mock<IGameService>();
-
-            _gameAppService = new GameAppService(_mockGameService.Object);
-
+            _mockLogger = new Mock<ILogger<GameAppService>>();
+            _gameAppService = new GameAppService(_mockGameService.Object, _mockLogger.Object);
             _gamesCadastrados = [];
             _nome = string.Empty;
             _descricao = string.Empty;

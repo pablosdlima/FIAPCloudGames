@@ -13,7 +13,7 @@ public static class UsuariosEndpoints
     {
         var app = route.MapGroup("/api/Usuarios").WithTags("Usuarios");
 
-        app.MapGet("BuscarPorId/{id}", (Guid id, IUsuarioAppService usuarioService) =>
+        app.MapGet("BuscarPorId/{id}", (Guid id, IUsuarioAppService usuarioService, ILogger<Program> logger) =>
         {
             try
             {
@@ -22,8 +22,10 @@ public static class UsuariosEndpoints
             }
             catch (KeyNotFoundException)
             {
+                logger.LogWarning("Usuário não encontrado | UsuarioId: {UsuarioId}", id);
                 return ApiResponses.NotFound("usuario", "Usuário não encontrado.");
             }
+
         })
         .WithName("BuscarUsuarioPorId")
         .Produces<BuscarPorIdResponse>(200)
@@ -33,15 +35,14 @@ public static class UsuariosEndpoints
         // }).RequireAuthorization();
 
 
-        app.MapPost("Cadastrar/", async (CadastrarUsuarioRequest request, IUsuarioAppService usuarioService) =>
+        app.MapPost("Cadastrar/", async (CadastrarUsuarioRequest request, IUsuarioAppService usuarioService, ILogger<Program> logger) =>
         {
             var result = await usuarioService.Cadastrar(request);
-
             if (result == null)
             {
+                logger.LogError("Erro ao cadastrar o usuário | UserName: {UserName} | Email: {Email}", request.Nome, request.Email);
                 return ApiResponses.Problem("Erro ao cadastrar o usuário.");
             }
-
             return ApiResponses.Created($"/api/Usuarios/{result.IdUsuario}", result, "Usuário cadastrado com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<CadastrarUsuarioRequest>>()
@@ -51,13 +52,15 @@ public static class UsuariosEndpoints
         .Produces(500);
 
 
-        app.MapPut("AlterarSenha/", async (AlterarSenhaRequest request, IUsuarioAppService usuarioService) =>
+        app.MapPut("AlterarSenha/", async (AlterarSenhaRequest request, IUsuarioAppService usuarioService, ILogger<Program> logger) =>
         {
             var sucesso = await usuarioService.AlterarSenha(request);
-
-            return !sucesso
-                ? ApiResponses.NotFound("usuario", "Usuário não encontrado ou senha atual incorreta.")
-                : ApiResponses.OkMessage("Senha alterada com sucesso.");
+            if (!sucesso)
+            {
+                logger.LogWarning("Falha ao alterar senha: Usuário não encontrado ou senha atual incorreta | UsuarioId: {UsuarioId}", request.Id);
+                return ApiResponses.NotFound("usuario", "Usuário não encontrado ou senha atual incorreta.");
+            }
+            return ApiResponses.OkMessage("Senha alterada com sucesso.");
         })
         .AddEndpointFilter<ValidationEndpointFilter<AlterarSenhaRequest>>()
         .WithName("AlterarSenha")
@@ -66,13 +69,15 @@ public static class UsuariosEndpoints
         .Produces(404);
 
 
-        app.MapPut("AlterarStatus/", async (Guid id, IUsuarioAppService usuarioService) =>
+        app.MapPut("AlterarStatus/", async (Guid id, IUsuarioAppService usuarioService, ILogger<Program> logger) =>
         {
             var result = await usuarioService.AlterarStatus(id);
-
-            return result == null
-                ? ApiResponses.NotFound("usuario", "Usuário não encontrado.")
-                : ApiResponses.Ok(result, "Status do usuário alterado com sucesso.");
+            if (result == null)
+            {
+                logger.LogWarning("Falha ao alterar status: Usuário não encontrado | UsuarioId: {UsuarioId}", id);
+                return ApiResponses.NotFound("usuario", "Usuário não encontrado.");
+            }
+            return ApiResponses.Ok(result, "Status do usuário alterado com sucesso.");
         })
         .WithName("AlterarStatus")
         .Produces<AlterarStatusResponse>(200)

@@ -4,16 +4,21 @@ using FIAPCloudGames.Domain.Dtos.Responses.Role;
 using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
+using Microsoft.Extensions.Logging;
 
 namespace FIAPCloudGames.Application.AppServices;
 
 public class RoleAppService : IRoleAppService
 {
     private readonly IRoleServices _roleService;
+    private readonly ILogger<RoleAppService> _logger;
 
-    public RoleAppService(IRoleServices roleService)
+    public RoleAppService(
+        IRoleServices roleService,
+        ILogger<RoleAppService> logger)
     {
         _roleService = roleService ?? throw new ArgumentNullException(nameof(roleService));
+        _logger = logger;
     }
 
     public async Task<RolesResponse> Cadastrar(CadastrarRoleRequest request)
@@ -24,14 +29,12 @@ public class RoleAppService : IRoleAppService
             RoleName = request.RoleName,
             Description = request.Description
         };
-
         var criado = await _roleService.Insert(entity);
-
         if (criado == null)
         {
+            _logger.LogError("Falha ao cadastrar role no serviço de domínio | Request: {@Request}", request);
             throw new DomainException("Não foi possível cadastrar a role. Verifique os dados fornecidos.");
         }
-
         return new RolesResponse
         {
             Id = criado.Id,
@@ -43,7 +46,6 @@ public class RoleAppService : IRoleAppService
     public async Task<List<RolesResponse>> ListarRoles()
     {
         var roles = _roleService.ListarRoles();
-
         var rolesResponse = roles.Select(r => new RolesResponse
         {
             Id = r.Id,
@@ -64,6 +66,7 @@ public class RoleAppService : IRoleAppService
         var (roleAtualizada, sucesso) = await _roleService.AtualizarRole(role);
         if (!sucesso || roleAtualizada == null)
         {
+            _logger.LogWarning("Falha ao atualizar role ou role não encontrada | RoleId: {RoleId} | Request: {@Request}", request.Id, request);
             return (null, false);
         }
         var response = new RolesResponse

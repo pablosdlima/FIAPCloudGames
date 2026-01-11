@@ -4,6 +4,7 @@ using FIAPCloudGames.Domain.Dtos.Responses.UsuarioGameBiblioteca;
 using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
+using Microsoft.Extensions.Logging;
 
 namespace FIAPCloudGames.Application.AppServices;
 
@@ -12,12 +13,18 @@ public class UsuarioGameBibliotecaAppService : IUsuarioGameBibliotecaAppService
     private readonly IUsuarioGameBibliotecaService _bibliotecaService;
     private readonly IUsuarioService _usuarioService;
     private readonly IGameService _gameService;
+    private readonly ILogger<UsuarioGameBibliotecaAppService> _logger;
 
-    public UsuarioGameBibliotecaAppService(IUsuarioGameBibliotecaService bibliotecaService, IUsuarioService usuarioService, IGameService gameService)
+    public UsuarioGameBibliotecaAppService(
+        IUsuarioGameBibliotecaService bibliotecaService,
+        IUsuarioService usuarioService,
+        IGameService gameService,
+        ILogger<UsuarioGameBibliotecaAppService> logger)
     {
         _bibliotecaService = bibliotecaService;
         _usuarioService = usuarioService;
         _gameService = gameService;
+        _logger = logger;
     }
 
     public async Task<List<BibliotecaResponse>> ListarPorUsuario(Guid usuarioId)
@@ -25,6 +32,7 @@ public class UsuarioGameBibliotecaAppService : IUsuarioGameBibliotecaAppService
         var usuarioExiste = _usuarioService.GetById(usuarioId);
         if (usuarioExiste == null)
         {
+            _logger.LogWarning("Usuário não encontrado ao listar biblioteca | UsuarioId: {UsuarioId}", usuarioId);
             throw new NotFoundException($"Usuário com ID {usuarioId} não encontrado.");
         }
 
@@ -48,12 +56,14 @@ public class UsuarioGameBibliotecaAppService : IUsuarioGameBibliotecaAppService
         var usuarioExiste = _usuarioService.GetById(request.UsuarioId);
         if (usuarioExiste == null)
         {
+            _logger.LogWarning("Usuário não encontrado para comprar jogo | UsuarioId: {UsuarioId} | GameId: {GameId}", request.UsuarioId, request.GameId);
             throw new NotFoundException($"Usuário com ID {request.UsuarioId} não encontrado.");
         }
 
         var gameExiste = _gameService.GetById(request.GameId);
         if (gameExiste == null)
         {
+            _logger.LogWarning("Jogo não encontrado para compra | GameId: {GameId} | UsuarioId: {UsuarioId}", request.GameId, request.UsuarioId);
             throw new NotFoundException($"Jogo com ID {request.GameId} não encontrado.");
         }
 
@@ -68,6 +78,7 @@ public class UsuarioGameBibliotecaAppService : IUsuarioGameBibliotecaAppService
         var (bibliotecaComprada, sucesso, errorMessage) = await _bibliotecaService.ComprarGame(biblioteca);
         if (!sucesso || bibliotecaComprada == null)
         {
+            _logger.LogWarning("Falha na compra do jogo | UsuarioId: {UsuarioId} | GameId: {GameId} | Erro: {ErrorMessage}", request.UsuarioId, request.GameId, errorMessage);
             return (null, false, errorMessage);
         }
         var response = new BibliotecaResponse
@@ -89,12 +100,14 @@ public class UsuarioGameBibliotecaAppService : IUsuarioGameBibliotecaAppService
         var usuarioExiste = _usuarioService.GetById(request.UsuarioId);
         if (usuarioExiste == null)
         {
+            _logger.LogWarning("Usuário não encontrado para atualizar item da biblioteca | UsuarioId: {UsuarioId} | BibliotecaItemId: {BibliotecaItemId}", request.UsuarioId, request.Id);
             throw new NotFoundException($"Usuário com ID {request.UsuarioId} não encontrado.");
         }
 
         var gameExiste = _gameService.GetById(request.GameId);
         if (gameExiste == null)
         {
+            _logger.LogWarning("Jogo não encontrado para atualização de item da biblioteca | GameId: {GameId} | UsuarioId: {UsuarioId} | BibliotecaItemId: {BibliotecaItemId}", request.GameId, request.UsuarioId, request.Id);
             throw new NotFoundException($"Jogo com ID {request.GameId} não encontrado.");
         }
 
@@ -110,6 +123,7 @@ public class UsuarioGameBibliotecaAppService : IUsuarioGameBibliotecaAppService
         var (bibliotecaAtualizada, sucesso) = await _bibliotecaService.Atualizar(biblioteca);
         if (!sucesso || bibliotecaAtualizada == null)
         {
+            _logger.LogWarning("Falha ao atualizar item da biblioteca ou item não encontrado | BibliotecaItemId: {BibliotecaItemId} | UsuarioId: {UsuarioId}", request.Id, request.UsuarioId);
             return (null, false);
         }
         var response = new BibliotecaResponse
@@ -131,6 +145,7 @@ public class UsuarioGameBibliotecaAppService : IUsuarioGameBibliotecaAppService
         var usuarioExiste = _usuarioService.GetById(usuarioId);
         if (usuarioExiste == null)
         {
+            _logger.LogWarning("Usuário não encontrado para deletar item da biblioteca | UsuarioId: {UsuarioId} | BibliotecaItemId: {BibliotecaItemId}", usuarioId, id);
             throw new NotFoundException($"Usuário com ID {usuarioId} não encontrado.");
         }
 

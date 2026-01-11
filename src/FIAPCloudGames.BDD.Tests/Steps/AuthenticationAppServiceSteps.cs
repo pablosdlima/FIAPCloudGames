@@ -4,6 +4,7 @@ using FIAPCloudGames.Domain.Dtos.Responses.Authentication;
 using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
+using Microsoft.Extensions.Logging;
 using Moq;
 using TechTalk.SpecFlow;
 
@@ -15,6 +16,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         private readonly ScenarioContext _scenarioContext;
         private readonly Mock<IJwtGenerator> _mockJwtGenerator;
         private readonly Mock<IUsuarioService> _mockUsuarioService;
+        private readonly Mock<ILogger<AuthenticationAppService>> _mockLogger;
         private readonly IAuthenticationAppService _authenticationAppService;
 
         private Usuario? _usuarioExistente;
@@ -27,10 +29,12 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _scenarioContext = scenarioContext;
             _mockJwtGenerator = new Mock<IJwtGenerator>();
             _mockUsuarioService = new Mock<IUsuarioService>();
+            _mockLogger = new Mock<ILogger<AuthenticationAppService>>();
             _scenarioContext["MockUsuarioService_Authentication"] = _mockUsuarioService;
             _authenticationAppService = new AuthenticationAppService(
                 _mockJwtGenerator.Object,
-                _mockUsuarioService.Object
+                _mockUsuarioService.Object,
+                _mockLogger.Object
             );
             _tokenGerado = string.Empty;
         }

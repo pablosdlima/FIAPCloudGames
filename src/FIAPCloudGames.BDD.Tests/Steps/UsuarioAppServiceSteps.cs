@@ -6,6 +6,7 @@ using FIAPCloudGames.Domain.Dtos.Responses.Usuarios;
 using FIAPCloudGames.Domain.Enums;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
+using Microsoft.Extensions.Logging;
 using Moq;
 using TechTalk.SpecFlow;
 
@@ -16,6 +17,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
     {
         private readonly ScenarioContext _scenarioContext;
         private readonly Mock<IUsuarioService> _mockUsuarioService;
+        private readonly Mock<ILogger<UsuarioAppService>> _mockLogger;
         private readonly IUsuarioAppService _usuarioAppService;
 
         private Guid _usuarioId;
@@ -39,11 +41,9 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         {
             _scenarioContext = scenarioContext;
             _mockUsuarioService = new Mock<IUsuarioService>();
-
+            _mockLogger = new Mock<ILogger<UsuarioAppService>>();
             _scenarioContext["MockUsuarioService_Usuario"] = _mockUsuarioService;
-
-            _usuarioAppService = new UsuarioAppService(_mockUsuarioService.Object);
-
+            _usuarioAppService = new UsuarioAppService(_mockUsuarioService.Object, _mockLogger.Object);
             _nome = string.Empty;
             _senha = string.Empty;
             _celular = string.Empty;

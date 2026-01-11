@@ -5,6 +5,7 @@ using FIAPCloudGames.Domain.Dtos.Responses.UsuarioRole;
 using FIAPCloudGames.Domain.Enums;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
+using Microsoft.Extensions.Logging;
 using MockQueryable.Moq;
 using Moq;
 using TechTalk.SpecFlow;
@@ -18,6 +19,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         private readonly Mock<IUsuarioRoleServices> _mockUsuarioRoleService;
         private readonly Mock<IUsuarioService> _mockUsuarioService;
         private readonly Mock<IRoleServices> _mockRoleService;
+        private readonly Mock<ILogger<UsuarioRoleAppService>> _mockLogger;
         private readonly IUsuarioRoleAppService _usuarioRoleAppService;
 
         private Guid _usuarioId;
@@ -36,14 +38,15 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _mockUsuarioRoleService = new Mock<IUsuarioRoleServices>();
             _mockUsuarioService = new Mock<IUsuarioService>();
             _mockRoleService = new Mock<IRoleServices>();
-
+            _mockLogger = new Mock<ILogger<UsuarioRoleAppService>>();
             _scenarioContext["MockUsuarioService_UsuarioRole"] = _mockUsuarioService;
             _scenarioContext["MockRoleService_UsuarioRole"] = _mockRoleService;
 
             _usuarioRoleAppService = new UsuarioRoleAppService(
                 _mockUsuarioRoleService.Object,
                 _mockUsuarioService.Object,
-                _mockRoleService.Object
+                _mockRoleService.Object,
+                _mockLogger.Object
             );
 
             _usuarioRoles = [];

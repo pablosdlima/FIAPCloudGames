@@ -1,11 +1,10 @@
 ﻿using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioPerfil;
-using FIAPCloudGames.Domain.Dtos.Responses.Contato;
 using FIAPCloudGames.Domain.Dtos.Responses.UsuarioPerfil;
 using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
-using FIAPCloudGames.Domain.Services;
+using Microsoft.Extensions.Logging;
 
 namespace FIAPCloudGames.Application.AppServices;
 
@@ -13,11 +12,16 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
 {
     private readonly IUsuarioPerfilService _usuarioPerfilService;
     private readonly IUsuarioService _usuarioService;
+    private readonly ILogger<UsuarioPerfilAppService> _logger;
 
-    public UsuarioPerfilAppService(IUsuarioPerfilService usuarioPerfilService, IUsuarioService usuarioService)
+    public UsuarioPerfilAppService(
+        IUsuarioPerfilService usuarioPerfilService,
+        IUsuarioService usuarioService,
+        ILogger<UsuarioPerfilAppService> logger)
     {
         _usuarioPerfilService = usuarioPerfilService;
         _usuarioService = usuarioService;
+        _logger = logger;
     }
 
     public async Task<BuscarUsuarioPerfilResponse?> BuscarPorUsuarioId(Guid usuarioId)
@@ -25,12 +29,13 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
         var usuarioExiste = _usuarioService.GetById(usuarioId);
         if (usuarioExiste == null)
         {
+            _logger.LogWarning("Usuário não encontrado ao buscar perfil | UsuarioId: {UsuarioId}", usuarioId);
             throw new NotFoundException($"Usuário com ID {usuarioId} não encontrado.");
         }
-
         var perfil = _usuarioPerfilService.BuscarPorUsuarioId(usuarioId);
         if (perfil == null)
         {
+            _logger.LogWarning("Perfil não encontrado para o usuário | UsuarioId: {UsuarioId}", usuarioId);
             throw new NotFoundException($"Perfil para o usuário com ID {usuarioId} não encontrado.");
         }
         return new BuscarUsuarioPerfilResponse
@@ -47,7 +52,6 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
     public async Task<List<BuscarUsuarioPerfilResponse>> ListarPaginacao(int take, int skip)
     {
         var usuariosPerfils = await _usuarioPerfilService.ListarPaginacao(take, skip);
-
         var usuariosResponse = usuariosPerfils.Select(c => new BuscarUsuarioPerfilResponse
         {
             Id = c.Id,
@@ -56,9 +60,7 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
             DataNascimento = c.DataNascimento,
             Pais = c.Pais,
             AvatarUrl = c.AvatarUrl
-
         }).ToList();
-
         return await Task.FromResult(usuariosResponse);
     }
 
@@ -67,9 +69,9 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
         var usuarioExiste = _usuarioService.GetById(request.UsuarioId);
         if (usuarioExiste == null)
         {
+            _logger.LogWarning("Usuário não encontrado para cadastrar perfil | UsuarioId: {UsuarioId}", request.UsuarioId);
             throw new NotFoundException($"Usuário com ID {request.UsuarioId} não encontrado para cadastrar o perfil.");
         }
-
         var perfil = new UsuarioPerfil(
             request.NomeCompleto,
             request.DataNascimento,
@@ -79,12 +81,11 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
             UsuarioId = request.UsuarioId
         };
         var perfilCadastrado = await _usuarioPerfilService.Cadastrar(perfil);
-
         if (perfilCadastrado == null)
         {
+            _logger.LogError("Falha ao cadastrar perfil | UsuarioId: {UsuarioId} | Request: {@Request}", request.UsuarioId, request);
             throw new DomainException("Não foi possível cadastrar o perfil. Verifique os dados fornecidos ou se o usuário já possui um perfil.");
         }
-
         return new BuscarUsuarioPerfilResponse
         {
             Id = perfilCadastrado.Id,
@@ -101,9 +102,9 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
         var usuarioExiste = _usuarioService.GetById(request.UsuarioId);
         if (usuarioExiste == null)
         {
+            _logger.LogWarning("Usuário não encontrado para atualizar perfil | UsuarioId: {UsuarioId} | PerfilId: {PerfilId}", request.UsuarioId, request.Id);
             throw new NotFoundException($"Usuário com ID {request.UsuarioId} não encontrado para atualizar o perfil.");
         }
-
         var perfil = new UsuarioPerfil(
             request.NomeCompleto,
             request.DataNascimento,
@@ -116,6 +117,7 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
         var (perfilAtualizado, sucesso) = await _usuarioPerfilService.Atualizar(perfil);
         if (!sucesso || perfilAtualizado == null)
         {
+            _logger.LogWarning("Falha ao atualizar perfil ou perfil não encontrado | PerfilId: {PerfilId} | UsuarioId: {UsuarioId}", request.Id, request.UsuarioId);
             return (null, false);
         }
         var response = new BuscarUsuarioPerfilResponse
@@ -135,9 +137,9 @@ public class UsuarioPerfilAppService : IUsuarioPerfilAppService
         var usuarioExiste = _usuarioService.GetById(usuarioId);
         if (usuarioExiste == null)
         {
+            _logger.LogWarning("Usuário não encontrado para deletar perfil | UsuarioId: {UsuarioId} | PerfilId: {PerfilId}", usuarioId, id);
             throw new NotFoundException($"Usuário com ID {usuarioId} não encontrado para deletar o perfil.");
         }
-
         return await _usuarioPerfilService.Deletar(id, usuarioId);
     }
 }

@@ -3,20 +3,22 @@ using FIAPCloudGames.Domain.Interfaces.Generic;
 using FIAPCloudGames.Domain.Models;
 using FIAPCloudGames.Domain.Services;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit;
 
 namespace FIAPCloudGames.Tests.Domain.Services
 {
     public class UsuarioServicesTests
     {
         private readonly Mock<IGenericEntityRepository<Usuario>> _repositoryMock;
+        private readonly Mock<ILogger<UsuarioServices>> _loggerMock;
         private readonly UsuarioServices _service;
 
         public UsuarioServicesTests()
         {
             _repositoryMock = new Mock<IGenericEntityRepository<Usuario>>();
-            _service = new UsuarioServices(_repositoryMock.Object);
+            _loggerMock = new Mock<ILogger<UsuarioServices>>();
+            _service = new UsuarioServices(_repositoryMock.Object, _loggerMock.Object);
         }
 
         [Fact]

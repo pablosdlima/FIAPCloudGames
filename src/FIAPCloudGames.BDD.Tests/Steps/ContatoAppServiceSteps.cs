@@ -4,6 +4,7 @@ using FIAPCloudGames.Domain.Dtos.Request.Contato;
 using FIAPCloudGames.Domain.Dtos.Responses.Contato;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
+using Microsoft.Extensions.Logging;
 using Moq;
 using TechTalk.SpecFlow;
 
@@ -15,6 +16,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         private readonly ScenarioContext _scenarioContext;
         private readonly Mock<IContatoService> _mockContatoService;
         private readonly Mock<IUsuarioService> _mockUsuarioService;
+        private readonly Mock<ILogger<ContatoAppService>> _mockLogger;
         private readonly IContatoAppService _contatoAppService;
 
         private Guid _contatoId;
@@ -34,10 +36,12 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _scenarioContext = scenarioContext;
             _mockContatoService = new Mock<IContatoService>();
             _mockUsuarioService = new Mock<IUsuarioService>();
+            _mockLogger = new Mock<ILogger<ContatoAppService>>();
             _scenarioContext["MockUsuarioService_Contato"] = _mockUsuarioService;
             _contatoAppService = new ContatoAppService(
                 _mockContatoService.Object,
-                _mockUsuarioService.Object
+                _mockUsuarioService.Object,
+                _mockLogger.Object
             );
             _contatosUsuario = [];
             _celular = string.Empty;

@@ -4,6 +4,7 @@ using FIAPCloudGames.Domain.Dtos.Request.Enderecos;
 using FIAPCloudGames.Domain.Dtos.Responses.Endereco;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
+using Microsoft.Extensions.Logging;
 using Moq;
 using TechTalk.SpecFlow;
 
@@ -15,6 +16,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         private readonly ScenarioContext _scenarioContext;
         private readonly Mock<IEnderecoService> _mockEnderecoService;
         private readonly Mock<IUsuarioService> _mockUsuarioService;
+        private readonly Mock<ILogger<EnderecoAppService>> _mockLogger;
         private readonly IEnderecoAppService _enderecoAppService;
 
         private Guid _enderecoId;
@@ -39,10 +41,12 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _scenarioContext = scenarioContext;
             _mockEnderecoService = new Mock<IEnderecoService>();
             _mockUsuarioService = new Mock<IUsuarioService>();
+            _mockLogger = new Mock<ILogger<EnderecoAppService>>();
             _scenarioContext["MockUsuarioService_Endereco"] = _mockUsuarioService;
             _enderecoAppService = new EnderecoAppService(
                 _mockEnderecoService.Object,
-                _mockUsuarioService.Object
+                _mockUsuarioService.Object,
+                _mockLogger.Object
             );
             _enderecosUsuario = [];
             _rua = string.Empty;

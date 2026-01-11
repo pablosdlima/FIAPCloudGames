@@ -4,6 +4,7 @@ using FIAPCloudGames.Domain.Dtos.Responses.Contato;
 using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
+using Microsoft.Extensions.Logging;
 
 namespace FIAPCloudGames.Application.AppServices;
 
@@ -11,11 +12,16 @@ public class ContatoAppService : IContatoAppService
 {
     private readonly IContatoService _contatoService;
     private readonly IUsuarioService _usuarioService;
+    private readonly ILogger<ContatoAppService> _logger;
 
-    public ContatoAppService(IContatoService contatoService, IUsuarioService usuarioService)
+    public ContatoAppService(
+        IContatoService contatoService,
+        IUsuarioService usuarioService,
+        ILogger<ContatoAppService> logger)
     {
         _contatoService = contatoService;
         _usuarioService = usuarioService;
+        _logger = logger;
     }
 
     public async Task<List<ContatoResponse>> ListarPorUsuario(Guid usuarioId)
@@ -23,9 +29,9 @@ public class ContatoAppService : IContatoAppService
         var usuarioExiste = _usuarioService.GetById(usuarioId);
         if (usuarioExiste == null)
         {
+            _logger.LogWarning("Usuário não encontrado ao listar contatos | UsuarioId: {UsuarioId}", usuarioId);
             throw new NotFoundException($"Usuário com ID {usuarioId} não encontrado.");
         }
-
         var contatos = _contatoService.ListarPorUsuario(usuarioId);
         var contatosResponse = contatos.Select(c => new ContatoResponse
         {
@@ -40,7 +46,6 @@ public class ContatoAppService : IContatoAppService
     public async Task<List<ContatoResponse>> ListarPaginacao(int take, int skip)
     {
         var contatos = await _contatoService.ListarPaginacao(take, skip);
-
         var contatosResponse = contatos.Select(c => new ContatoResponse
         {
             Id = c.Id,
@@ -48,7 +53,6 @@ public class ContatoAppService : IContatoAppService
             Celular = c.Celular,
             Email = c.Email
         }).ToList();
-
         return await Task.FromResult(contatosResponse);
     }
 
@@ -57,21 +61,19 @@ public class ContatoAppService : IContatoAppService
         var usuarioExiste = _usuarioService.GetById(request.UsuarioId);
         if (usuarioExiste == null)
         {
+            _logger.LogWarning("Usuário não encontrado para cadastrar contato | UsuarioId: {UsuarioId}", request.UsuarioId);
             throw new NotFoundException($"Usuário com ID {request.UsuarioId} não encontrado para cadastrar o contato.");
         }
-
         var contato = new Contato(request.Celular, request.Email)
         {
             UsuarioId = request.UsuarioId
         };
-
         var contatoCadastrado = await _contatoService.Cadastrar(contato);
-
         if (contatoCadastrado == null)
         {
+            _logger.LogError("Falha ao cadastrar contato | UsuarioId: {UsuarioId} | Request: {@Request}", request.UsuarioId, request);
             throw new DomainException("Não foi possível cadastrar o contato. Verifique os dados fornecidos.");
         }
-
         return new ContatoResponse
         {
             Id = contatoCadastrado.Id,
@@ -86,9 +88,9 @@ public class ContatoAppService : IContatoAppService
         var usuarioExiste = _usuarioService.GetById(request.UsuarioId);
         if (usuarioExiste == null)
         {
+            _logger.LogWarning("Usuário não encontrado para atualizar contato | UsuarioId: {UsuarioId} | ContatoId: {ContatoId}", request.UsuarioId, request.Id);
             throw new NotFoundException($"Usuário com ID {request.UsuarioId} não encontrado para atualizar o contato.");
         }
-
         var contato = new Contato(request.Celular, request.Email)
         {
             Id = request.Id,
@@ -97,6 +99,7 @@ public class ContatoAppService : IContatoAppService
         var (contatoAtualizado, sucesso) = await _contatoService.Atualizar(contato);
         if (!sucesso || contatoAtualizado == null)
         {
+            _logger.LogWarning("Falha ao atualizar contato ou contato não encontrado | ContatoId: {ContatoId} | UsuarioId: {UsuarioId}", request.Id, request.UsuarioId);
             return (null, false);
         }
         var response = new ContatoResponse
@@ -114,11 +117,9 @@ public class ContatoAppService : IContatoAppService
         var usuarioExiste = _usuarioService.GetById(usuarioId);
         if (usuarioExiste == null)
         {
+            _logger.LogWarning("Usuário não encontrado para deletar contato | UsuarioId: {UsuarioId} | ContatoId: {ContatoId}", usuarioId, id);
             throw new NotFoundException($"Usuário com ID {usuarioId} não encontrado para deletar o contato.");
         }
-
         return await _contatoService.Deletar(id, usuarioId);
     }
-
-    
 }

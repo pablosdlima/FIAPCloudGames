@@ -4,6 +4,7 @@ using FIAPCloudGames.Domain.Dtos.Request.UsuarioGameBiblioteca;
 using FIAPCloudGames.Domain.Dtos.Responses.UsuarioGameBiblioteca;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
+using Microsoft.Extensions.Logging;
 using Moq;
 using TechTalk.SpecFlow;
 
@@ -16,6 +17,7 @@ namespace FIAPCloudGames.BDD.Tests.Steps
         private readonly Mock<IUsuarioGameBibliotecaService> _mockBibliotecaService;
         private readonly Mock<IUsuarioService> _mockUsuarioService;
         private readonly Mock<IGameService> _mockGameService;
+        private readonly Mock<ILogger<UsuarioGameBibliotecaAppService>> _mockLogger;
         private readonly IUsuarioGameBibliotecaAppService _bibliotecaAppService;
 
         private Guid _usuarioId;
@@ -40,14 +42,15 @@ namespace FIAPCloudGames.BDD.Tests.Steps
             _mockBibliotecaService = new Mock<IUsuarioGameBibliotecaService>();
             _mockUsuarioService = new Mock<IUsuarioService>();
             _mockGameService = new Mock<IGameService>();
-
+            _mockLogger = new Mock<ILogger<UsuarioGameBibliotecaAppService>>();
             _scenarioContext["MockUsuarioService_Biblioteca"] = _mockUsuarioService;
             _scenarioContext["MockGameService_Biblioteca"] = _mockGameService;
 
             _bibliotecaAppService = new UsuarioGameBibliotecaAppService(
                 _mockBibliotecaService.Object,
                 _mockUsuarioService.Object,
-                _mockGameService.Object
+                _mockGameService.Object,
+                _mockLogger.Object
             );
 
             _biblioteca = [];

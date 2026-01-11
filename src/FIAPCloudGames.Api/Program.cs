@@ -17,10 +17,7 @@ builder.Services.AddJwtAuthenticationConfig(builder.Configuration);
 builder.Services.AddControllers();
 builder.AddSerilogConfiguration();
 builder.Services.AddValidatorsFromAssemblyContaining<CadastrarUsuarioRequestValidator>();
-builder.Services.AddDbContext<Contexto>(options =>
-    options
-        .UseLazyLoadingProxies()
-        .UseSqlServer(builder.Configuration.GetConnectionString("MS_FiapCloudGames")));
+builder.Services.AddDbContext<Contexto>(options => options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("MS_FiapCloudGames")));
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDomainServices();
@@ -37,6 +34,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerDocumentation();
 }
 
+app.UseMiddleware<LoggingMiddleware>();
 app.UseSerilogRequestLoggingConfiguration();
 app.UseHttpsRedirection();
 app.UseAuthentication();
