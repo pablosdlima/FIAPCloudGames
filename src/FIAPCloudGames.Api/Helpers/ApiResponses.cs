@@ -36,7 +36,7 @@ public static class ApiResponses
         return Results.NotFound(new
         {
             statusCode = 404,
-            message = "Validation failed", // Mantendo o padrão de mensagem para erros
+            message = "Validation failed",
             errors = new Dictionary<string, string[]>
             {
                 { key, new[] { message } }
@@ -49,7 +49,7 @@ public static class ApiResponses
         return Results.BadRequest(new
         {
             statusCode = 400,
-            message = "Validation failed", // Mantendo o padrão de mensagem para erros
+            message = "Validation failed",
             errors = new Dictionary<string, string[]>
             {
                 { key, new[] { message } }
@@ -62,7 +62,7 @@ public static class ApiResponses
         return Results.BadRequest(new
         {
             statusCode = 400,
-            message = "Validation failed", // Mantendo o padrão de mensagem para erros
+            message = "Validation failed",
             errors
         });
     }
@@ -86,5 +86,16 @@ public static class ApiResponses
             detail: detail,
             statusCode: 500
         );
+    }
+
+    public static IResult BadRequestMultiple(string message, Dictionary<string, string[]> errors)
+    {
+        var response = new
+        {
+            statusCode = StatusCodes.Status400BadRequest,
+            message,
+            errors
+        };
+        return Results.BadRequest(response);
     }
 }

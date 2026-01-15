@@ -12,7 +12,7 @@ namespace FIAPCloudGames.Api.Endpoints
         {
             var app = route.MapGroup("/api/Authentication").WithTags("Authentication");
 
-            app.MapPost("login/", async (LoginRequest request, IAuthenticationAppService authenticationService, HttpContext httpContext, ILogger<Program> logger) =>
+            app.MapPost("login/", async (LoginRequest request, IAuthenticationAppService authenticationService, HttpContext httpContext) =>
             {
                 var correlationId = httpContext.TraceIdentifier;
 
@@ -21,14 +21,12 @@ namespace FIAPCloudGames.Api.Endpoints
                     var result = await authenticationService.Login(request.Usuario, request.Senha);
                     return ApiResponses.Ok(result, "Login realizado com sucesso.");
                 }
-                catch (AutenticacaoException ex)
+                catch (AutenticacaoException)
                 {
-                    logger.LogWarning(ex, "Falha na autenticação");
                     return ApiResponses.Unauthorized("credenciais", "Usuário ou senha inválidos.");
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    logger.LogError(ex, "Erro no login | Error: {ErrorMessage}", ex.Message);
                     return ApiResponses.Problem("Ocorreu um erro inesperado durante o login.");
                 }
             })

@@ -32,11 +32,10 @@ public static class ContatoEndpoints
         .Produces<ContatoResponse>(201)
         .Produces(400);
 
-        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarContatoRequest request, IContatoAppService contatoService, ILogger<Program> logger) =>
+        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarContatoRequest request, IContatoAppService contatoService) =>
         {
             if (id != request.Id)
             {
-                logger.LogWarning("Falha na atualização: Id da URL não corresponde ao Id do corpo da requisição | ContatoId: {ContatoId} | RequestId: {RequestId}", id, request.Id);
                 return ApiResponses.BadRequest("id", "Id da URL não corresponde ao Id do corpo da requisição.");
             }
 
@@ -45,7 +44,6 @@ public static class ContatoEndpoints
 
             if (!sucesso || contato == null)
             {
-                logger.LogWarning("Falha na atualização: Contato não encontrado ou não pertence ao usuário | ContatoId: {ContatoId} | UsuarioId: {UsuarioId}", id, usuarioId);
                 return ApiResponses.NotFound("contato", "Contato não encontrado ou não pertence ao usuário.");
             }
 
@@ -58,13 +56,12 @@ public static class ContatoEndpoints
         .Produces(404);
 
 
-        app.MapDelete("Deletar/{id:guid}", async (Guid usuarioId, Guid id, IContatoAppService contatoService, ILogger<Program> logger) =>
+        app.MapDelete("Deletar/{id:guid}", async (Guid usuarioId, Guid id, IContatoAppService contatoService) =>
         {
             var sucesso = await contatoService.Deletar(id, usuarioId);
 
             if (!sucesso)
             {
-                logger.LogWarning("Falha na exclusão: Contato não encontrado ou não pertence ao usuário | ContatoId: {ContatoId} | UsuarioId: {UsuarioId}", id, usuarioId);
                 return ApiResponses.NotFound("contato", "Contato não encontrado ou não pertence ao usuário.");
             }
 

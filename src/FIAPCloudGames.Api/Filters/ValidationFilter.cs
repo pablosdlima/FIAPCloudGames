@@ -6,10 +6,9 @@ namespace FIAPCloudGames.Api.Filters
     {
         public static async Task<IResult?> ValidateAsync<T>(
             T model,
-            IValidator<T> validator)
+            IValidator<T> validator) where T : class
         {
             var validationResult = await validator.ValidateAsync(model);
-
             if (!validationResult.IsValid)
             {
                 var errors = validationResult.Errors
@@ -19,16 +18,14 @@ namespace FIAPCloudGames.Api.Filters
                         g => g.Select(e => e.ErrorMessage).ToArray()
                     );
 
-                var response = new
+                var responseBody = new
                 {
-                    statusCode = 400,
+                    statusCode = StatusCodes.Status400BadRequest,
                     message = "Erro de validação",
                     errors
                 };
-
-                return Results.BadRequest(response);
+                return Results.BadRequest(responseBody);
             }
-
             return null;
         }
     }
