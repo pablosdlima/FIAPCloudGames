@@ -33,11 +33,10 @@ public static class EnderecoEndpoints
         .Produces(400);
 
 
-        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarEnderecoRequest request, IEnderecoAppService enderecoService, ILogger<Program> logger) =>
+        app.MapPut("Atualizar/{id:guid}", async (Guid usuarioId, Guid id, AtualizarEnderecoRequest request, IEnderecoAppService enderecoService) =>
         {
             if (id != request.Id)
             {
-                logger.LogWarning("Falha na atualização: Id da URL não corresponde ao Id do corpo da requisição | EnderecoId: {EnderecoId} | RequestId: {RequestId}", id, request.Id);
                 return ApiResponses.BadRequest("id", "Id da URL não corresponde ao Id do corpo da requisição.");
             }
 
@@ -47,7 +46,6 @@ public static class EnderecoEndpoints
 
             if (!sucesso || endereco == null)
             {
-                logger.LogWarning("Falha na atualização: Endereço não encontrado ou não pertence ao usuário | EnderecoId: {EnderecoId} | UsuarioId: {UsuarioId}", id, usuarioId);
                 return ApiResponses.NotFound("endereco", "Endereço não encontrado ou não pertence ao usuário.");
             }
 
@@ -60,13 +58,12 @@ public static class EnderecoEndpoints
         .Produces(404);
 
 
-        app.MapDelete("Deletar/{id:guid}", async (Guid usuarioId, Guid id, IEnderecoAppService enderecoService, ILogger<Program> logger) =>
+        app.MapDelete("Deletar/{id:guid}", async (Guid usuarioId, Guid id, IEnderecoAppService enderecoService) =>
         {
             var sucesso = await enderecoService.Deletar(id, usuarioId);
 
             if (!sucesso)
             {
-                logger.LogWarning("Falha na exclusão: Endereço não encontrado ou não pertence ao usuário | EnderecoId: {EnderecoId} | UsuarioId: {UsuarioId}", id, usuarioId);
                 return ApiResponses.NotFound("endereco", "Endereço não encontrado ou não pertence ao usuário.");
             }
 
