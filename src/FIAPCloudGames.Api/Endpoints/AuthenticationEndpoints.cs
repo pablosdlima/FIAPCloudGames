@@ -1,8 +1,9 @@
-﻿using FIAPCloudGames.Api.Filters;
+﻿// FIAPCloudGames.Api/Endpoints/AuthenticationEndpoints.cs
+using FIAPCloudGames.Api.Filters;
 using FIAPCloudGames.Api.Helpers;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Authentication;
-using FIAPCloudGames.Domain.Exceptions;
+using FIAPCloudGames.Domain.Dtos.Responses.Authentication;
 
 namespace FIAPCloudGames.Api.Endpoints
 {
@@ -12,30 +13,24 @@ namespace FIAPCloudGames.Api.Endpoints
         {
             var app = route.MapGroup("/api/Authentication").WithTags("Authentication");
 
-            app.MapPost("login/", async (LoginRequest request, IAuthenticationAppService authenticationService, HttpContext httpContext) =>
+            app.MapPost("login/", async (LoginRequest request, IAuthenticationAppService authenticationService) =>
             {
-                var correlationId = httpContext.TraceIdentifier;
+                // Correção aqui: Acessar as propriedades do LoginResponse retornado
+                var loginResponse = await authenticationService.Login(request.Usuario, request.Senha);
 
-                try
+                // Assumindo que LoginResponse.Token é null ou vazio em caso de falha
+                if (loginResponse == null || string.IsNullOrEmpty(loginResponse.Token))
                 {
-                    var result = await authenticationService.Login(request.Usuario, request.Senha);
-                    return ApiResponses.Ok(result, "Login realizado com sucesso.");
+                    return ApiResponses.Unauthorized("Usuário ou senha inválidos.");
                 }
-                catch (AutenticacaoException)
-                {
-                    return ApiResponses.Unauthorized("credenciais", "Usuário ou senha inválidos.");
-                }
-                catch (Exception)
-                {
-                    return ApiResponses.Problem("Ocorreu um erro inesperado durante o login.");
-                }
+
+                return ApiResponses.Ok(loginResponse, "Login realizado com sucesso.");
             })
             .AddEndpointFilter<ValidationEndpointFilter<LoginRequest>>()
             .WithName("Login")
-            .Produces(200)
+            .Produces<LoginResponse>(200)
             .Produces(400)
-            .Produces(401)
-            .Produces(500);
+            .Produces(401);
         }
     }
 }

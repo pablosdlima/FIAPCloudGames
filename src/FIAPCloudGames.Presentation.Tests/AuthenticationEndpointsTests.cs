@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using FIAPCloudGames.Application.Common.Models;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Authentication;
 using FIAPCloudGames.Domain.Dtos.Responses.Authentication;
@@ -11,7 +12,6 @@ using NSubstitute.ClearExtensions;
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace FIAPCloudGames.Presentation.Tests.Endpoints
 {
@@ -42,21 +42,24 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             return new StringContent(JsonSerializer.Serialize(obj), Encoding.UTF8, "application/json");
         }
 
-        private async Task<T?> DeserializarResposta<T>(HttpResponseMessage response)
+        private async Task<ApiResponse<T>?> DeserializarRespostaSucesso<T>(HttpResponseMessage response)
         {
             var jsonString = await response.Content.ReadAsStringAsync();
             if (string.IsNullOrEmpty(jsonString))
             {
                 return default;
             }
+            return JsonSerializer.Deserialize<ApiResponse<T>>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
 
-            if (typeof(T) == typeof(object))
+        private async Task<ErrorDetails?> DeserializarRespostaErro(HttpResponseMessage response)
+        {
+            var jsonString = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(jsonString))
             {
-                var jsonNode = JsonNode.Parse(jsonString);
-                return (T)(object)jsonNode!;
+                return default;
             }
-
-            return JsonSerializer.Deserialize<T>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return JsonSerializer.Deserialize<ErrorDetails>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         [Fact]
@@ -66,9 +69,9 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
                 .RuleFor(r => r.Usuario, f => f.Internet.UserName())
                 .RuleFor(r => r.Senha, f => f.Internet.Password())
                 .Generate();
-
             var tokenEsperado = new Faker().Random.Hash();
             var respostaLogin = new LoginResponse(tokenEsperado);
+            var mensagemSucesso = "Login realizado com sucesso.";
 
             _mockLoginRequestValidator
                 .ValidateAsync(Arg.Any<LoginRequest>(), Arg.Any<CancellationToken>())
@@ -81,75 +84,74 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
 
             resposta.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            dynamic conteudoResposta = await DeserializarResposta<object>(resposta);
+            var conteudoResposta = await DeserializarRespostaSucesso<LoginResponse>(resposta);
 
-            int statusCode = conteudoResposta!["statusCode"].GetValue<int>();
-            statusCode.Should().Be(200);
-
-            string mensagem = conteudoResposta!["message"].GetValue<string>();
-            mensagem.Should().Be("Login realizado com sucesso.");
-
-            string token = conteudoResposta!["data"]!["token"].GetValue<string>();
-            token.Should().Be(tokenEsperado);
+            conteudoResposta.Should().NotBeNull();
+            conteudoResposta!.Success.Should().BeTrue();
+            conteudoResposta.Message.Should().Be(mensagemSucesso);
+            conteudoResposta.Data.Should().NotBeNull();
+            conteudoResposta.Data!.Token.Should().Be(tokenEsperado);
+            conteudoResposta.Errors.Should().BeNull();
 
             await _mockAuthenticationAppService.Received(1).Login(requisicao.Usuario, requisicao.Senha);
         }
 
         [Fact]
-        public async Task Login_ComCredenciaisInvalidas_RetornaNaoAutorizado()
+        public async Task Login_ComCredenciaisInvalidas_RetornaUnauthorized()
         {
             var requisicao = new Faker<LoginRequest>()
                 .RuleFor(r => r.Usuario, f => f.Internet.UserName())
                 .RuleFor(r => r.Senha, f => f.Internet.Password())
                 .Generate();
+            var mensagemErro = "Usuário ou senha inválidos.";
 
             _mockLoginRequestValidator
                 .ValidateAsync(Arg.Any<LoginRequest>(), Arg.Any<CancellationToken>())
                 .Returns(new FluentValidation.Results.ValidationResult());
 
             _mockAuthenticationAppService.Login(requisicao.Usuario, requisicao.Senha)
-                .Returns(Task.FromException<LoginResponse>(new AutenticacaoException("Usuário ou senha inválidos.")));
+                .Returns(Task.FromException<LoginResponse>(new AutenticacaoException(mensagemErro)));
 
             var resposta = await _client.PostAsync("/api/Authentication/login/", ObterConteudoJson(requisicao));
 
             resposta.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
-            dynamic conteudoResposta = await DeserializarResposta<object>(resposta);
+            var conteudoRespostaErro = await DeserializarRespostaErro(resposta);
 
-            int statusCode = conteudoResposta!["statusCode"].GetValue<int>();
-            statusCode.Should().Be(401);
-
-            string mensagem = conteudoResposta!["message"].GetValue<string>();
-            mensagem.Should().Be("Authentication failed");
-
-            var noErros = conteudoResposta!["errors"];
-            var errosCredenciais = ((JsonArray)noErros!["credenciais"]!).Select((Func<JsonNode, string>)(n => n!.GetValue<string>())).ToArray();
-            errosCredenciais.Should().Contain("Usuário ou senha inválidos.");
+            conteudoRespostaErro.Should().NotBeNull();
+            conteudoRespostaErro!.StatusCode.Should().Be(401);
+            conteudoRespostaErro.Message.Should().Be(mensagemErro);
+            conteudoRespostaErro.Errors.Should().BeNull();
 
             await _mockAuthenticationAppService.Received(1).Login(requisicao.Usuario, requisicao.Senha);
         }
 
         [Fact]
-        public async Task Login_ComExcecaoNaoTratada_RetornaProblema()
+        public async Task Login_ComExcecaoNaoTratada_RetornaProblem()
         {
             var requisicao = new Faker<LoginRequest>()
                 .RuleFor(r => r.Usuario, f => f.Internet.UserName())
                 .RuleFor(r => r.Senha, f => f.Internet.Password())
                 .Generate();
+            var mensagemErroInterno = "Ocorreu um erro interno no servidor";
 
             _mockLoginRequestValidator
                 .ValidateAsync(Arg.Any<LoginRequest>(), Arg.Any<CancellationToken>())
                 .Returns(new FluentValidation.Results.ValidationResult());
 
             _mockAuthenticationAppService.Login(requisicao.Usuario, requisicao.Senha)
-                .Returns(Task.FromException<LoginResponse>(new Exception("Algo deu muito errado!")));
+                .Returns(Task.FromException<LoginResponse>(new Exception("Erro inesperado no serviço de autenticação.")));
 
             var resposta = await _client.PostAsync("/api/Authentication/login/", ObterConteudoJson(requisicao));
 
             resposta.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
-            var detalhesProblema = await DeserializarResposta<Microsoft.AspNetCore.Mvc.ProblemDetails>(resposta);
-            detalhesProblema!.Detail.Should().Be("Ocorreu um erro inesperado durante o login.");
+            var conteudoRespostaErro = await DeserializarRespostaErro(resposta);
+
+            conteudoRespostaErro.Should().NotBeNull();
+            conteudoRespostaErro!.StatusCode.Should().Be(500);
+            conteudoRespostaErro.Message.Should().Be(mensagemErroInterno);
+            conteudoRespostaErro.Errors.Should().BeNull();
 
             await _mockAuthenticationAppService.Received(1).Login(requisicao.Usuario, requisicao.Senha);
         }
@@ -157,40 +159,40 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
         [Fact]
         public async Task Login_ComRequisicaoInvalida_RetornaBadRequestDoFiltroDeValidacao()
         {
-            var requisicaoInvalida = new LoginRequest { Usuario = "", Senha = "" };
-
-            var errosValidacao = new List<FluentValidation.Results.ValidationFailure>
+            var invalidRequest = new LoginRequest
+            {
+                Usuario = string.Empty,
+                Senha = string.Empty
+            };
+            var validationErrors = new List<FluentValidation.Results.ValidationFailure>
             {
                 new FluentValidation.Results.ValidationFailure("Usuario", "Usuario é obrigatório"),
                 new FluentValidation.Results.ValidationFailure("Senha", "Senha é obrigatório")
             };
+            var mensagemErroValidacao = "Erro de validação";
 
             _mockLoginRequestValidator
-                .ValidateAsync(Arg.Is<LoginRequest>(r => r.Usuario == requisicaoInvalida.Usuario && r.Senha == requisicaoInvalida.Senha), Arg.Any<CancellationToken>())
-                .Returns(new FluentValidation.Results.ValidationResult(errosValidacao));
+                .ValidateAsync(Arg.Is<LoginRequest>(r => r.Usuario == invalidRequest.Usuario && r.Senha == invalidRequest.Senha), Arg.Any<CancellationToken>())
+                .Returns(new FluentValidation.Results.ValidationResult(validationErrors));
 
             _mockLoginRequestValidator
-                .ValidateAsync(Arg.Is<LoginRequest>(r => r.Usuario != requisicaoInvalida.Usuario || r.Senha != requisicaoInvalida.Senha), Arg.Any<CancellationToken>())
+                .ValidateAsync(Arg.Is<LoginRequest>(r => r.Usuario != invalidRequest.Usuario || r.Senha != invalidRequest.Senha), Arg.Any<CancellationToken>())
                 .Returns(new FluentValidation.Results.ValidationResult());
 
-            var resposta = await _client.PostAsync("/api/Authentication/login/", ObterConteudoJson(requisicaoInvalida));
+            var resposta = await _client.PostAsync("/api/Authentication/login/", ObterConteudoJson(invalidRequest));
 
             resposta.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-            dynamic conteudoResposta = await DeserializarResposta<object>(resposta);
+            var conteudoRespostaErro = await DeserializarRespostaErro(resposta);
 
-            int statusCode = conteudoResposta!["statusCode"].GetValue<int>();
-            statusCode.Should().Be(400);
-
-            string mensagem = conteudoResposta!["message"].GetValue<string>();
-            mensagem.Should().Be("Erro de validação");
-
-            var noErros = conteudoResposta!["errors"];
-            var errosUsuario = ((JsonArray)noErros!["Usuario"]!).Select((Func<JsonNode, string>)(n => n!.GetValue<string>())).ToArray();
-            errosUsuario.Should().Contain("Usuario é obrigatório");
-
-            var errosSenha = ((JsonArray)noErros!["Senha"]!).Select((Func<JsonNode, string>)(n => n!.GetValue<string>())).ToArray();
-            errosSenha.Should().Contain("Senha é obrigatório");
+            conteudoRespostaErro.Should().NotBeNull();
+            conteudoRespostaErro!.StatusCode.Should().Be(400);
+            conteudoRespostaErro.Message.Should().Be(mensagemErroValidacao);
+            conteudoRespostaErro.Errors.Should().NotBeNull();
+            conteudoRespostaErro.Errors!.Should().ContainKey("Usuario");
+            conteudoRespostaErro.Errors!["Usuario"].Should().Contain("Usuario é obrigatório");
+            conteudoRespostaErro.Errors!.Should().ContainKey("Senha");
+            conteudoRespostaErro.Errors!["Senha"].Should().Contain("Senha é obrigatório");
 
             await _mockAuthenticationAppService.DidNotReceive().Login(Arg.Any<string>(), Arg.Any<string>());
         }

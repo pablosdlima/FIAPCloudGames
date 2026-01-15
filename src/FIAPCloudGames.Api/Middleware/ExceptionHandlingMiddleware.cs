@@ -1,81 +1,65 @@
-﻿using FIAPCloudGames.Application.Common.Models;
+﻿// FIAPCloudGames.Api/Middlewares/ExceptionHandlingMiddleware.cs
+// Este código é o que você me forneceu e está correto para o propósito.
+using FIAPCloudGames.Application.Common.Models;
 using FIAPCloudGames.Domain.Exceptions;
 
-namespace FIAPCloudGames.Api.Middleware
+namespace FIAPCloudGames.Api.Middlewares
 {
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
-
         public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
         {
             _next = next;
             _logger = logger;
         }
-
         public async Task InvokeAsync(HttpContext context)
         {
             try
             {
                 await _next(context);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                _logger.LogError(ex, "Uma exceção não tratada ocorreu: {Message}", ex.Message);
-                await HandleExceptionAsync(context, ex);
-            }
-        }
+                _logger.LogError(exception, "Ocorreu uma exceção não tratada: {Message}", exception.Message);
+                context.Response.ContentType = "application/json";
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
-        {
-            context.Response.ContentType = "application/json";
-            var response = new ErrorDetails
-            {
-                Timestamp = DateTime.UtcNow,
-                TraceId = context.TraceIdentifier
-            };
+                ErrorDetails errorDetails;
 
-            switch (exception)
-            {
-                case ValidationException validationEx:
-                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    response.StatusCode = StatusCodes.Status400BadRequest;
-                    response.Message = validationEx.Message;
-                    response.Errors = validationEx.Errors;
-                    break;
-                case NotFoundException notFoundEx:
-                    context.Response.StatusCode = StatusCodes.Status404NotFound;
-                    response.StatusCode = StatusCodes.Status404NotFound;
-                    response.Message = notFoundEx.Message;
-                    break;
-                case AutenticacaoException autenticacaoEx:
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.Message = autenticacaoEx.Message;
-                    break;
-                case UnauthorizedException unauthorizedEx:
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.Message = unauthorizedEx.Message;
-                    break;
-                case ForbiddenException forbiddenEx:
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    response.StatusCode = StatusCodes.Status403Forbidden;
-                    response.Message = forbiddenEx.Message;
-                    break;
-                case DomainException domainEx:
-                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    response.StatusCode = StatusCodes.Status400BadRequest;
-                    response.Message = domainEx.Message;
-                    break;
-                default:
-                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                    response.StatusCode = StatusCodes.Status500InternalServerError;
-                    response.Message = "Ocorreu um erro interno no servidor";
-                    break;
+                switch (exception)
+                {
+                    case ValidationException validationEx:
+                        errorDetails = ErrorDetails.ErrorResponse(StatusCodes.Status400BadRequest, validationEx.Message, validationEx.Errors, context.TraceIdentifier);
+                        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                        break;
+                    case NotFoundException notFoundEx:
+                        errorDetails = ErrorDetails.ErrorResponse(StatusCodes.Status404NotFound, notFoundEx.Message, null, context.TraceIdentifier);
+                        context.Response.StatusCode = StatusCodes.Status404NotFound;
+                        break;
+                    case AutenticacaoException autenticacaoEx:
+                        errorDetails = ErrorDetails.ErrorResponse(StatusCodes.Status401Unauthorized, autenticacaoEx.Message, null, context.TraceIdentifier);
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        break;
+                    case UnauthorizedException unauthorizedEx:
+                        errorDetails = ErrorDetails.ErrorResponse(StatusCodes.Status401Unauthorized, unauthorizedEx.Message, null, context.TraceIdentifier);
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        break;
+                    case ForbiddenException forbiddenEx:
+                        errorDetails = ErrorDetails.ErrorResponse(StatusCodes.Status403Forbidden, forbiddenEx.Message, null, context.TraceIdentifier);
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        break;
+                    case DomainException domainEx:
+                        errorDetails = ErrorDetails.ErrorResponse(StatusCodes.Status400BadRequest, domainEx.Message, null, context.TraceIdentifier);
+                        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                        break;
+                    default:
+                        errorDetails = ErrorDetails.ErrorResponse(StatusCodes.Status500InternalServerError, "Ocorreu um erro interno no servidor", null, context.TraceIdentifier);
+                        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                        break;
+                }
+                await context.Response.WriteAsJsonAsync(errorDetails);
             }
-            return context.Response.WriteAsJsonAsync(response);
         }
     }
 }

@@ -1,6 +1,7 @@
 using FIAPCloudGames.Api.Endpoints;
 using FIAPCloudGames.Api.Extensions;
 using FIAPCloudGames.Api.Middleware;
+using FIAPCloudGames.Api.Middlewares;
 using FIAPCloudGames.Data.Data;
 using FIAPCloudGames.Domain.Dtos.Validators;
 using FIAPCloudGames.IoC;
