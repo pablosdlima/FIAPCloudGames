@@ -1,4 +1,6 @@
-﻿using FIAPCloudGames.Domain.Interfaces.Generic;
+﻿using FIAPCloudGames.Domain.Dtos;
+using FIAPCloudGames.Domain.Dtos.Responses.Usuarios;
+using FIAPCloudGames.Domain.Interfaces.Generic;
 using FIAPCloudGames.Domain.Models;
 
 namespace FIAPCloudGames.Domain.Interfaces.Repository

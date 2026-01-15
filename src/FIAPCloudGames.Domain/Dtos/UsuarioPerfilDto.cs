@@ -1,4 +1,6 @@
-﻿namespace FIAPCloudGames.Application.Dtos;
+﻿using FIAPCloudGames.Domain.Dtos;
+
+namespace FIAPCloudGames.Application.Dtos;
 //====================================================
 public class UsuarioPerfilDto
 {
@@ -10,12 +12,16 @@ public class UsuarioPerfilDto
     //--------------------------------------------------------
     public Guid GameId { get; set; }
     //--------------------------------------------------------
-    public string TipoAquisicao { get; set; }
+    public string NomeCompleto { get; set; }
     //--------------------------------------------------------
     public decimal PrecoAquisicao { get; set; }
     //--------------------------------------------------------
-    public DateTime DataAquisicao { get; set; }
+    public DateTimeOffset? DataNascimento { get; set; }
     //--------------------------------------------------------
+    #endregion
+
+    #region Relacionamentos
+    public virtual UsuarioDtos? Usuario { get; set; }
     #endregion
 }
 //====================================================

@@ -1,4 +1,6 @@
-﻿using FIAPCloudGames.Domain.Interfaces.Generic;
+﻿using FIAPCloudGames.Domain.Dtos;
+using FIAPCloudGames.Domain.Dtos.Responses.Usuarios;
+using FIAPCloudGames.Domain.Interfaces.Generic;
 using FIAPCloudGames.Domain.Interfaces.Repository;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
@@ -69,4 +71,5 @@ public class ContatoService : GenericServices<Contato>, IContatoService
         }
         return sucesso;
     }
+
 }

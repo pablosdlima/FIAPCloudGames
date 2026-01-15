@@ -3,11 +3,11 @@ using GraphQL.Types;
 
 namespace FIAPCloudGames.Api.GraphQL.Schemas;
 //==================================================
-public class GameBibliotecaSchema : Schema
+public class UsuarioGameBibliotecaSchema : Schema
 {
-    public GameBibliotecaSchema(IServiceProvider service) : base(service)
+    public UsuarioGameBibliotecaSchema(IServiceProvider service) : base(service)
     {
-        Query = service.GetRequiredService<GameBibliotecaQuery>();
+        Query = service.GetRequiredService<UsuarioGameBibliotecaQuery>();
     }
 }
 //==================================================

@@ -1,4 +1,5 @@
-﻿using FIAPCloudGames.Domain.Dtos.Request.Usuario;
+﻿using FIAPCloudGames.Domain.Dtos;
+using FIAPCloudGames.Domain.Dtos.Request.Usuario;
 using FIAPCloudGames.Domain.Dtos.Responses.Usuario;
 using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Generic;
@@ -126,5 +127,26 @@ namespace FIAPCloudGames.Domain.Services
 
             return new AlterarStatusResponse(usuarioAtualizado.Ativo ? "Ativo" : "Inativo");
         }
+
+        #region GraphQL
+        //-------------------------------------------------------------------------------
+        #endregion
+        public async Task<IDictionary<Guid, UsuarioDtos>> BuscarPorIdsAsync(IEnumerable<Guid> ids)
+        {
+            var usuarios = await _repository.BuscarPorIdsAsync(ids, u => u.Id);
+
+            return usuarios.ToDictionary(
+                u => u.Id,
+                u => new UsuarioDtos
+                {
+                    IdUsuario = u.Id,
+                    Nome = u.Nome,
+                    Ativo = u.Ativo,
+                    DataCriacao = u.DataCriacao,
+                    DataAtualizacao = u.DataAtualizacao
+                }
+            );
+        }
+        //-------------------------------------------------------------------------------
     }
 }

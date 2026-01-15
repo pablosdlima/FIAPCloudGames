@@ -1,5 +1,8 @@
 ﻿using FIAPCloudGames.Api.GraphQL.Types;
+using FIAPCloudGames.Application.Dtos;
 using FIAPCloudGames.Application.Interfaces;
+using FIAPCloudGames.Domain.Dtos.Responses.Contato;
+using FIAPCloudGames.Domain.Models;
 using GraphQL;
 using GraphQL.Types;
 
@@ -25,7 +28,15 @@ public class ContatoQuery : ObjectGraphType
 
                     var contatos = await service.ListarPaginacao(take, skip);
 
-                    return contatos;
+                    List<ContatosDtos> contatosDto = contatos.Select(c => new ContatosDtos
+                    {
+                        IdContato = c.Id,
+                        UsuarioId = c.UsuarioId,
+                        Celular = c.Celular,
+                        Email = c.Email
+                    }).ToList();
+
+                    return contatosDto;
                 }
                 catch (Exception ex)
                 {
@@ -40,7 +51,17 @@ public class ContatoQuery : ObjectGraphType
             .ResolveAsync(async context =>
             {
                 Guid idUsuario = context.GetArgument<Guid>("idUsuario");
-                return await service.ListarPorUsuario(idUsuario);
+                var contatos = await service.ListarPorUsuario(idUsuario);
+
+                List<ContatosDtos> contatosDto = contatos.Select(c => new ContatosDtos
+                {
+                    IdContato = c.Id,
+                    UsuarioId = c.UsuarioId,
+                    Celular = c.Celular,
+                    Email = c.Email
+                }).ToList();
+
+                return contatosDto;
             });
     }
     //-----------------------------------------------------

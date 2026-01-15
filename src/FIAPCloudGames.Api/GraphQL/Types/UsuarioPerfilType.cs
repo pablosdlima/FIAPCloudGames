@@ -1,6 +1,9 @@
 ﻿using FIAPCloudGames.Application.AppServices;
 using FIAPCloudGames.Application.Dtos;
 using FIAPCloudGames.Application.Interfaces;
+using FIAPCloudGames.Domain.Dtos;
+using GraphQL;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 
 namespace FIAPCloudGames.Api.GraphQL.Types;
@@ -9,7 +12,7 @@ public class UsuarioPerfilType : ObjectGraphType<UsuarioPerfilDto>
 {
     #region Construtor
     //----------------------------------------------------------
-    public UsuarioPerfilType(IUsuarioAppService usuarioAppService)
+    public UsuarioPerfilType(IUsuarioAppService usuarioAppService, IDataLoaderContextAccessor dataLoader)
     {
         Name = "UsuarioPerfil";
         Description = "Perfil do Usuário";
@@ -17,17 +20,28 @@ public class UsuarioPerfilType : ObjectGraphType<UsuarioPerfilDto>
         Field(c => c.IdPerfil).Description("Chave Primária");
         Field(c => c.UsuarioId).Description("Usuário");
         Field(c => c.GameId).Description("GameId");
-        Field(c => c.TipoAquisicao).Description("TipoAquisicao");
+        Field(c => c.NomeCompleto).Description("NomeCompleto");
         Field(c => c.PrecoAquisicao).Description("PrecoAquisicao");
-        Field(c => c.DataAquisicao).Description("Data Aquisição");
+        Field(c => c.DataNascimento).Description("DataNascimento");
 
         Field<UsuarioType>("usuario").Description("Usuário Portador do contato")
             .Resolve(context =>
             {
-                if (context.Source.UsuarioId != null) return context.Source.UsuarioId; //substituir por obj.
-
                 var usuarioId = context.Source.UsuarioId;
-                return usuarioAppService.BuscarPorId(usuarioId); //Verificar tipo de retorno...
+
+                if (usuarioId == Guid.Empty)
+                    return null;
+
+                var loader = dataLoader.Context
+                    .GetOrAddBatchLoader<Guid, UsuarioDtos>(
+                        "UsuariosPorId",
+                        async ids =>
+                        {
+                            var usuarios = await usuarioAppService.BuscarPorIdsAsync(ids);
+                            return usuarios;
+                        });
+
+                return loader.LoadAsync(usuarioId);
             });
     }
     //----------------------------------------------------------

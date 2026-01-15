@@ -1,17 +1,17 @@
-﻿using FIAPCloudGames.Application.AppServices;
-using FIAPCloudGames.Application.Dtos;
+﻿using FIAPCloudGames.Application.Dtos;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos;
-using FIAPCloudGames.Domain.Models;
+using GraphQL;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 
 namespace FIAPCloudGames.Api.GraphQL.Types;
-//===============================================
+
 public class ContatoType : ObjectGraphType<ContatosDtos>
 {
-    #region Construtor
-    //---------------------------------------------------------------------------------------
-    public ContatoType(IUsuarioAppService usuarioAppService)
+    public ContatoType(
+        IUsuarioAppService usuarioAppService,
+        IDataLoaderContextAccessor dataLoader)
     {
         Name = "Contato";
         Description = "Contatos do Usuário";
@@ -21,16 +21,25 @@ public class ContatoType : ObjectGraphType<ContatosDtos>
         Field(c => c.Celular).Description("Celular");
         Field(c => c.Email).Description("Email");
 
-
-        Field<UsuarioType>("usuario").Description("Usuário Portador do contato")
+        Field<UsuarioType>("usuario")
+            .Description("Usuário Portador do contato")
             .Resolve(context =>
             {
-                if(context.Source.UsuarioId != null) return context.Source.UsuarioId; //substituir por obj.
-
                 var usuarioId = context.Source.UsuarioId;
-                return usuarioAppService.BuscarPorId(usuarioId); //Verificar tipo de retorno...
+
+                if (usuarioId == Guid.Empty)
+                    return null;
+
+                var loader = dataLoader.Context
+                    .GetOrAddBatchLoader<Guid, UsuarioDtos>(
+                        "UsuariosPorId",
+                        async ids =>
+                        {
+                            var usuarios = await usuarioAppService.BuscarPorIdsAsync(ids);
+                            return usuarios;
+                        });
+
+                return loader.LoadAsync(usuarioId);
             });
     }
-    //---------------------------------------------------------------------------------------
-    #endregion
 }

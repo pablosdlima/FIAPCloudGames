@@ -13,6 +13,11 @@
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="GraphQL" Version="8.8.3" />
+    <PackageReference Include="GraphQL.Client" Version="6.1.0" />
+    <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="6.1.0" />
+    <PackageReference Include="GraphQL.Client.Serializer.SystemTextJson" Version="6.1.0" />
+    <PackageReference Include="GraphQL.Server.All" Version="8.3.3" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="8.3.3" />
     <PackageReference Include="GraphQL.SystemTextJson" Version="8.8.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.11" />

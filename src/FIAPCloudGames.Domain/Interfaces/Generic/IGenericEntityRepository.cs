@@ -29,4 +29,12 @@ public interface IGenericEntityRepository<T>
     Task<List<T>> ListarPaginacao(int take, int skip);
 
     #endregion
+
+    #region GraphQL
+    //-------------------------------------------------------
+    Task<List<T>> BuscarPorIdsAsync<TKey>(
+        IEnumerable<TKey> ids,
+        Expression<Func<T, TKey>> keySelector);
+    //-------------------------------------------------------
+    #endregion
 }

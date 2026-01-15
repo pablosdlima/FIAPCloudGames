@@ -1,14 +1,17 @@
 ﻿using FIAPCloudGames.Application.Dtos;
 using FIAPCloudGames.Application.Interfaces;
+using FIAPCloudGames.Domain.Dtos;
+using GraphQL;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 
 namespace FIAPCloudGames.Api.GraphQL.Types;
 //====================================================
-public class GameBibliotecaType : ObjectGraphType<UsuarioGameBibliotecaDto>
+public class UsuarioGameBibliotecaType : ObjectGraphType<UsuarioGameBibliotecaDto>
 {
     #region Construtor
     //----------------------------------------------------------
-    public GameBibliotecaType(IUsuarioAppService usuarioAppService)
+    public UsuarioGameBibliotecaType(IUsuarioAppService usuarioAppService, IDataLoaderContextAccessor dataLoader)
     {
         Name = "GameBiblioteca";
         Description = "GameBiblioteca";
@@ -23,10 +26,21 @@ public class GameBibliotecaType : ObjectGraphType<UsuarioGameBibliotecaDto>
         Field<UsuarioType>("usuario").Description("Usuário Portador do contato")
             .Resolve(context =>
             {
-                if (context.Source.UsuarioId != null) return context.Source.UsuarioId; //substituir por obj.
-
                 var usuarioId = context.Source.UsuarioId;
-                return usuarioAppService.BuscarPorId(usuarioId); //Verificar tipo de retorno...
+
+                if (usuarioId == Guid.Empty)
+                    return null;
+
+                var loader = dataLoader.Context
+                    .GetOrAddBatchLoader<Guid, UsuarioDtos>(
+                        "UsuariosPorId",
+                        async ids =>
+                        {
+                            var usuarios = await usuarioAppService.BuscarPorIdsAsync(ids);
+                            return usuarios;
+                        });
+
+                return loader.LoadAsync(usuarioId);
             });
     }
     //----------------------------------------------------------

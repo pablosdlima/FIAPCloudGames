@@ -1,5 +1,7 @@
 ﻿using FIAPCloudGames.Api.GraphQL.Types;
+using FIAPCloudGames.Application.Dtos;
 using FIAPCloudGames.Application.Interfaces;
+using FIAPCloudGames.Domain.Models;
 using GraphQL;
 using GraphQL.Types;
 
@@ -24,8 +26,15 @@ public class UsuarioPerfilQuery : ObjectGraphType
                     int skip = context.GetArgument<int>("skip");
 
                     var usuarios = await service.ListarPaginacao(take, skip);
+                    List<UsuarioPerfilDto> dtos = usuarios.Select(c => new UsuarioPerfilDto()
+                    {
+                        IdPerfil = c.Id,
+                        UsuarioId = c.UsuarioId,
+                        NomeCompleto = c.NomeCompleto,
+                        DataNascimento = c.DataNascimento
+                    }).ToList();
 
-                    return usuarios;
+                    return dtos;
                 }
                 catch (Exception ex)
                 {
@@ -40,7 +49,16 @@ public class UsuarioPerfilQuery : ObjectGraphType
             .ResolveAsync(async context =>
             {
                 Guid idUsuario = context.GetArgument<Guid>("idUsuario");
-                return await service.BuscarPorUsuarioId(idUsuario);
+                var usuarioPerfil = await service.BuscarPorUsuarioId(idUsuario);
+
+                UsuarioPerfilDto dto = new()
+                {
+                    IdPerfil = usuarioPerfil.Id,
+                    UsuarioId = usuarioPerfil.UsuarioId,
+                    NomeCompleto = usuarioPerfil.NomeCompleto,
+                    DataNascimento = usuarioPerfil.DataNascimento
+                };
+                return dto;
             });
     }
     //-----------------------------------------------------

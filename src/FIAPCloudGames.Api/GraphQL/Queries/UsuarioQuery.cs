@@ -1,5 +1,6 @@
 ﻿using FIAPCloudGames.Api.GraphQL.Types;
 using FIAPCloudGames.Application.Interfaces;
+using FIAPCloudGames.Domain.Dtos;
 using GraphQL;
 using GraphQL.Types;
 
@@ -18,7 +19,15 @@ public class UsuarioQuery : ObjectGraphType
             .ResolveAsync(async context =>
             {
                 Guid idUsuario = context.GetArgument<Guid>("idUsuario");
-                return service.BuscarPorId(idUsuario);
+                var usuario = service.BuscarPorId(idUsuario);
+
+                return new UsuarioDtos()
+                {
+                    Ativo = usuario.Ativo,
+                    Nome = usuario.Nome,
+                    DataAtualizacao = usuario.DataAtualizacao,
+                    DataCriacao = usuario.DataCriacao
+                };
             });
     }
     //-------------------------------------------------------

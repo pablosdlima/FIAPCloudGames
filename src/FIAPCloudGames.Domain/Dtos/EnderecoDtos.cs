@@ -1,10 +1,12 @@
-﻿namespace FIAPCloudGames.Application.Dtos;
+﻿using FIAPCloudGames.Domain.Dtos;
+
+namespace FIAPCloudGames.Application.Dtos;
 //===================================================
 public class EnderecoDtos
 {
     #region Propriedades
     //--------------------------------------------------------
-    public int IdEndereco { get; set; }
+    public Guid IdEndereco { get; set; }
     //--------------------------------------------------------
     public Guid UsuarioId { get; set; }
     //--------------------------------------------------------
@@ -22,6 +24,10 @@ public class EnderecoDtos
     //--------------------------------------------------------
     public string Cep { get; set; }
     //--------------------------------------------------------
+    #endregion
+
+    #region Relacionamentos
+    public virtual UsuarioDtos? Usuario { get; set; }
     #endregion
 }
 //===================================================

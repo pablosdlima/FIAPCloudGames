@@ -1,6 +1,9 @@
 ﻿using FIAPCloudGames.Application.AppServices;
 using FIAPCloudGames.Application.Dtos;
 using FIAPCloudGames.Application.Interfaces;
+using FIAPCloudGames.Domain.Dtos;
+using GraphQL;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 
 namespace FIAPCloudGames.Api.GraphQL.Types;
@@ -9,7 +12,7 @@ public class EnderecoType : ObjectGraphType<EnderecoDtos>
 {
     #region Construtor
     //-----------------------------------------------------
-    public EnderecoType(IUsuarioAppService usuarioAppService)
+    public EnderecoType(IUsuarioAppService usuarioAppService, IDataLoaderContextAccessor dataLoader)
     {
         Name = "Endereco";
         Description = "Enderecos do Usuário";
@@ -27,10 +30,21 @@ public class EnderecoType : ObjectGraphType<EnderecoDtos>
         Field<UsuarioType>("usuario").Description("Usuário Portador do contato")
             .Resolve(context =>
             {
-                if (context.Source.UsuarioId != null) return context.Source.UsuarioId; //substituir por obj.
-
                 var usuarioId = context.Source.UsuarioId;
-                return usuarioAppService.BuscarPorId(usuarioId); //Verificar tipo de retorno...
+
+                if (usuarioId == Guid.Empty)
+                    return null;
+
+                var loader = dataLoader.Context
+                    .GetOrAddBatchLoader<Guid, UsuarioDtos>(
+                        "UsuariosPorId",
+                        async ids =>
+                        {
+                            var usuarios = await usuarioAppService.BuscarPorIdsAsync(ids);
+                            return usuarios;
+                        });
+
+                return loader.LoadAsync(usuarioId);
             });
     }
     //-----------------------------------------------------

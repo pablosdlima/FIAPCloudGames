@@ -132,6 +132,35 @@ public class GenericEntityRepository<T> : IGenericEntityRepository<T> where T : 
         return await _context.Set<T>().AsNoTracking()
             .Skip(skip).Take(take).ToListAsync();
     }
+    #endregion
 
+
+    #region GraphQL
+    //--------------------------------------------------------
+    public async Task<List<T>> BuscarPorIdsAsync<TKey>(
+    IEnumerable<TKey> ids,
+    Expression<Func<T, TKey>> keySelector)
+    {
+        return await _dbSet
+            .Where(BuildContainsExpression(keySelector, ids))
+            .ToListAsync();
+    }
+    //--------------------------------------------------------
+    private static Expression<Func<T, bool>> BuildContainsExpression<TKey>(
+        Expression<Func<T, TKey>> keySelector,
+        IEnumerable<TKey> ids)
+    {
+        var parameter = keySelector.Parameters.Single();
+        var body = Expression.Call(
+            typeof(Enumerable),
+            nameof(Enumerable.Contains),
+            new[] { typeof(TKey) },
+            Expression.Constant(ids),
+            keySelector.Body
+        );
+
+        return Expression.Lambda<Func<T, bool>>(body, parameter);
+    }
+    //--------------------------------------------------------
     #endregion
 }

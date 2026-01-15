@@ -1,4 +1,5 @@
 ﻿using FIAPCloudGames.Application.Interfaces;
+using FIAPCloudGames.Domain.Dtos;
 using FIAPCloudGames.Domain.Dtos.Request.Usuario;
 using FIAPCloudGames.Domain.Dtos.Responses.Usuario;
 using FIAPCloudGames.Domain.Dtos.Responses.Usuarios;
@@ -85,4 +86,13 @@ public class UsuarioAppService : IUsuarioAppService
         }
         return result;
     }
+
+    #region GraphQl
+    //-----------------------------------------------------------------------------------
+    public Task<IDictionary<Guid, UsuarioDtos>> BuscarPorIdsAsync(IEnumerable<Guid> ids)
+    {
+        return _usuarioService.BuscarPorIdsAsync(ids);
+    }
+    #endregion
+    //-----------------------------------------------------------------------------------
 }

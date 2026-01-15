@@ -1,4 +1,6 @@
-﻿namespace FIAPCloudGames.Application.Dtos;
+﻿using FIAPCloudGames.Domain.Dtos;
+
+namespace FIAPCloudGames.Application.Dtos;
 //==============================================
 public class UsuarioGameBibliotecaDto
 {
@@ -16,6 +18,10 @@ public class UsuarioGameBibliotecaDto
     //--------------------------------------------------------
     public DateTime DataAquisicao { get; set; }
     //--------------------------------------------------------
+    #endregion
+
+    #region Relacionamentos
+    public virtual UsuarioDtos? Usuario { get; set; }
     #endregion
 }
 //==============================================
