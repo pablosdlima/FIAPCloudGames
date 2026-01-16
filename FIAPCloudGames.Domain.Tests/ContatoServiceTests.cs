@@ -27,8 +27,8 @@ namespace FIAPCloudGames.Domain.Tests
         public void ListarPorUsusario_QuandoNaoHouverUsuario_DeveRetornarListaVazia()
         {
             // Arrange
-            _repositoryMock.Setup(e => e.Get()).Returns(new List<Contato>().AsQueryable());
             var id = Guid.NewGuid();
+            _contatoRepositoryMock.Setup(e => e.ListarPorUsuario(id)).Returns(new List<Contato>());
 
             // Act
             var result = _service.ListarPorUsuario(id);
@@ -42,9 +42,8 @@ namespace FIAPCloudGames.Domain.Tests
         public void ListarPorUsusario_QuandoNaoHouverUmUsuario_DeveRetornarListaComUmIndice()
         {
             // Arrange
-            _repositoryMock.Setup(r => r.Get()).Returns(new List<Contato> { new Contato("phone", "email") }.AsQueryable());
             var id = Guid.NewGuid();
-
+            _contatoRepositoryMock.Setup(e => e.ListarPorUsuario(id)).Returns(new List<Contato> { new Contato("phone", "email") });
 
             // Act
             var result = _service.ListarPorUsuario(id);
@@ -53,16 +52,14 @@ namespace FIAPCloudGames.Domain.Tests
             Assert.NotNull(result);
             Assert.NotEmpty(result);
             Assert.Equal(1, result.Count);
-            //para verificar se um método foi chamado, loggers por exemplo:
-            //_contatoServiceLoggerMock.Verify(r => r.Log(It.IsAny<string>(), Times.Once"ou equals x", ou AtLeast);
         }
 
         [Fact]
         public void ListarPorUsusario_QuandoHouverDoisUsuarios_DeveRetornarListaComDoisIndices()
         {
             // Arrange
-            _repositoryMock.Setup(r => r.Get()).Returns(new List<Contato> {new Contato("phone1", "email1"), new Contato("phone2", "email2")}.AsQueryable());
             var id = Guid.NewGuid();
+            _contatoRepositoryMock.Setup(e => e.ListarPorUsuario(id)).Returns(new List<Contato> { new Contato("phone1", "email1"), new Contato("phone2", "email2") });
 
             // Act
             var result = _service.ListarPorUsuario(id);
@@ -71,6 +68,170 @@ namespace FIAPCloudGames.Domain.Tests
             Assert.NotNull(result);
             Assert.NotEmpty(result);
             Assert.Equal(2, result.Count);
+        }
+
+        [Fact]
+        public async Task Cadastrar_QuandoCadastroForBemSucedido_DeveRetornarContato()
+        {
+            // Arrange
+            var contato = new Contato("11999999999", "teste@email.com");
+            _repositoryMock.Setup(r => r.Insert(It.IsAny<Contato>(), It.IsAny<CancellationToken>())).ReturnsAsync(contato);
+
+            // Act
+            var result = await _service.Cadastrar(contato);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(contato.Celular, result.Celular);
+            Assert.Equal(contato.Email, result.Email);
+        }
+
+        [Fact]
+        public async Task Cadastrar_QuandoCadastroFalhar_DeveRetornarNull()
+        {
+            // Arrange
+            var contato = new Contato("11999999999", "teste@email.com");
+            _repositoryMock.Setup(r => r.Insert(It.IsAny<Contato>(), It.IsAny<CancellationToken>())).ReturnsAsync((Contato)null);
+
+            // Act
+            var result = await _service.Cadastrar(contato);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task Atualizar_QuandoContatoExistir_DeveRetornarContatoAtualizadoComSuccessTrue()
+        {
+            // Arrange
+            var contatoId = Guid.NewGuid();
+            var usuarioId = Guid.NewGuid();
+            var contatoExistente = new Contato("11999999999", "antigo@email.com")
+            {
+                Id = contatoId,
+                UsuarioId = usuarioId
+            };
+            var contatoAtualizado = new Contato("11888888888", "novo@email.com")
+            {
+                Id = contatoId,
+                UsuarioId = usuarioId
+            };
+            _contatoRepositoryMock.Setup(r => r.BuscarPorIdEUsuario(contatoId, usuarioId)).Returns(contatoExistente);
+            _repositoryMock.Setup(r => r.Update(It.IsAny<Contato>())).Returns((contatoExistente, true));
+
+            // Act
+            var result = await _service.Atualizar(contatoAtualizado);
+
+            // Assert
+            Assert.NotNull(result.Contato);
+            Assert.True(result.Success);
+            Assert.Equal(contatoAtualizado.Celular, result.Contato.Celular);
+            Assert.Equal(contatoAtualizado.Email, result.Contato.Email);
+        }
+
+        [Fact]
+        public async Task Atualizar_QuandoContatoNaoExistir_DeveRetornarNullComSuccessFalse()
+        {
+            // Arrange
+            var contatoId = Guid.NewGuid();
+            var usuarioId = Guid.NewGuid();
+            var contatoAtualizado = new Contato("11888888888", "novo@email.com")
+            {
+                Id = contatoId,
+                UsuarioId = usuarioId
+            };
+            _contatoRepositoryMock.Setup(r => r.BuscarPorIdEUsuario(contatoId, usuarioId)).Returns((Contato)null);
+
+            // Act
+            var result = await _service.Atualizar(contatoAtualizado);
+
+            // Assert
+            Assert.Null(result.Contato);
+            Assert.False(result.Success);
+        }
+
+        [Fact]
+        public async Task Atualizar_QuandoAtualizacaoFalhar_DeveRetornarContatoComSuccessFalse()
+        {
+            // Arrange
+            var contatoId = Guid.NewGuid();
+            var usuarioId = Guid.NewGuid();
+            var contatoExistente = new Contato("11999999999", "antigo@email.com")
+            {
+                Id = contatoId,
+                UsuarioId = usuarioId
+            };
+            var contatoAtualizado = new Contato("11888888888", "novo@email.com")
+            {
+                Id = contatoId,
+                UsuarioId = usuarioId
+            };
+            _contatoRepositoryMock.Setup(r => r.BuscarPorIdEUsuario(contatoId, usuarioId)).Returns(contatoExistente);
+            _repositoryMock.Setup(r => r.Update(It.IsAny<Contato>())).Returns((contatoExistente, false));
+
+            // Act
+            var result = await _service.Atualizar(contatoAtualizado);
+
+            // Assert
+            Assert.NotNull(result.Contato);
+            Assert.False(result.Success);
+        }
+
+        [Fact]
+        public async Task Deletar_QuandoContatoExistir_DeveRetornarTrue()
+        {
+            // Arrange
+            var contatoId = Guid.NewGuid();
+            var usuarioId = Guid.NewGuid();
+            var contato = new Contato("11999999999", "teste@email.com")
+            {
+                Id = contatoId,
+                UsuarioId = usuarioId
+            };
+            _contatoRepositoryMock.Setup(r => r.BuscarPorIdEUsuario(contatoId, usuarioId)).Returns(contato);
+            _repositoryMock.Setup(r => r.DeleteById(contatoId)).ReturnsAsync(true);
+
+            // Act
+            var result = await _service.Deletar(contatoId, usuarioId);
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task Deletar_QuandoContatoNaoExistir_DeveRetornarFalse()
+        {
+            // Arrange
+            var contatoId = Guid.NewGuid();
+            var usuarioId = Guid.NewGuid();
+            _contatoRepositoryMock.Setup(r => r.BuscarPorIdEUsuario(contatoId, usuarioId)).Returns((Contato)null);
+
+            // Act
+            var result = await _service.Deletar(contatoId, usuarioId);
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task Deletar_QuandoDelecaoFalhar_DeveRetornarFalse()
+        {
+            // Arrange
+            var contatoId = Guid.NewGuid();
+            var usuarioId = Guid.NewGuid();
+            var contato = new Contato("11999999999", "teste@email.com")
+            {
+                Id = contatoId,
+                UsuarioId = usuarioId
+            };
+            _contatoRepositoryMock.Setup(r => r.BuscarPorIdEUsuario(contatoId, usuarioId)).Returns(contato);
+            _repositoryMock.Setup(r => r.DeleteById(contatoId)).ReturnsAsync(false);
+
+            // Act
+            var result = await _service.Deletar(contatoId, usuarioId);
+
+            // Assert
+            Assert.False(result);
         }
     }
 }
