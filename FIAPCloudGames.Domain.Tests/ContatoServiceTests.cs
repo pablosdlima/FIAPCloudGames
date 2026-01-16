@@ -51,5 +51,25 @@ namespace FIAPCloudGames.Domain.Tests
             //para verificar se um método foi chamado, loggers por exemplo:
             //_contatoServiceLoggerMock.Verify(r => r.Log(It.IsAny<string>(), Times.Once"ou equals x", ou AtLeast);
         }
+
+        [Fact]
+        public void ListarPorUsusario_QuandoHouverDoisUsuarios_DeveRetornarListaComDoisIndices()
+        {
+            // Arrange
+            _contatoRepositoryMock.Setup(r => r.Get()).Returns(new List<Contato>
+            {
+                new Contato("phone1", "email1"),
+                new Contato("phone2", "email2")
+            }.AsQueryable());
+            var contatoService = new ContatoService(_contatoEntityMock.Object, _contatoRepositoryMock.Object, _contatoServiceLogger.Object);
+
+            // Act
+            var result = contatoService.ListarPorUsuario(new Guid());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+            Assert.Equal(2, result.Count);
+        }
     }
 }
