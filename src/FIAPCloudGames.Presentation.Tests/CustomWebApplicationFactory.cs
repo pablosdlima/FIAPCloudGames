@@ -1,10 +1,12 @@
-﻿using FIAPCloudGames.Api;
+﻿// FIAPCloudGames.Presentation.Tests/CustomWebApplicationFactory.cs
+using FIAPCloudGames.Api;
 using FIAPCloudGames.Api.Endpoints;
 using FIAPCloudGames.Api.Middlewares;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Authentication;
 using FIAPCloudGames.Domain.Dtos.Request.Contato;
 using FIAPCloudGames.Domain.Dtos.Request.Enderecos;
+using FIAPCloudGames.Domain.Dtos.Request.Game; // Adicionar este using
 using FIAPCloudGames.Domain.Dtos.Request.Role;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioGameBiblioteca;
 using FluentValidation;
@@ -33,11 +35,15 @@ namespace FIAPCloudGames.Presentation.Tests
         public IRoleAppService MockRoleAppService { get; private set; } = default!;
         public IValidator<CadastrarRoleRequest> MockCadastrarRoleRequestValidator { get; private set; } = default!;
         public IValidator<AtualizarRoleRequest> MockAtualizarRoleRequestValidator { get; private set; } = default!;
-
-        // NOVOS MOCKS PARA USUARIOGAMEBIBLIOTECA
         public IUsuarioGameBibliotecaAppService MockUsuarioGameBibliotecaAppService { get; private set; } = default!;
         public IValidator<ComprarGameRequest> MockComprarGameRequestValidator { get; private set; } = default!;
         public IValidator<AtualizarBibliotecaRequest> MockAtualizarBibliotecaRequestValidator { get; private set; } = default!;
+
+        // NOVOS MOCKS PARA GAME
+        public IGameAppService MockGameAppService { get; private set; } = default!;
+        public IValidator<CadastrarGameRequest> MockCadastrarGameRequestValidator { get; private set; } = default!;
+        public IValidator<ListarGamesPaginadoRequest> MockListarGamesPaginadoRequestValidator { get; private set; } = default!;
+        public IValidator<AtualizarGameRequest> MockAtualizarGameRequestValidator { get; private set; } = default!;
 
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -89,7 +95,7 @@ namespace FIAPCloudGames.Presentation.Tests
                 MockContatoAppServiceLogger = Substitute.For<ILogger<FIAPCloudGames.Application.AppServices.ContatoAppService>>();
                 services.AddSingleton(MockContatoAppServiceLogger);
                 Console.WriteLine("CustomWebApplicationFactory: Adicionado mock ILogger<ContatoAppService>.");
-                // Mocks para Endereço
+                // Mocks para Endereco
                 var enderecoAppServiceDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IEnderecoAppService));
                 if (enderecoAppServiceDescriptor != null) { services.Remove(enderecoAppServiceDescriptor); Console.WriteLine("CustomWebApplicationFactory: Removido IEnderecoAppService."); }
                 MockEnderecoAppService = Substitute.For<IEnderecoAppService>();
@@ -129,14 +135,12 @@ namespace FIAPCloudGames.Presentation.Tests
                     .Returns(new FluentValidation.Results.ValidationResult());
                 services.AddSingleton(MockAtualizarRoleRequestValidator);
                 Console.WriteLine("CustomWebApplicationFactory: Adicionado mock IValidator<AtualizarRoleRequest>.");
-
-                // NOVOS MOCKS PARA USUARIOGAMEBIBLIOTECA
+                // Mocks para UsuarioGameBiblioteca
                 var usuarioGameBibliotecaAppServiceDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IUsuarioGameBibliotecaAppService));
                 if (usuarioGameBibliotecaAppServiceDescriptor != null) { services.Remove(usuarioGameBibliotecaAppServiceDescriptor); Console.WriteLine("CustomWebApplicationFactory: Removido IUsuarioGameBibliotecaAppService."); }
                 MockUsuarioGameBibliotecaAppService = Substitute.For<IUsuarioGameBibliotecaAppService>();
                 services.AddSingleton(MockUsuarioGameBibliotecaAppService);
                 Console.WriteLine("CustomWebApplicationFactory: Adicionado mock IUsuarioGameBibliotecaAppService.");
-
                 var comprarGameRequestValidatorDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IValidator<ComprarGameRequest>));
                 if (comprarGameRequestValidatorDescriptor != null) { services.Remove(comprarGameRequestValidatorDescriptor); Console.WriteLine("CustomWebApplicationFactory: Removido IValidator<ComprarGameRequest>."); }
                 MockComprarGameRequestValidator = Substitute.For<IValidator<ComprarGameRequest>>();
@@ -144,7 +148,6 @@ namespace FIAPCloudGames.Presentation.Tests
                     .Returns(new FluentValidation.Results.ValidationResult());
                 services.AddSingleton(MockComprarGameRequestValidator);
                 Console.WriteLine("CustomWebApplicationFactory: Adicionado mock IValidator<ComprarGameRequest>.");
-
                 var atualizarBibliotecaRequestValidatorDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IValidator<AtualizarBibliotecaRequest>));
                 if (atualizarBibliotecaRequestValidatorDescriptor != null) { services.Remove(atualizarBibliotecaRequestValidatorDescriptor); Console.WriteLine("CustomWebApplicationFactory: Removido IValidator<AtualizarBibliotecaRequest>."); }
                 MockAtualizarBibliotecaRequestValidator = Substitute.For<IValidator<AtualizarBibliotecaRequest>>();
@@ -152,7 +155,40 @@ namespace FIAPCloudGames.Presentation.Tests
                     .Returns(new FluentValidation.Results.ValidationResult());
                 services.AddSingleton(MockAtualizarBibliotecaRequestValidator);
                 Console.WriteLine("CustomWebApplicationFactory: Adicionado mock IValidator<AtualizarBibliotecaRequest>.");
+
+                // NOVOS MOCKS PARA GAME
+                var gameAppServiceDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IGameAppService));
+                if (gameAppServiceDescriptor != null) { services.Remove(gameAppServiceDescriptor); Console.WriteLine("CustomWebApplicationFactory: Removido IGameAppService."); }
+                MockGameAppService = Substitute.For<IGameAppService>();
+                services.AddSingleton(MockGameAppService);
+                Console.WriteLine("CustomWebApplicationFactory: Adicionado mock IGameAppService.");
+
+                var cadastrarGameRequestValidatorDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IValidator<CadastrarGameRequest>));
+                if (cadastrarGameRequestValidatorDescriptor != null) { services.Remove(cadastrarGameRequestValidatorDescriptor); Console.WriteLine("CustomWebApplicationFactory: Removido IValidator<CadastrarGameRequest>."); }
+                MockCadastrarGameRequestValidator = Substitute.For<IValidator<CadastrarGameRequest>>();
+                MockCadastrarGameRequestValidator.ValidateAsync(Arg.Any<CadastrarGameRequest>(), Arg.Any<CancellationToken>())
+                    .Returns(new FluentValidation.Results.ValidationResult());
+                services.AddSingleton(MockCadastrarGameRequestValidator);
+                Console.WriteLine("CustomWebApplicationFactory: Adicionado mock IValidator<CadastrarGameRequest>.");
+
+                var listarGamesPaginadoRequestValidatorDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IValidator<ListarGamesPaginadoRequest>));
+                if (listarGamesPaginadoRequestValidatorDescriptor != null) { services.Remove(listarGamesPaginadoRequestValidatorDescriptor); Console.WriteLine("CustomWebApplicationFactory: Removido IValidator<ListarGamesPaginadoRequest>."); }
+                MockListarGamesPaginadoRequestValidator = Substitute.For<IValidator<ListarGamesPaginadoRequest>>();
+                MockListarGamesPaginadoRequestValidator.ValidateAsync(Arg.Any<ListarGamesPaginadoRequest>(), Arg.Any<CancellationToken>())
+                    .Returns(new FluentValidation.Results.ValidationResult());
+                services.AddSingleton(MockListarGamesPaginadoRequestValidator);
+                Console.WriteLine("CustomWebApplicationFactory: Adicionado mock IValidator<ListarGamesPaginadoRequest>.");
+
+                var atualizarGameRequestValidatorDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IValidator<AtualizarGameRequest>));
+                if (atualizarGameRequestValidatorDescriptor != null) { services.Remove(atualizarGameRequestValidatorDescriptor); Console.WriteLine("CustomWebApplicationFactory: Removido IValidator<AtualizarGameRequest>."); }
+                MockAtualizarGameRequestValidator = Substitute.For<IValidator<AtualizarGameRequest>>();
+                MockAtualizarGameRequestValidator.ValidateAsync(Arg.Any<AtualizarGameRequest>(), Arg.Any<CancellationToken>())
+                    .Returns(new FluentValidation.Results.ValidationResult());
+                services.AddSingleton(MockAtualizarGameRequestValidator);
+                Console.WriteLine("CustomWebApplicationFactory: Adicionado mock IValidator<AtualizarGameRequest>.");
+
             });
+
             // Substituir o método Configure para mapear APENAS os endpoints de Roles
             builder.Configure(app =>
             {
@@ -168,11 +204,15 @@ namespace FIAPCloudGames.Presentation.Tests
                     endpoints.MapAuthentication();
                     endpoints.MapContatos();
                     endpoints.MapEnderecos();
-                    // NOVO MAPEAMENTO PARA USUARIOGAMEBIBLIOTECA
-                    endpoints.MapUsuarioGameBiblioteca();
-                    Console.WriteLine("CustomWebApplicationFactory: Endpoints de Roles, Authentication, Contatos, Enderecos e UsuarioGameBiblioteca mapeados.");
+                    endpoints.MapUsuarioGameBiblioteca(); // Manter este mapeamento
+                    endpoints.MapGames(); // Adicionar este mapeamento
+                    Console.WriteLine("CustomWebApplicationFactory: Endpoints de Roles mapeados.");
+                    // Comentar ou remover os outros mapeamentos para evitar inicialização de dependências não mockadas
+                    // endpoints.MapAuthentication();
+                    // endpoints.MapContatos();
+                    // endpoints.MapEnderecos();
                 });
-                Console.WriteLine("CustomWebApplicationFactory: Pipeline de requisição configurado.");
+                Console.WriteLine("CustomWebApplicationFactory: Pipeline de requisição de Roles configurado.");
             });
             Console.WriteLine("CustomWebApplicationFactory: ConfigureWebHost concluído.");
         }
