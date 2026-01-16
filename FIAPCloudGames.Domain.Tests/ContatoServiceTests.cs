@@ -9,25 +9,29 @@ namespace FIAPCloudGames.Domain.Tests
 {
     public class ContatoServiceTests
     {
-        private readonly Mock<IGenericEntityRepository<Contato>> _contatoEntityMock;
+        private readonly Mock<IGenericEntityRepository<Contato>> _repositoryMock;
+        //TODO: Entender por que o contrutor de ContatoService pede este campo
+        private readonly Mock<ILogger<ContatoService>> _loggerMock;
         private readonly Mock<IContatoRepository> _contatoRepositoryMock;
-        private readonly Mock<ILogger<ContatoService>> _contatoServiceLogger;
+        private readonly ContatoService _service;
 
         public ContatoServiceTests()
         {
+            _repositoryMock = new Mock<IGenericEntityRepository<Contato>>();
+            _loggerMock = new Mock<ILogger<ContatoService>>();
+            _contatoRepositoryMock = new Mock<IContatoRepository>();
+            _service = new ContatoService(_repositoryMock.Object, _contatoRepositoryMock.Object, _loggerMock.Object);
         }
 
         [Fact]
         public void ListarPorUsusario_QuandoNaoHouverUsuario_DeveRetornarListaVazia()
         {
             // Arrange
-            //TODO: Entender porque contatoEntity tem esse campo!
-            _contatoEntityMock.Setup(e => e.Get()).Returns(new List<Contato>().AsQueryable());
-            _contatoRepositoryMock.Setup(r => r.Get()).Returns(new List<Contato>().AsQueryable());
-            var contatoService = new ContatoService(_contatoEntityMock.Object, _contatoRepositoryMock.Object, _contatoServiceLogger.Object);
+            _repositoryMock.Setup(e => e.Get()).Returns(new List<Contato>().AsQueryable());
+            var id = Guid.NewGuid();
 
             // Act
-            var result = contatoService.ListarPorUsuario(new Guid());
+            var result = _service.ListarPorUsuario(id);
 
             // Assert
             Assert.NotNull(result);
@@ -38,11 +42,12 @@ namespace FIAPCloudGames.Domain.Tests
         public void ListarPorUsusario_QuandoNaoHouverUmUsuario_DeveRetornarListaComUmIndice()
         {
             // Arrange
-            _contatoRepositoryMock.Setup(r => r.Get()).Returns(new List<Contato> { new Contato("phone", "email") }.AsQueryable());
-            var contatoService = new ContatoService(_contatoEntityMock.Object, _contatoRepositoryMock.Object, _contatoServiceLogger.Object);
+            _repositoryMock.Setup(r => r.Get()).Returns(new List<Contato> { new Contato("phone", "email") }.AsQueryable());
+            var id = Guid.NewGuid();
+
 
             // Act
-            var result = contatoService.ListarPorUsuario(new Guid());
+            var result = _service.ListarPorUsuario(id);
 
             // Assert
             Assert.NotNull(result);
@@ -56,15 +61,11 @@ namespace FIAPCloudGames.Domain.Tests
         public void ListarPorUsusario_QuandoHouverDoisUsuarios_DeveRetornarListaComDoisIndices()
         {
             // Arrange
-            _contatoRepositoryMock.Setup(r => r.Get()).Returns(new List<Contato>
-            {
-                new Contato("phone1", "email1"),
-                new Contato("phone2", "email2")
-            }.AsQueryable());
-            var contatoService = new ContatoService(_contatoEntityMock.Object, _contatoRepositoryMock.Object, _contatoServiceLogger.Object);
+            _repositoryMock.Setup(r => r.Get()).Returns(new List<Contato> {new Contato("phone1", "email1"), new Contato("phone2", "email2")}.AsQueryable());
+            var id = Guid.NewGuid();
 
             // Act
-            var result = contatoService.ListarPorUsuario(new Guid());
+            var result = _service.ListarPorUsuario(id);
 
             // Assert
             Assert.NotNull(result);
