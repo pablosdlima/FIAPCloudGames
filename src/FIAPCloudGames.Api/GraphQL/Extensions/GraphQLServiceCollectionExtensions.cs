@@ -19,6 +19,7 @@ public static class GraphQLServiceCollectionExtensions
         services.AddScoped<UsuarioGameBibliotecaQuery>();
         services.AddScoped<UsuarioPerfilQuery>();
         services.AddScoped<UsuarioQuery>();
+        services.AddScoped<GamesQuery>();
         //------------------------------------------------
         #endregion
 
