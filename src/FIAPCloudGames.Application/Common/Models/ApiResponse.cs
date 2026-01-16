@@ -1,6 +1,4 @@
-﻿// FIAPCloudGames.Application.Common.Models/ApiResponse.cs
-// Este código é o que você me forneceu e está correto para o propósito.
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace FIAPCloudGames.Application.Common.Models
 {
@@ -8,10 +6,9 @@ namespace FIAPCloudGames.Application.Common.Models
     {
         public bool Success { get; set; }
         public string Message { get; set; }
-        public T? Data { get; set; } // Permitir que Data seja nulo
-        public Dictionary<string, string[]>? Errors { get; set; } // Permitir que Errors seja nulo
+        public T? Data { get; set; }
+        public Dictionary<string, string[]>? Errors { get; set; }
         public DateTime Timestamp { get; set; }
-        // TraceId não está em ApiResponse<T> diretamente, mas em ErrorDetails
 
         public ApiResponse()
         {

@@ -7,6 +7,7 @@ using FIAPCloudGames.Domain.Dtos.Request.Contato;
 using FIAPCloudGames.Domain.Dtos.Request.Enderecos;
 using FIAPCloudGames.Domain.Dtos.Request.Game;
 using FIAPCloudGames.Domain.Dtos.Request.Role;
+using FIAPCloudGames.Domain.Dtos.Request.Usuario;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioGameBiblioteca;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioPerfil;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioRole;
@@ -18,17 +19,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 
-namespace FIAPCloudGames.Presentation.Tests
+namespace FIAPCloudGames.Presentation.Tests.Endpoints
 {
     public class CustomWebApplicationFactory : WebApplicationFactory<ApiAssemblyReference>
     {
         public IAuthenticationAppService MockAuthenticationAppService { get; private set; } = default!;
         public IValidator<LoginRequest> MockLoginRequestValidator { get; private set; } = default!;
-        public ILogger<FIAPCloudGames.Application.AppServices.AuthenticationAppService> MockAppServiceLogger { get; private set; } = default!;
+        public ILogger<Application.AppServices.AuthenticationAppService> MockAppServiceLogger { get; private set; } = default!;
         public IContatoAppService MockContatoAppService { get; private set; } = default!;
         public IValidator<CadastrarContatoRequest> MockCadastrarContatoRequestValidator { get; private set; } = default!;
         public IValidator<AtualizarContatoRequest> MockAtualizarContatoRequestValidator { get; private set; } = default!;
-        public ILogger<FIAPCloudGames.Application.AppServices.ContatoAppService> MockContatoAppServiceLogger { get; private set; } = default!;
+        public ILogger<Application.AppServices.ContatoAppService> MockContatoAppServiceLogger { get; private set; } = default!;
         public IEnderecoAppService MockEnderecoAppService { get; private set; } = default!;
         public IValidator<CadastrarEnderecoRequest> MockCadastrarEnderecoRequestValidator { get; private set; } = default!;
         public IValidator<AtualizarEnderecoRequest> MockAtualizarEnderecoRequestValidator { get; private set; } = default!;
@@ -45,18 +46,21 @@ namespace FIAPCloudGames.Presentation.Tests
         public IUsuarioPerfilAppService MockUsuarioPerfilAppService { get; private set; } = default!;
         public IValidator<CadastrarUsuarioPerfilRequest> MockCadastrarUsuarioPerfilRequestValidator { get; private set; } = default!;
         public IValidator<AtualizarUsuarioPerfilRequest> MockAtualizarUsuarioPerfilRequestValidator { get; private set; } = default!;
-
         public IUsuarioRoleAppService MockUsuarioRoleAppService { get; private set; } = default!;
         public IValidator<ListarRolePorUsuarioRequest> MockListarRolePorUsuarioRequestValidator { get; private set; } = default!;
         public IValidator<AlterarUsuarioRoleRequest> MockAlterarUsuarioRoleRequestValidator { get; private set; } = default!;
 
+        // NOVOS MOCKS PARA USUARIOS
+        public IUsuarioAppService MockUsuarioAppService { get; private set; } = default!;
+        public IValidator<CadastrarUsuarioRequest> MockCadastrarUsuarioRequestValidator { get; private set; } = default!;
+        public IValidator<AlterarSenhaRequest> MockAlterarSenhaRequestValidator { get; private set; } = default!;
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureServices(services =>
             {
-                var authAppServiceDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IAuthenticationAppService));
-                if (authAppServiceDescriptor != null) { services.Remove(authAppServiceDescriptor); }
+                var authenticationAppServiceDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IAuthenticationAppService));
+                if (authenticationAppServiceDescriptor != null) { services.Remove(authenticationAppServiceDescriptor); }
                 MockAuthenticationAppService = Substitute.For<IAuthenticationAppService>();
                 services.AddSingleton(MockAuthenticationAppService);
 
@@ -67,9 +71,9 @@ namespace FIAPCloudGames.Presentation.Tests
                     .Returns(new FluentValidation.Results.ValidationResult());
                 services.AddSingleton(MockLoginRequestValidator);
 
-                var appServiceLoggerDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(ILogger<FIAPCloudGames.Application.AppServices.AuthenticationAppService>));
+                var appServiceLoggerDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(ILogger<Application.AppServices.AuthenticationAppService>));
                 if (appServiceLoggerDescriptor != null) { services.Remove(appServiceLoggerDescriptor); }
-                MockAppServiceLogger = Substitute.For<ILogger<FIAPCloudGames.Application.AppServices.AuthenticationAppService>>();
+                MockAppServiceLogger = Substitute.For<ILogger<Application.AppServices.AuthenticationAppService>>();
                 services.AddSingleton(MockAppServiceLogger);
 
                 var contatoAppServiceDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IContatoAppService));
@@ -91,9 +95,9 @@ namespace FIAPCloudGames.Presentation.Tests
                     .Returns(new FluentValidation.Results.ValidationResult());
                 services.AddSingleton(MockAtualizarContatoRequestValidator);
 
-                var contatoAppServiceLoggerDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(ILogger<FIAPCloudGames.Application.AppServices.ContatoAppService>));
+                var contatoAppServiceLoggerDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(ILogger<Application.AppServices.ContatoAppService>));
                 if (contatoAppServiceLoggerDescriptor != null) { services.Remove(contatoAppServiceLoggerDescriptor); }
-                MockContatoAppServiceLogger = Substitute.For<ILogger<FIAPCloudGames.Application.AppServices.ContatoAppService>>();
+                MockContatoAppServiceLogger = Substitute.For<ILogger<Application.AppServices.ContatoAppService>>();
                 services.AddSingleton(MockContatoAppServiceLogger);
 
                 var enderecoAppServiceDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IEnderecoAppService));
@@ -216,6 +220,26 @@ namespace FIAPCloudGames.Presentation.Tests
                 MockAlterarUsuarioRoleRequestValidator.ValidateAsync(Arg.Any<AlterarUsuarioRoleRequest>(), Arg.Any<CancellationToken>())
                     .Returns(new FluentValidation.Results.ValidationResult());
                 services.AddSingleton(MockAlterarUsuarioRoleRequestValidator);
+
+                // Configuração dos NOVOS MOCKS PARA USUARIOS
+                var usuarioAppServiceDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IUsuarioAppService));
+                if (usuarioAppServiceDescriptor != null) { services.Remove(usuarioAppServiceDescriptor); }
+                MockUsuarioAppService = Substitute.For<IUsuarioAppService>();
+                services.AddSingleton(MockUsuarioAppService);
+
+                var cadastrarUsuarioRequestValidatorDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IValidator<CadastrarUsuarioRequest>));
+                if (cadastrarUsuarioRequestValidatorDescriptor != null) { services.Remove(cadastrarUsuarioRequestValidatorDescriptor); }
+                MockCadastrarUsuarioRequestValidator = Substitute.For<IValidator<CadastrarUsuarioRequest>>();
+                MockCadastrarUsuarioRequestValidator.ValidateAsync(Arg.Any<CadastrarUsuarioRequest>(), Arg.Any<CancellationToken>())
+                    .Returns(new FluentValidation.Results.ValidationResult());
+                services.AddSingleton(MockCadastrarUsuarioRequestValidator);
+
+                var alterarSenhaRequestValidatorDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IValidator<AlterarSenhaRequest>));
+                if (alterarSenhaRequestValidatorDescriptor != null) { services.Remove(alterarSenhaRequestValidatorDescriptor); }
+                MockAlterarSenhaRequestValidator = Substitute.For<IValidator<AlterarSenhaRequest>>();
+                MockAlterarSenhaRequestValidator.ValidateAsync(Arg.Any<AlterarSenhaRequest>(), Arg.Any<CancellationToken>())
+                    .Returns(new FluentValidation.Results.ValidationResult());
+                services.AddSingleton(MockAlterarSenhaRequestValidator);
             });
 
             builder.Configure(app =>
@@ -234,6 +258,7 @@ namespace FIAPCloudGames.Presentation.Tests
                     endpoints.MapGames();
                     endpoints.MapUsuarioPerfil();
                     endpoints.MapUsuarioRole();
+                    endpoints.MapUsuarios();
                 });
             });
         }

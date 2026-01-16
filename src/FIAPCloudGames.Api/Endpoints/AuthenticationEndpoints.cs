@@ -1,5 +1,4 @@
-﻿// FIAPCloudGames.Api/Endpoints/AuthenticationEndpoints.cs
-using FIAPCloudGames.Api.Filters;
+﻿using FIAPCloudGames.Api.Filters;
 using FIAPCloudGames.Api.Helpers;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Authentication;

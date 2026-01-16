@@ -1,5 +1,4 @@
-﻿// FIAPCloudGames.Api/Filters/ValidationEndpointFilter.cs
-using FIAPCloudGames.Api.Helpers; // Para ApiResponses
+﻿using FIAPCloudGames.Api.Helpers;
 using FluentValidation;
 
 namespace FIAPCloudGames.Api.Filters

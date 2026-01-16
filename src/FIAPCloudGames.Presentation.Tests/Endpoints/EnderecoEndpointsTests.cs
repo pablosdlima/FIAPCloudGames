@@ -1,5 +1,4 @@
-﻿// FIAPCloudGames.Presentation.Tests/Endpoints/EnderecoEndpointsTests.cs
-using Bogus;
+﻿using Bogus;
 using FIAPCloudGames.Application.Common.Models;
 using FIAPCloudGames.Application.Interfaces;
 using FIAPCloudGames.Domain.Dtos.Request.Enderecos;

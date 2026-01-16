@@ -1,6 +1,4 @@
-﻿// FIAPCloudGames.Api/Middlewares/ExceptionHandlingMiddleware.cs
-// Este código é o que você me forneceu e está correto para o propósito.
-using FIAPCloudGames.Application.Common.Models;
+﻿using FIAPCloudGames.Application.Common.Models;
 using FIAPCloudGames.Domain.Exceptions;
 
 namespace FIAPCloudGames.Api.Middlewares
