@@ -1,5 +1,4 @@
-﻿// FIAPCloudGames.Api/Helpers/ApiResponses.cs
-using FIAPCloudGames.Application.Common.Models;
+﻿using FIAPCloudGames.Application.Common.Models;
 
 namespace FIAPCloudGames.Api.Helpers
 {
