@@ -12,13 +12,12 @@ public static class UsuarioRoleEndpoints
     {
         var app = route.MapGroup("/api/UsuarioRole").WithTags("UsuarioRole");
 
-        app.MapGet("ListarRolesPorUsuario/", async (Guid usuarioId, IUsuarioRoleAppService usuarioService, ILogger<Program> logger) =>
+        app.MapGet("ListarRolesPorUsuario/", async (Guid usuarioId, IUsuarioRoleAppService usuarioService) =>
         {
             var request = new ListarRolePorUsuarioRequest(usuarioId);
             var result = await usuarioService.ListarRolesPorUsuario(request);
             if (result == null || !result.Any())
             {
-                logger.LogWarning("Nenhuma role encontrada para o usuário | UsuarioId: {UsuarioId}", usuarioId);
                 return ApiResponses.NotFound("roles", "Nenhuma role encontrada para este usuário.");
             }
             return ApiResponses.Ok(result, "Roles listadas com sucesso.");
@@ -30,12 +29,11 @@ public static class UsuarioRoleEndpoints
         .Produces(404);
 
 
-        app.MapPut("AlterarRoleUsuario", async (AlterarUsuarioRoleRequest request, IUsuarioRoleAppService usuarioRoleService, ILogger<Program> logger) =>
+        app.MapPut("AlterarRoleUsuario", async (AlterarUsuarioRoleRequest request, IUsuarioRoleAppService usuarioRoleService) =>
         {
             var result = await usuarioRoleService.AlterarRoleUsuario(request);
             if (!result)
             {
-                logger.LogWarning("Registro de role do usuário não encontrado ou falha na atualização | UsuarioId: {UsuarioId} | IdUsuarioRole: {IdUsuarioRole}", request.UsuarioId, request.IdUsuarioRole);
                 return ApiResponses.NotFound("usuarioRole", "Registro não encontrado ou não foi possível atualizar.");
             }
             return ApiResponses.OkMessage("Role do usuário alterada com sucesso.");
