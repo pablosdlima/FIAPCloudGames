@@ -35,12 +35,8 @@ namespace FIAPCloudGames.Api.Helpers
             return Results.BadRequest(errorDetails);
         }
 
-        // Correção aqui: O método NotFound agora sempre cria um dicionário de erros
-        // com a chave e a mensagem fornecidas, se nenhum dicionário explícito for passado.
         public static IResult NotFound(string key, string message, Dictionary<string, string[]>? errors = null)
         {
-            // Se 'errors' não foi fornecido, crie um dicionário com a chave e a mensagem principal.
-            // Caso contrário, use o dicionário de erros fornecido.
             var finalErrors = errors ?? new Dictionary<string, string[]> { { key, new[] { message } } };
 
             var errorDetails = ErrorDetails.ErrorResponse(StatusCodes.Status404NotFound, message, finalErrors);

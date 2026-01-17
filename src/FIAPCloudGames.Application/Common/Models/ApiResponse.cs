@@ -43,9 +43,9 @@ namespace FIAPCloudGames.Application.Common.Models
     {
         public int StatusCode { get; set; }
         public string Message { get; set; }
-        public Dictionary<string, string[]>? Errors { get; set; } // Permitir que Errors seja nulo
+        public Dictionary<string, string[]>? Errors { get; set; }
         public DateTime Timestamp { get; set; }
-        public string? TraceId { get; set; } // Permitir que TraceId seja nulo
+        public string? TraceId { get; set; }
 
         public ErrorDetails()
         {
