@@ -14,10 +14,8 @@ namespace FIAPCloudGames.Api.Endpoints
 
             app.MapPost("login/", async (LoginRequest request, IAuthenticationAppService authenticationService) =>
             {
-                // Correção aqui: Acessar as propriedades do LoginResponse retornado
                 var loginResponse = await authenticationService.Login(request.Usuario, request.Senha);
 
-                // Assumindo que LoginResponse.Token é null ou vazio em caso de falha
                 if (loginResponse == null || string.IsNullOrEmpty(loginResponse.Token))
                 {
                     return ApiResponses.Unauthorized("Usuário ou senha inválidos.");

@@ -1,7 +1,7 @@
 ﻿using FIAPCloudGames.Domain.Dtos.Request.Role;
 using FluentValidation;
 
-namespace FIAPCloudGames.Domain.Dtos.Validators
+namespace FIAPCloudGames.Domain.Dtos.Validators.Roles
 {
     public class AtualizarRoleRequestValidator : AbstractValidator<AtualizarRoleRequest>
     {

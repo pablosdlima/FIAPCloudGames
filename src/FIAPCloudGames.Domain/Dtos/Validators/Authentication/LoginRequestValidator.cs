@@ -1,7 +1,7 @@
 ﻿using FIAPCloudGames.Domain.Dtos.Request.Authentication;
 using FluentValidation;
 
-namespace FIAPCloudGames.Domain.Dtos.Validators
+namespace FIAPCloudGames.Domain.Dtos.Validators.Authentication
 {
     public class LoginRequestValidator : AbstractValidator<LoginRequest>
     {

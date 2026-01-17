@@ -1,6 +1,6 @@
 ﻿using FIAPCloudGames.Domain.Dtos.Request.Authentication;
 using FIAPCloudGames.Domain.Dtos.Request.Usuario;
-using FIAPCloudGames.Domain.Dtos.Validators;
+using FIAPCloudGames.Domain.Dtos.Validators.Authentication;
 using FluentAssertions;
 using Xunit;
 

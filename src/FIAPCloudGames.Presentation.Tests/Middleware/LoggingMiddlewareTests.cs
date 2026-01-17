@@ -7,7 +7,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.InMemory;
 
-namespace FIAPCloudGames.Presentation.Tests.Middlewares
+namespace FIAPCloudGames.Presentation.Tests.Middleware
 {
     public class LoggingMiddlewareTests : IDisposable
     {

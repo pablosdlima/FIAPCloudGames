@@ -1,7 +1,7 @@
 ﻿using FIAPCloudGames.Domain.Dtos.Request.Usuario;
 using FluentValidation;
 
-namespace FIAPCloudGames.Domain.Dtos.Validators
+namespace FIAPCloudGames.Domain.Dtos.Validators.Usuarios
 {
     public class CadastrarUsuarioRequestValidator : AbstractValidator<CadastrarUsuarioRequest>
     {

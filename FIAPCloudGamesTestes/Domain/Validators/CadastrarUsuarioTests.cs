@@ -1,5 +1,5 @@
 ﻿using FIAPCloudGames.Domain.Dtos.Request.Usuario;
-using FIAPCloudGames.Domain.Dtos.Validators;
+using FIAPCloudGames.Domain.Dtos.Validators.Usuarios;
 using FIAPCloudGames.Domain.Enums;
 using FluentAssertions;
 using Xunit;

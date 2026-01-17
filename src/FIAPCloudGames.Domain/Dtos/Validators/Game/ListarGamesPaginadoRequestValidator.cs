@@ -1,7 +1,7 @@
 ﻿using FIAPCloudGames.Domain.Dtos.Request.Game;
 using FluentValidation;
 
-namespace FIAPCloudGames.Domain.Dtos.Validators
+namespace FIAPCloudGames.Domain.Dtos.Validators.Game
 {
     public class ListarGamesPaginadoRequestValidator : AbstractValidator<ListarGamesPaginadoRequest>
     {

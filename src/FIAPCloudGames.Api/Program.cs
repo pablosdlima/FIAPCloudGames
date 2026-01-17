@@ -6,12 +6,12 @@ using FIAPCloudGames.Api.Extensions;
 using FIAPCloudGames.Api.Middleware;
 using FIAPCloudGames.Api.Middlewares;
 using FIAPCloudGames.Data.Data;
-using FIAPCloudGames.Domain.Dtos.Validators;
 using FIAPCloudGames.IoC;
 using FluentValidation;
 using Microsoft.IdentityModel.Logging;
 using Serilog;
 using FIAPCloudGames.Api.GraphQL.Extensions;
+using FIAPCloudGames.Domain.Dtos.Validators.Usuarios;
 
 IdentityModelEventSource.ShowPII = true;
 var builder = WebApplication.CreateBuilder(args);

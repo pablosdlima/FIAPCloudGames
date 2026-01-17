@@ -1,12 +1,16 @@
 ﻿using FIAPCloudGames.Domain.Dtos.Request.Enderecos;
 using FluentValidation;
 
-namespace FIAPCloudGames.Domain.Dtos.Validators
+namespace FIAPCloudGames.Domain.Dtos.Validators.Enderecos
 {
-    public class CadastrarEnderecoRequestValidator : AbstractValidator<CadastrarEnderecoRequest>
+    public class AtualizarEnderecoRequestValidator : AbstractValidator<AtualizarEnderecoRequest>
     {
-        public CadastrarEnderecoRequestValidator()
+        public AtualizarEnderecoRequestValidator()
         {
+            RuleFor(x => x.Id)
+                .NotEmpty()
+                .WithMessage("Id é obrigatório.");
+
             RuleFor(x => x.UsuarioId)
                 .NotEmpty()
                 .WithMessage("UsuarioId é obrigatório.");
