@@ -17,9 +17,7 @@ namespace FIAPCloudGames.Domain.Dtos.Validators.Contato
 
             RuleFor(x => x.Celular)
                 .NotEmpty()
-                .WithMessage("Celular é obrigatório.")
-                .Matches(@"^|$\d{2}$|\s?\d{4,5}-?\d{4}$")
-                .WithMessage("Celular deve estar no formato (00) 00000-0000 ou (00) 0000-0000.");
+                .WithMessage("Celular é obrigatório.");
 
             RuleFor(x => x.Email)
                 .NotEmpty()

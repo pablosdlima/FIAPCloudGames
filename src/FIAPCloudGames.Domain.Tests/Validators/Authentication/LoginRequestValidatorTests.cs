@@ -1,10 +1,8 @@
 ﻿using FIAPCloudGames.Domain.Dtos.Request.Authentication;
-using FIAPCloudGames.Domain.Dtos.Request.Usuario;
 using FIAPCloudGames.Domain.Dtos.Validators.Authentication;
 using FluentAssertions;
-using Xunit;
 
-namespace FIAPCloudGames.Tests.Domain.Validators
+namespace FIAPCloudGames.Domain.Tests.Validators
 {
     public class LoginRequestValidatorTests
     {

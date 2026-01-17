@@ -2,9 +2,8 @@
 using FIAPCloudGames.Domain.Dtos.Validators.Usuarios;
 using FIAPCloudGames.Domain.Enums;
 using FluentAssertions;
-using Xunit;
 
-namespace FIAPCloudGames.Tests.Domain.Validators
+namespace FIAPCloudGames.Domain.Tests.Validators
 {
     public class CadastrarUsuarioRequestValidatorTests
     {
@@ -42,7 +41,7 @@ namespace FIAPCloudGames.Tests.Domain.Validators
 
         [Fact]
         public void Validator_QuandoEmailForInvalido_DeveRetornarErro()
-        {           
+        {
             //Arange
             var request = CriarRequestValitor();
             request.Email = "email-invalido";
@@ -70,7 +69,7 @@ namespace FIAPCloudGames.Tests.Domain.Validators
 
         [Fact]
         public void Validator_QuandoSenhaFraca_DeveRetornarErro()
-        { 
+        {
             //Arange
             var request = CriarRequestValitor();
             request.Senha = "123456";
