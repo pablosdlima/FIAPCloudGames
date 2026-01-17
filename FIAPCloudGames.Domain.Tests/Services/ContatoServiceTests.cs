@@ -5,7 +5,7 @@ using FIAPCloudGames.Domain.Services;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace FIAPCloudGames.Domain.Tests
+namespace FIAPCloudGames.Domain.Tests.Services
 {
     public class ContatoServiceTests
     {
@@ -28,7 +28,7 @@ namespace FIAPCloudGames.Domain.Tests
         {
             // Arrange
             var id = Guid.NewGuid();
-            _contatoRepositoryMock.Setup(e => e.ListarPorUsuario(id)).Returns(new List<Contato>());
+            _contatoRepositoryMock.Setup(e => e.ListarPorUsuario(id)).Returns([]);
 
             // Act
             var result = _service.ListarPorUsuario(id);
@@ -43,7 +43,7 @@ namespace FIAPCloudGames.Domain.Tests
         {
             // Arrange
             var id = Guid.NewGuid();
-            _contatoRepositoryMock.Setup(e => e.ListarPorUsuario(id)).Returns(new List<Contato> { new Contato("phone", "email") });
+            _contatoRepositoryMock.Setup(e => e.ListarPorUsuario(id)).Returns([new Contato("phone", "email")]);
 
             // Act
             var result = _service.ListarPorUsuario(id);
@@ -59,7 +59,7 @@ namespace FIAPCloudGames.Domain.Tests
         {
             // Arrange
             var id = Guid.NewGuid();
-            _contatoRepositoryMock.Setup(e => e.ListarPorUsuario(id)).Returns(new List<Contato> { new Contato("phone1", "email1"), new Contato("phone2", "email2") });
+            _contatoRepositoryMock.Setup(e => e.ListarPorUsuario(id)).Returns([new Contato("phone1", "email1"), new Contato("phone2", "email2")]);
 
             // Act
             var result = _service.ListarPorUsuario(id);

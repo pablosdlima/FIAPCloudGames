@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace FIAPCloudGames.Domain.Tests
+namespace FIAPCloudGames.Domain.Tests.Services
 {
     public class UsuarioServicesTests
     {

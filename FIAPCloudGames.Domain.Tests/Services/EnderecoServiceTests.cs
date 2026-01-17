@@ -5,7 +5,7 @@ using FIAPCloudGames.Domain.Services;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace FIAPCloudGames.Domain.Tests
+namespace FIAPCloudGames.Domain.Tests.Services
 {
     public class EnderecoServiceTests
     {
