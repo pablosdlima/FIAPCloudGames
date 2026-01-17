@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\FIAPCloudGames.Domain\FIAPCloudGames.Domain.csproj" />
+    <ProjectReference Include="..\FIAPCloudGames.Domain\FIAPCloudGames.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
