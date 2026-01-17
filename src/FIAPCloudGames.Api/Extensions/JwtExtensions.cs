@@ -7,9 +7,27 @@ namespace FIAPCloudGames.Api.Extensions
     public static class JwtExtensions
     {
         public static IServiceCollection AddJwtAuthenticationConfig(
-    this IServiceCollection services,
-    IConfiguration configuration)
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
+            var secret = configuration["Jwt:Key"];
+            if (string.IsNullOrWhiteSpace(secret))
+            {
+                throw new ArgumentNullException("Jwt:Key", "A chave JWT (Jwt:Key) não pode ser nula ou vazia.");
+            }
+
+            var issuer = configuration["Jwt:Issuer"];
+            if (string.IsNullOrWhiteSpace(issuer))
+            {
+                throw new ArgumentNullException("Jwt:Issuer", "O emissor JWT (Jwt:Issuer) não pode ser nulo ou vazio.");
+            }
+
+            var audience = configuration["Jwt:Audience"];
+            if (string.IsNullOrWhiteSpace(audience))
+            {
+                throw new ArgumentNullException("Jwt:Audience", "A audiência JWT (Jwt:Audience) não pode ser nula ou vazia.");
+            }
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -19,16 +37,14 @@ namespace FIAPCloudGames.Api.Extensions
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = configuration["Jwt:Issuer"],
-                        ValidAudience = configuration["Jwt:Audience"],
+                        ValidIssuer = issuer,
+                        ValidAudience = audience,
                         IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(configuration["Jwt:Key"])),
+                            Encoding.UTF8.GetBytes(secret)),
                         ClockSkew = TimeSpan.Zero
                     };
                 });
-
             services.AddAuthorization();
-
             return services;
         }
     }
