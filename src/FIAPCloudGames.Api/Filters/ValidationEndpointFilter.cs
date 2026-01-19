@@ -32,7 +32,6 @@ namespace FIAPCloudGames.Api.Filters
                         g => g.Select(e => e.ErrorMessage).ToArray()
                     );
 
-                // Retorna ErrorDetails através do ApiResponses.BadRequestMultiple
                 return ApiResponses.BadRequestMultiple("Erro de validação", errorsDictionary);
             }
 

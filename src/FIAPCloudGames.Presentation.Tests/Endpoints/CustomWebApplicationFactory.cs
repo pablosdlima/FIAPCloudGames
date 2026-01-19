@@ -12,15 +12,50 @@ using FIAPCloudGames.Domain.Dtos.Request.UsuarioGameBiblioteca;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioPerfil;
 using FIAPCloudGames.Domain.Dtos.Request.UsuarioRole;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NSubstitute;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
 
 namespace FIAPCloudGames.Presentation.Tests.Endpoints
 {
+    public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    {
+        public const string SchemeName = "Test";
+
+        public TestAuthHandler(
+            IOptionsMonitor<AuthenticationSchemeOptions> options,
+            ILoggerFactory logger,
+            UrlEncoder encoder,
+            ISystemClock clock) : base(options, logger, encoder, clock)
+        { }
+
+        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+        {
+            var claims = new[]
+            {
+        new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
+        new Claim(ClaimTypes.Name, "test-user"),
+        new Claim(ClaimTypes.Role, "usuario"),
+        new Claim(ClaimTypes.Role, "administrador")
+        };
+
+            var identity = new ClaimsIdentity(claims, SchemeName);
+            var principal = new ClaimsPrincipal(identity);
+            var ticket = new AuthenticationTicket(principal, SchemeName);
+
+            return Task.FromResult(AuthenticateResult.Success(ticket));
+        }
+
+    }
+
     public class CustomWebApplicationFactory : WebApplicationFactory<ApiAssemblyReference>
     {
         public IAuthenticationAppService MockAuthenticationAppService { get; private set; } = default!;
@@ -49,8 +84,6 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
         public IUsuarioRoleAppService MockUsuarioRoleAppService { get; private set; } = default!;
         public IValidator<ListarRolePorUsuarioRequest> MockListarRolePorUsuarioRequestValidator { get; private set; } = default!;
         public IValidator<AlterarUsuarioRoleRequest> MockAlterarUsuarioRoleRequestValidator { get; private set; } = default!;
-
-        // NOVOS MOCKS PARA USUARIOS
         public IUsuarioAppService MockUsuarioAppService { get; private set; } = default!;
         public IValidator<CadastrarUsuarioRequest> MockCadastrarUsuarioRequestValidator { get; private set; } = default!;
         public IValidator<AlterarSenhaRequest> MockAlterarSenhaRequestValidator { get; private set; } = default!;
@@ -221,7 +254,6 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
                     .Returns(new FluentValidation.Results.ValidationResult());
                 services.AddSingleton(MockAlterarUsuarioRoleRequestValidator);
 
-                // Configuração dos NOVOS MOCKS PARA USUARIOS
                 var usuarioAppServiceDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IUsuarioAppService));
                 if (usuarioAppServiceDescriptor != null) { services.Remove(usuarioAppServiceDescriptor); }
                 MockUsuarioAppService = Substitute.For<IUsuarioAppService>();
@@ -242,12 +274,25 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
                 services.AddSingleton(MockAlterarSenhaRequestValidator);
             });
 
+            builder.ConfigureTestServices(services =>
+            {
+                services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = TestAuthHandler.SchemeName;
+                    options.DefaultChallengeScheme = TestAuthHandler.SchemeName;
+                })
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.SchemeName, _ => { });
+
+                services.AddAuthorization(options => { });
+            });
+
             builder.Configure(app =>
             {
                 app.UseMiddleware<ExceptionHandlingMiddleware>();
                 app.UseRouting();
                 app.UseAuthentication();
                 app.UseAuthorization();
+
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapRoles();

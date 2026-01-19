@@ -37,7 +37,6 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             _mockAtualizarGameRequestValidator.ClearReceivedCalls();
         }
 
-        // Testes para CadastrarGame
         [Fact]
         public async Task CadastrarGame_DeveRetornarCreated_QuandoSucesso()
         {
@@ -79,7 +78,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             apiResponse.Should().NotBeNull();
             apiResponse!.Success.Should().BeTrue();
             apiResponse.Message.Should().Be("Jogo cadastrado com sucesso.");
-            apiResponse.Data.Should().BeEquivalentTo(expectedGameResponse, options => options.Excluding(g => g.DataRelease)); // Excluir DataRelease para evitar problemas de precisão de DateTimeOffset
+            apiResponse.Data.Should().BeEquivalentTo(expectedGameResponse, options => options.Excluding(g => g.DataRelease));
 
             await _mockCadastrarGameRequestValidator.Received(1).ValidateAsync(Arg.Any<CadastrarGameRequest>(), Arg.Any<CancellationToken>());
             await _mockGameAppService.Received(1).Cadastrar(Arg.Is<CadastrarGameRequest>(r => r.Nome == request.Nome));
@@ -91,7 +90,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             // Arrange
             var request = new CadastrarGameRequest
             {
-                Nome = "", // Nome inválido para forçar falha de validação
+                Nome = "",
                 Descricao = "Um jogo de aventura de mundo aberto.",
                 Genero = "Aventura",
                 Desenvolvedor = "Nintendo",
@@ -122,14 +121,14 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             await _mockGameAppService.DidNotReceive().Cadastrar(Arg.Any<CadastrarGameRequest>());
         }
 
-        // Testes para BuscarGamePorId
+
         [Fact]
         public async Task BuscarGamePorId_DeveRetornarOkComGame_QuandoEncontrado()
         {
             // Arrange
             var gameId = Guid.NewGuid();
             var expectedGame = Game.Criar("Game Teste", "Desc Teste", "Acao", "Dev Teste", 60.00m, DateTimeOffset.UtcNow);
-            expectedGame.Id = gameId; // Garantir que o ID corresponde ao da requisição
+            expectedGame.Id = gameId;
             var expectedGameResponse = new GameResponse
             {
                 Id = expectedGame.Id,
@@ -141,7 +140,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
                 Preco = expectedGame.Preco
             };
 
-            _mockGameAppService.BuscarPorId(gameId).Returns(expectedGame); // Método síncrono
+            _mockGameAppService.BuscarPorId(gameId).Returns(expectedGame);
 
             // Act
             var response = await _client.GetAsync($"/api/Game/BuscarPorId/{gameId}");
@@ -154,7 +153,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             apiResponse.Message.Should().Be("Jogo encontrado com sucesso.");
             apiResponse.Data.Should().BeEquivalentTo(expectedGameResponse, options => options.Excluding(g => g.DataRelease));
 
-            _mockGameAppService.Received(1).BuscarPorId(gameId); // Verificação síncrona
+            _mockGameAppService.Received(1).BuscarPorId(gameId);
         }
 
         [Fact]
@@ -163,7 +162,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             // Arrange
             var gameId = Guid.NewGuid();
 
-            _mockGameAppService.BuscarPorId(gameId).Returns((Game?)null); // Método síncrono
+            _mockGameAppService.BuscarPorId(gameId).Returns((Game?)null);
 
             // Act
             var response = await _client.GetAsync($"/api/Game/BuscarPorId/{gameId}");
@@ -176,10 +175,10 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             errorResponse.Errors.Should().ContainKey("game");
             errorResponse.Errors["game"].Should().Contain("Jogo não encontrado.");
 
-            _mockGameAppService.Received(1).BuscarPorId(gameId); // Verificação síncrona
+            _mockGameAppService.Received(1).BuscarPorId(gameId);
         }
 
-        // Testes para ListarGamesPaginado
+
         [Fact]
         public async Task ListarGamesPaginado_DeveRetornarOkComListaPaginada_QuandoSucesso()
         {
@@ -192,9 +191,9 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             };
             var expectedResponse = new ListarGamesPaginadoResponse
             {
-                PaginaAtual = request.NumeroPagina, // CORRIGIDO: Usando PaginaAtual
+                PaginaAtual = request.NumeroPagina,
                 TamanhoPagina = request.TamanhoPagina,
-                TotalRegistros = 2, // CORRIGIDO: Usando TotalRegistros
+                TotalRegistros = 2,
                 TotalPaginas = 1,
                 TemPaginaAnterior = false,
                 TemProximaPagina = false,
@@ -217,9 +216,9 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             apiResponse.Should().NotBeNull();
             apiResponse!.Success.Should().BeTrue();
             apiResponse.Message.Should().Be("Jogos listados com sucesso.");
-            // CORREÇÃO AQUI: Usando Excluding com predicado para DataRelease dentro de Jogos
+
             apiResponse.Data.Should().BeEquivalentTo(expectedResponse, options => options
-                .Excluding(ctx => ctx.Path.EndsWith("DataRelease")) // Exclui qualquer propriedade chamada DataRelease
+                .Excluding(ctx => ctx.Path.EndsWith("DataRelease"))
             );
 
             await _mockListarGamesPaginadoRequestValidator.Received(1).ValidateAsync(Arg.Any<ListarGamesPaginadoRequest>(), Arg.Any<CancellationToken>());
@@ -230,7 +229,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
         public async Task ListarGamesPaginado_DeveRetornarBadRequest_QuandoValidacaoFalha()
         {
             // Arrange
-            var request = new ListarGamesPaginadoRequest { NumeroPagina = 0, TamanhoPagina = 10 }; // NumeroPagina inválido
+            var request = new ListarGamesPaginadoRequest { NumeroPagina = 0, TamanhoPagina = 10 };
             var validationResult = new FluentValidation.Results.ValidationResult(new[]
             {
                 new FluentValidation.Results.ValidationFailure("NumeroPagina", "Número da página deve ser maior que zero.")
@@ -255,7 +254,6 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             await _mockGameAppService.DidNotReceive().ListarGamesPaginado(Arg.Any<ListarGamesPaginadoRequest>());
         }
 
-        // Testes para AtualizarGame
         [Fact]
         public async Task AtualizarGame_DeveRetornarOk_QuandoSucesso()
         {
@@ -280,7 +278,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
                 Desenvolvedor = request.Desenvolvedor,
                 DataRelease = new DateTimeOffset(request.DataRelease!.Value.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero),
                 Preco = request.Preco,
-                DataCriacao = DateTimeOffset.UtcNow.AddYears(-6) // Simular data de criação anterior
+                DataCriacao = DateTimeOffset.UtcNow.AddYears(-6)
             };
 
             _mockAtualizarGameRequestValidator
@@ -314,7 +312,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             var request = new AtualizarGameRequest
             {
                 Id = gameId,
-                Nome = "", // Nome inválido para forçar falha de validação
+                Nome = "",
                 Descricao = "RPG de mundo aberto",
                 Genero = "RPG",
                 Desenvolvedor = "CD Projekt Red",

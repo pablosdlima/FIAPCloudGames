@@ -4,7 +4,7 @@ using FIAPCloudGames.Domain.Dtos.Responses.Endereco;
 using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;
-using Microsoft.Extensions.Logging; // ✅ Adicionado para ILogger
+using Microsoft.Extensions.Logging;
 
 namespace FIAPCloudGames.Application.AppServices;
 

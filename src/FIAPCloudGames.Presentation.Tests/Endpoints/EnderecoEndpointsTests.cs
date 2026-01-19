@@ -60,7 +60,6 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             return JsonSerializer.Deserialize<ErrorDetails>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        // Testes para ListarEnderecosDoUsuario
         [Fact]
         public async Task ListarEnderecosPorUsuarioId_ComUsuarioExistente_RetornaOkComEnderecos()
         {
@@ -101,7 +100,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
         public async Task ListarEnderecosPorUsuarioId_ComUsuarioInexistente_RetornaOkComListaVazia()
         {
             var usuarioId = Guid.NewGuid();
-            var enderecosEsperados = new List<EnderecoResponse>(); // Lista vazia
+            var enderecosEsperados = new List<EnderecoResponse>();
             var mensagemSucesso = "Endereços listados com sucesso.";
 
             _mockEnderecoAppService.ListarPorUsuario(usuarioId)
@@ -123,7 +122,6 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             await _mockEnderecoAppService.Received(1).ListarPorUsuario(usuarioId);
         }
 
-        // Testes para CadastrarEndereco
         [Fact]
         public async Task CadastrarEndereco_ComDadosValidos_RetornaCreated()
         {
@@ -181,13 +179,13 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             var usuarioId = Guid.NewGuid();
             var invalidRequest = new CadastrarEnderecoRequest
             {
-                Rua = string.Empty, // Inválido
-                Numero = string.Empty, // Inválido
+                Rua = string.Empty,
+                Numero = string.Empty,
                 Complemento = null,
-                Bairro = string.Empty, // Inválido
-                Cidade = string.Empty, // Inválido
-                Estado = string.Empty, // Inválido
-                Cep = string.Empty // Inválido
+                Bairro = string.Empty,
+                Cidade = string.Empty,
+                Estado = string.Empty,
+                Cep = string.Empty
             };
             var mensagemErroValidacao = "Erro de validação";
             var validationFailures = new List<FluentValidation.Results.ValidationFailure>
@@ -230,7 +228,6 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             await _mockEnderecoAppService.DidNotReceive().Cadastrar(Arg.Any<CadastrarEnderecoRequest>());
         }
 
-        // Testes para AtualizarEndereco
         [Fact]
         public async Task AtualizarEndereco_ComDadosValidos_RetornaOk()
         {
@@ -373,13 +370,13 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             {
                 Id = enderecoId,
                 UsuarioId = usuarioId,
-                Rua = string.Empty, // Inválido
-                Numero = string.Empty, // Inválido
+                Rua = string.Empty,
+                Numero = string.Empty,
                 Complemento = null,
-                Bairro = string.Empty, // Inválido
-                Cidade = string.Empty, // Inválido
-                Estado = string.Empty, // Inválido
-                Cep = string.Empty // Inválido
+                Bairro = string.Empty,
+                Cidade = string.Empty,
+                Estado = string.Empty,
+                Cep = string.Empty
             };
             var mensagemErroValidacao = "Erro de validação";
             var validationFailures = new List<FluentValidation.Results.ValidationFailure>
@@ -421,7 +418,6 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             await _mockEnderecoAppService.DidNotReceive().Atualizar(Arg.Any<AtualizarEnderecoRequest>());
         }
 
-        // Testes para DeletarEndereco
         [Fact]
         public async Task DeletarEndereco_ComEnderecoExistente_RetornaOk()
         {

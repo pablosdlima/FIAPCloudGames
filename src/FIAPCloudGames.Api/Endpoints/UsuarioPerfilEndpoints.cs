@@ -21,6 +21,7 @@ public static class UsuarioPerfilEndpoints
             }
             return ApiResponses.Ok(perfil, "Perfil encontrado com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("usuario"))
         .WithName("BuscarPerfilDoUsuario")
         .Produces<BuscarUsuarioPerfilResponse>(200)
         .Produces(404);
@@ -37,6 +38,7 @@ public static class UsuarioPerfilEndpoints
             }
             return ApiResponses.Created($"/api/usuarios/{usuarioId}/perfil/{perfil.Id}", perfil, "Perfil cadastrado com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("usuario"))
         .AddEndpointFilter<ValidationEndpointFilter<CadastrarUsuarioPerfilRequest>>()
         .WithName("CadastrarPerfil")
         .Produces<BuscarUsuarioPerfilResponse>(201)
@@ -57,6 +59,7 @@ public static class UsuarioPerfilEndpoints
             }
             return ApiResponses.Ok(perfil, "Perfil atualizado com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("usuario"))
         .AddEndpointFilter<ValidationEndpointFilter<AtualizarUsuarioPerfilRequest>>()
         .WithName("AtualizarPerfil")
         .Produces<BuscarUsuarioPerfilResponse>(200)
@@ -73,6 +76,7 @@ public static class UsuarioPerfilEndpoints
             }
             return ApiResponses.OkMessage("Perfil removido com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("usuario"))
         .WithName("DeletarPerfil")
         .Produces(200)
         .Produces(404);

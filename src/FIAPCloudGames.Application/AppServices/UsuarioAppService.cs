@@ -88,11 +88,10 @@ public class UsuarioAppService : IUsuarioAppService
     }
 
     #region GraphQl
-    //-----------------------------------------------------------------------------------
+
     public Task<IDictionary<Guid, UsuarioDtos>> BuscarPorIdsAsync(IEnumerable<Guid> ids)
     {
         return _usuarioService.BuscarPorIdsAsync(ids);
     }
     #endregion
-    //-----------------------------------------------------------------------------------
 }

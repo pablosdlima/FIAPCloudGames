@@ -191,7 +191,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var errorResponse = await response.Content.ReadFromJsonAsync<ErrorDetails>();
             errorResponse.Should().NotBeNull();
-            errorResponse!.StatusCode.Should().Be(StatusCodes.Status400BadRequest); // CORRIGIDO: Usando StatusCode
+            errorResponse!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
             errorResponse.Errors.Should().ContainKey("game");
             errorResponse.Errors["game"].Should().Contain(errorMessage);
 
@@ -254,7 +254,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             var urlBibliotecaId = Guid.NewGuid();
             var request = new AtualizarBibliotecaRequest
             {
-                Id = Guid.NewGuid(), // ID diferente do ID da URL
+                Id = Guid.NewGuid(),
                 UsuarioId = usuarioId,
                 GameId = Guid.NewGuid(),
                 TipoAquisicao = "Fisica",
@@ -262,10 +262,9 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
                 DataAquisicao = DateTimeOffset.UtcNow
             };
 
-            // **CORREÇÃO AQUI:** O validador será chamado pelo filtro, então ele deve retornar sucesso.
             _mockAtualizarBibliotecaRequestValidator
                 .ValidateAsync(Arg.Any<AtualizarBibliotecaRequest>(), Arg.Any<CancellationToken>())
-                .Returns(new FluentValidation.Results.ValidationResult()); // Retorna um resultado de validação bem-sucedido
+                .Returns(new FluentValidation.Results.ValidationResult());
 
             // Act
             var response = await _client.PutAsJsonAsync($"/api/usuarios/{usuarioId}/biblioteca/Atualizar/{urlBibliotecaId}", request);
@@ -278,9 +277,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             errorResponse.Errors.Should().ContainKey("id");
             errorResponse.Errors["id"].Should().Contain("Id da URL não corresponde ao Id do corpo da requisição.");
 
-            // **CORREÇÃO AQUI:** Agora esperamos que o validador tenha sido chamado UMA vez
             await _mockAtualizarBibliotecaRequestValidator.Received(1).ValidateAsync(Arg.Any<AtualizarBibliotecaRequest>(), Arg.Any<CancellationToken>());
-            // E o AppService ainda não deve ter sido chamado, pois a validação do ID falhou antes
             await _mockAppService.DidNotReceive().Atualizar(Arg.Any<AtualizarBibliotecaRequest>());
         }
 
@@ -295,7 +292,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             {
                 Id = bibliotecaId,
                 UsuarioId = usuarioId,
-                GameId = Guid.Empty, // ID inválido para forçar falha de validação
+                GameId = Guid.Empty,
                 TipoAquisicao = "Fisica",
                 PrecoAquisicao = 79.99m,
                 DataAquisicao = DateTimeOffset.UtcNow
@@ -316,7 +313,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var errorResponse = await response.Content.ReadFromJsonAsync<ErrorDetails>();
             errorResponse.Should().NotBeNull();
-            errorResponse!.StatusCode.Should().Be(StatusCodes.Status400BadRequest); // CORRIGIDO: Usando StatusCode
+            errorResponse!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
             errorResponse.Errors.Should().ContainKey("GameId");
             errorResponse.Errors["GameId"].Should().Contain("GameId é obrigatório.");
 
@@ -354,7 +351,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             var errorResponse = await response.Content.ReadFromJsonAsync<ErrorDetails>();
             errorResponse.Should().NotBeNull();
-            errorResponse!.StatusCode.Should().Be(StatusCodes.Status404NotFound); // CORRIGIDO: Usando StatusCode
+            errorResponse!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
             errorResponse.Errors.Should().ContainKey("biblioteca");
             errorResponse.Errors["biblioteca"].Should().Contain("Item da biblioteca não encontrado ou não pertence ao usuário.");
 
@@ -400,7 +397,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             var errorResponse = await response.Content.ReadFromJsonAsync<ErrorDetails>();
             errorResponse.Should().NotBeNull();
-            errorResponse!.StatusCode.Should().Be(StatusCodes.Status404NotFound); // CORRIGIDO: Usando StatusCode
+            errorResponse!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
             errorResponse.Errors.Should().ContainKey("biblioteca");
             errorResponse.Errors["biblioteca"].Should().Contain("Item da biblioteca não encontrado ou não pertence ao usuário.");
 

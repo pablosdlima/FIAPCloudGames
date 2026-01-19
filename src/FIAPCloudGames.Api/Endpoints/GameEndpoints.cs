@@ -21,6 +21,7 @@ public static class GameEndpoints
             }
             return ApiResponses.Created($"/api/Game/{result.Id}", result, "Jogo cadastrado com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("administrador"))
         .AddEndpointFilter<ValidationEndpointFilter<CadastrarGameRequest>>()
         .WithName("CadastrarGame")
         .Produces<GameResponse>(201)
@@ -37,6 +38,7 @@ public static class GameEndpoints
             }
             return ApiResponses.Ok(result, "Jogo encontrado com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("usuario"))
         .WithName("BuscarGamePorId")
         .Produces<GameResponse>(200)
         .Produces(404);
@@ -47,6 +49,7 @@ public static class GameEndpoints
             var result = await gameService.ListarGamesPaginado(request);
             return ApiResponses.Ok(result, "Jogos listados com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("usuario"))
         .AddEndpointFilter<ValidationEndpointFilter<ListarGamesPaginadoRequest>>()
         .WithName("ListarGamesPaginado")
         .Produces<ListarGamesPaginadoResponse>(200)
@@ -66,6 +69,7 @@ public static class GameEndpoints
             }
             return ApiResponses.Ok(game, "Jogo atualizado com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("administrador"))
         .AddEndpointFilter<ValidationEndpointFilter<AtualizarGameRequest>>()
         .WithName("AtualizarGame")
         .Produces<GameResponse>(200)

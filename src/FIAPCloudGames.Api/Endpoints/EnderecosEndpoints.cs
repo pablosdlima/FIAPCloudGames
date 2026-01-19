@@ -17,6 +17,7 @@ public static class EnderecoEndpoints
             var enderecos = await enderecoService.ListarPorUsuario(usuarioId);
             return ApiResponses.Ok(enderecos, "Endereços listados com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("usuario"))
         .WithName("ListarEnderecosDoUsuario")
         .Produces<List<EnderecoResponse>>(200);
 
@@ -27,6 +28,7 @@ public static class EnderecoEndpoints
             var endereco = await enderecoService.Cadastrar(request);
             return ApiResponses.Created($"/api/usuarios/{usuarioId}/enderecos/{endereco.Id}", endereco, "Endereço cadastrado com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("usuario"))
         .AddEndpointFilter<ValidationEndpointFilter<CadastrarEnderecoRequest>>()
         .WithName("CadastrarEndereco")
         .Produces<EnderecoResponse>(201)
@@ -51,6 +53,7 @@ public static class EnderecoEndpoints
 
             return ApiResponses.Ok(endereco, "Endereço atualizado com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("usuario"))
         .AddEndpointFilter<ValidationEndpointFilter<AtualizarEnderecoRequest>>()
         .WithName("AtualizarEndereco")
         .Produces<EnderecoResponse>(200)
@@ -69,6 +72,7 @@ public static class EnderecoEndpoints
 
             return ApiResponses.OkMessage("Endereço removido com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("usuario"))
         .WithName("DeletarEndereco")
         .Produces(200)
         .Produces(404);

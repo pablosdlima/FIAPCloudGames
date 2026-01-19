@@ -33,13 +33,12 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             _mockAtualizarRequestValidator.ClearReceivedCalls();
         }
 
-        // Testes para BuscarPerfilDoUsuario
         [Fact]
         public async Task BuscarPerfilPorUsuarioId_DeveRetornarOkComPerfil_QuandoEncontrado()
         {
             // Arrange
             var usuarioId = Guid.NewGuid();
-            var expectedResponse = new BuscarUsuarioPerfilResponse // CORRIGIDO: Usando inicializador de objeto
+            var expectedResponse = new BuscarUsuarioPerfilResponse
             {
                 Id = Guid.NewGuid(),
                 UsuarioId = usuarioId,
@@ -87,7 +86,6 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             await _mockAppService.Received(1).BuscarPorUsuarioId(usuarioId);
         }
 
-        // Testes para CadastrarPerfil
         [Fact]
         public async Task CadastrarPerfil_DeveRetornarCreated_QuandoSucesso()
         {
@@ -101,7 +99,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
                 Pais = "Portugal",
                 AvatarUrl = "http://example.com/new_avatar.png"
             };
-            var expectedResponse = new BuscarUsuarioPerfilResponse // CORRIGIDO: Usando inicializador de objeto
+            var expectedResponse = new BuscarUsuarioPerfilResponse
             {
                 Id = Guid.NewGuid(),
                 UsuarioId = usuarioId,
@@ -142,7 +140,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             var request = new CadastrarUsuarioPerfilRequest
             {
                 UsuarioId = usuarioId,
-                NomeCompleto = "", // Nome inválido para forçar falha de validação
+                NomeCompleto = "",
                 DataNascimento = DateTimeOffset.UtcNow.AddYears(-25),
                 Pais = "Portugal",
                 AvatarUrl = "http://example.com/new_avatar.png"
@@ -171,8 +169,6 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             await _mockAppService.DidNotReceive().Cadastrar(Arg.Any<CadastrarUsuarioPerfilRequest>());
         }
 
-
-        // Testes para AtualizarPerfil
         [Fact]
         public async Task AtualizarPerfil_DeveRetornarOk_QuandoSucesso()
         {
@@ -188,7 +184,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
                 Pais = "Canadá",
                 AvatarUrl = "http://example.com/updated_avatar.png"
             };
-            var expectedResponse = new BuscarUsuarioPerfilResponse // CORRIGIDO: Usando inicializador de objeto
+            var expectedResponse = new BuscarUsuarioPerfilResponse
             {
                 Id = perfilId,
                 UsuarioId = usuarioId,
@@ -232,7 +228,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             {
                 Id = perfilId,
                 UsuarioId = usuarioId,
-                NomeCompleto = "", // Nome inválido para forçar falha de validação
+                NomeCompleto = "",
                 DataNascimento = DateTimeOffset.UtcNow.AddYears(-22),
                 Pais = "Canadá",
                 AvatarUrl = "http://example.com/updated_avatar.png"
@@ -299,7 +295,7 @@ namespace FIAPCloudGames.Presentation.Tests.Endpoints
             await _mockAppService.Received(1).Atualizar(Arg.Is<AtualizarUsuarioPerfilRequest>(r => r.Id == perfilId && r.UsuarioId == usuarioId));
         }
 
-        // Testes para DeletarPerfil
+
         [Fact]
         public async Task DeletarPerfil_DeveRetornarOk_QuandoSucesso()
         {

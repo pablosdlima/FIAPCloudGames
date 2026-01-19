@@ -1,5 +1,4 @@
 ﻿using FIAPCloudGames.Domain.Dtos;
-using FIAPCloudGames.Domain.Models;
 
 namespace FIAPCloudGames.Application.Dtos;
 

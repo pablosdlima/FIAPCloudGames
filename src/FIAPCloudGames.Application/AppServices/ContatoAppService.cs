@@ -1,8 +1,6 @@
 ﻿using FIAPCloudGames.Application.Interfaces;
-using FIAPCloudGames.Domain.Dtos;
 using FIAPCloudGames.Domain.Dtos.Request.Contato;
 using FIAPCloudGames.Domain.Dtos.Responses.Contato;
-using FIAPCloudGames.Domain.Dtos.Responses.Usuarios;
 using FIAPCloudGames.Domain.Exceptions;
 using FIAPCloudGames.Domain.Interfaces.Services;
 using FIAPCloudGames.Domain.Models;

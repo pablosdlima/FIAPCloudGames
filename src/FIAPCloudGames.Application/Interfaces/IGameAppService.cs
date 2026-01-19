@@ -1,5 +1,4 @@
 ﻿using FIAPCloudGames.Domain.Dtos.Request.Game;
-using FIAPCloudGames.Domain.Dtos.Responses.Contato;
 using FIAPCloudGames.Domain.Dtos.Responses.Game;
 using FIAPCloudGames.Domain.Models;
 

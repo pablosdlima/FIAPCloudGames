@@ -21,6 +21,7 @@ public static class RolesEndpoints
             }
             return ApiResponses.Created($"/api/Roles/{result.Id}", result, "Role cadastrada com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("administrador"))
         .AddEndpointFilter<ValidationEndpointFilter<CadastrarRoleRequest>>()
         .WithName("CadastrarRole")
         .Produces<RolesResponse>(201)
@@ -33,6 +34,7 @@ public static class RolesEndpoints
             var roles = await roleService.ListarRoles();
             return ApiResponses.Ok(roles, "Roles listadas com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("administrador"))
         .WithName("ListarRoles")
         .Produces<List<RolesResponse>>(200);
 
@@ -49,6 +51,7 @@ public static class RolesEndpoints
             }
             return ApiResponses.Ok(role, "Role atualizada com sucesso.");
         })
+        .RequireAuthorization(policy => policy.RequireRole("administrador"))
         .AddEndpointFilter<ValidationEndpointFilter<AtualizarRoleRequest>>()
         .WithName("AtualizarRole")
         .Produces<RolesResponse>(200)

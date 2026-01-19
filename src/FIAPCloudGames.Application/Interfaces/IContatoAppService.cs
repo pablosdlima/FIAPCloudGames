@@ -1,7 +1,5 @@
-﻿using FIAPCloudGames.Domain.Dtos;
-using FIAPCloudGames.Domain.Dtos.Request.Contato;
+﻿using FIAPCloudGames.Domain.Dtos.Request.Contato;
 using FIAPCloudGames.Domain.Dtos.Responses.Contato;
-using FIAPCloudGames.Domain.Dtos.Responses.Usuarios;
 
 namespace FIAPCloudGames.Application.Interfaces;
 
