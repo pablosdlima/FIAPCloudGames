@@ -1,6 +1,6 @@
-# 🎮 Projeto **CloudGames** – Grupo 24
+# 🎮 Projeto **CloudGames** – Grupo 5
 
-Bem-vindo ao repositório do **Grupo 24** para o projeto **CloudGames**, desenvolvido como parte da pós-graduação FIAP.
+Bem-vindo ao repositório do **Grupo 5** para o projeto **CloudGames**, desenvolvido como parte da pós-graduação FIAP.
 
 ## 🧑‍💻 Integrantes do Grupo
 
