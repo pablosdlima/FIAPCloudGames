@@ -16,4 +16,13 @@ Bem-vindo ao repositório do **Grupo 5** para o projeto **CloudGames**, desenvol
 - [Domain Storytelling](https://miro.com/app/board/uXjVJlCbR2I=/?moveToWidget=3458764654952768299&cot=14)
 ---
 
+## Execução do projeto
+
+É necessário que tenha o Docker instalado.
+Para a execução do projeto precisamos que seja executado o comando na raiz do projeto (Diretório que contem o arquivo .sln).
+
+```docker-compose up ```
+
+Com isso teremos a incialização da base mongoDB para conseguirmos registrar os logs da aplicação.
+
 🔒 *Este repositório faz parte de um projeto acadêmico da Pós-graduação FIAP e destina-se exclusivamente a fins educacionais.*
